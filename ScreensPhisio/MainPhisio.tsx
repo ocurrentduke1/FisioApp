@@ -134,7 +134,7 @@ export default function MainPhisio({
           style={stylesMain.button}
           onPress={toggleModal}
         >
-          <Icon name="plus-circle" size={50} color="#FFFFFF" />
+          <Icon name="plus-circle" size={50} color="#000" />
         </TouchableOpacity>
 
         <Modal

@@ -6,7 +6,6 @@ import {
   View,
   TouchableOpacity,
   Image,
-  TextInput,
   Switch,
   Alert,
   Platform,
@@ -16,6 +15,7 @@ import { NavigationProp } from "@react-navigation/native";
 import { BACKEND_URL } from "@env";
 import JWT, { SupportedAlgorithms } from "expo-jwt";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { TextInput } from "react-native-paper";
 
 export function Login({ navigation }: { navigation: NavigationProp<any> }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -29,19 +29,20 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
 
   // const loggin = async () => {
   //   try {
-  //      const response = await axios.post(BACKEND_URL + '/login', {
-  //        email,
-  //        password,
-  //      });
+  //     const response = await axios.post(BACKEND_URL + "/login", {
+  //       email,
+  //       password,
+  //     });
   //     // const { key } = response.data;
+
   //     // JWT.encode({ foo: "bar" }, key, { algorithm: SupportedAlgorithms.HS512 });
-  //     // Aquí puedes almacenar el token de forma segura
+  //     // //Aquí puedes almacenar el token de forma segura
   //     // await AsyncStorage.setItem("jwt", key);
   //     // Alert.alert("Login successful");
   //     // console.log(key);
   //     // console.log(response.data);
 
-  //     if(response.data.code == 404 || response.data.code == 500){
+  //     if (response.data.code == 404 || response.data.code == 500) {
   //       Alert.alert("Correo o contraseña incorrectos");
   //       return;
   //     }
@@ -51,7 +52,11 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
   //     //console.log(idSesion + " LOGIN");
 
   //     //navigation.navigate( 'mainFisio' );
-  //     navigation.navigate(response.data.tipoUsuario === 'fisioterapeuta' ? 'mainFisio' : 'mainPaciente', );
+  //     navigation.navigate(
+  //       response.data.tipoUsuario === "fisioterapeuta"
+  //         ? "mainFisio"
+  //         : "mainPaciente"
+  //     );
   //   } catch (error) {
   //     console.error(error);
   //   }
@@ -94,33 +99,22 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
       />
 
       <View style={stylesLogin.datos}>
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label="Email"
           value={email}
-          style={stylesLogin.input}
-          placeholder="Correo Electronico"
-          placeholderTextColor="rgba(255, 255, 255, 0.5)"
-          onChangeText={(value) => setEmail(value)}
-          /*onEndEditing={(e) => {
-            if (!validateEmail(e.nativeEvent.text)) {
-              return Alert.alert('Error', 'Correo electrónico no válido');
-            }
-          }}*/
-          keyboardType="email-address"
+          onChangeText={(text) => setEmail(text)}
+          style={{ width: 300, marginBottom: 10, paddingTop: 10 }}
         />
         <TextInput //textbox ingresar Contraseña
+          mode="outlined"
           value={password}
-          style={stylesLogin.input}
-          placeholder="Contraseña"
-          placeholderTextColor="rgba(255, 255, 255, 0.5)"
+          label= "Password"
           onChangeText={(value) => setPassword(value)}
+          style={{ width: 300, marginBottom: 10, paddingTop: 10 }}
           secureTextEntry={!showPassword}
-        />
-        <Text style={{ fontSize: 16, marginRight: 10, color: "#FFFFFF" }}>
-          Mostrar contraseña
-        </Text>
-        <Switch
-          value={showPassword} // Establece el valor del Switch según showPassword
-          onValueChange={(value) => setShowPassword(value)} // Actualiza showPassword cuando se cambia el Switch
+          right={<TextInput.Icon icon={showPassword ? "eye-off" : "eye"}
+          onPress={() => setShowPassword(!showPassword)}/>}
         />
       </View>
       <TouchableOpacity // boton de recuperar contraseña

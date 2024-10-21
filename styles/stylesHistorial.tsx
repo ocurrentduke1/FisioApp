@@ -11,7 +11,7 @@ export default StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     backgroundColor: "#00BCD4",
-     // Alinea los elementos verticalmente al principio
+    // Alinea los elementos verticalmente al principio
   },
   scrollView: {
     display: "flex",
@@ -42,8 +42,8 @@ export default StyleSheet.create({
     marginVertical: 0,
     shadowColor: "#000",
     shadowOffset: { width: 2, height: 16 },
-    shadowOpacity: 0.5, 
-    shadowRadius: 6, 
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
     elevation: 8,
   },
   menuPaciente: {
@@ -57,11 +57,11 @@ export default StyleSheet.create({
     paddingHorizontal: 10,
     shadowColor: "#000",
     shadowOffset: { width: 2, height: 16 },
-    shadowOpacity: 0.5, 
-    shadowRadius: 6, 
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
     elevation: 8,
   },
-  
+
   dropdown: {
     height: 50,
     paddingHorizontal: 8,
@@ -92,7 +92,7 @@ export default StyleSheet.create({
     borderColor: "#000",
     borderWidth: 1,
     shadowColor: "#000",
-    shadowOffset: { width: 0  , height: 2 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
     shadowRadius: 3.84,
     elevation: 10,
@@ -100,19 +100,19 @@ export default StyleSheet.create({
 
   //Estilos para vista de registrar nuevos pacientes
 
-  containerRegistro:{
+  containerRegistro: {
     backgroundColor: "#FFFFFF",
-      alignItems: "center",
-      justifyContent: "flex-start", // Alinea los elementos verticalmente al principio
-      width: windowWidth * 0.8,
-      height: windowHeight * 0.75,
-      borderRadius: 25,
-      marginBottom: 20,
-      paddingBottom: 10,
-          shadowColor: "#000",
+    alignItems: "center",
+    justifyContent: "flex-start", // Alinea los elementos verticalmente al principio
+    width: windowWidth * 0.8,
+    height: windowHeight * 0.75,
+    borderRadius: 25,
+    marginBottom: 20,
+    paddingBottom: 10,
+    shadowColor: "#000",
     shadowOffset: { width: 2, height: 16 },
-    shadowOpacity: 0.5, 
-    shadowRadius: 6, 
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
     elevation: 8,
   },
   input: {
@@ -140,8 +140,8 @@ export default StyleSheet.create({
     borderRadius: 20,
     shadowColor: "#000",
     shadowOffset: { width: 2, height: 16 },
-    shadowOpacity: 0.5, 
-    shadowRadius: 6, 
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
     elevation: 8,
   },
   buttonText: {

@@ -48,43 +48,43 @@ export default function RegistrarPersonales({
     sexo: sex
   };
 
-  const registerUser = async () => {
-    const route =
-      selected === "fisioterapeuta"
-        ? "/registrar-fisioterapeuta"
-        : "/registrar-paciente";
-    if (selected === "fisioterapeuta") {
-      navigation.navigate("registrarTarjeta", {
-        registerDataPhisio: registerDataPhisio,
-      });
-    } else if (selected === "paciente") {
-      const response = await axios.post(
-        BACKEND_URL + route,
-        registerDataPatient,
-        {
-          headers: { "Access-Control-Allow-Origin": "*" },
-        }
-      );
-      if (response.data.code == 400) {
-        console.log(response.data);
-        Alert.alert("Correo ya registrado");
-        return;
-      }
-      console.log(response.data);
-      Alert.alert("Cuenta creada exitosamente");
-      navigation.navigate("login");
-    }
-  };
-
   // const registerUser = async () => {
-  //   if (selected === "paciente") {
-  //     console.log("Registrando paciente");
-  //     console.log(registerDataPatient);
-  //   } else {
-  //     console.log("Registrando fisioterapeuta");
-  //     console.log(registerDataPhisio);
+  //   const route =
+  //     selected === "fisioterapeuta"
+  //       ? "/registrar-fisioterapeuta"
+  //       : "/registrar-paciente";
+  //   if (selected === "fisioterapeuta") {
+  //     navigation.navigate("registrarTarjeta", {
+  //       registerDataPhisio: registerDataPhisio,
+  //     });
+  //   } else if (selected === "paciente") {
+  //     const response = await axios.post(
+  //       BACKEND_URL + route,
+  //       registerDataPatient,
+  //       {
+  //         headers: { "Access-Control-Allow-Origin": "*" },
+  //       }
+  //     );
+  //     if (response.data.code == 400) {
+  //       console.log(response.data);
+  //       Alert.alert("Correo ya registrado");
+  //       return;
+  //     }
+  //     console.log(response.data);
+  //     Alert.alert("Cuenta creada exitosamente");
+  //     navigation.navigate("login");
   //   }
   // };
+
+  const registerUser = async () => {
+    if (selected === "paciente") {
+      console.log("Registrando paciente");
+      console.log(registerDataPatient);
+    } else {
+      console.log("Registrando fisioterapeuta");
+      console.log(registerDataPhisio);
+    }
+  };
 
   const data = [
     { key: "1", value: "fisioterapeuta" },
