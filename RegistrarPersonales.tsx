@@ -6,7 +6,6 @@ import {
   View,
   TouchableOpacity,
   Image,
-  TextInput,
   Alert,
   Modal,
   Button,
@@ -16,6 +15,7 @@ import { RouteProp } from "@react-navigation/native";
 import { SelectList } from "react-native-dropdown-select-list";
 import { BACKEND_URL } from "@env";
 import stylesLogin from "./styles/stylesLogin";
+import { TextInput } from "react-native-paper";
 
 export default function RegistrarPersonales({
   route,navigation,
@@ -80,9 +80,15 @@ export default function RegistrarPersonales({
     if (selected === "paciente") {
       console.log("Registrando paciente");
       console.log(registerDataPatient);
+      navigation.navigate("Login", {
+        registerDataPatient: registerDataPatient,
+      });
     } else {
       console.log("Registrando fisioterapeuta");
       console.log(registerDataPhisio);
+      navigation.navigate("registrarTarjeta", {
+        registerDataPhisio: registerDataPhisio,
+      });
     }
   };
 
@@ -141,15 +147,19 @@ export default function RegistrarPersonales({
 
       <View style={stylesLogin.datosRegistrar}>
         <TextInput //textbox ingresar correo
-          style={stylesLogin.inputRegistrar}
-          placeholder="Nombre(s)"
-          placeholderTextColor="rgba(255, 255, 255, 0.5)"
+          mode= "outlined"
+          label = "Nombre(s)"
+          style={stylesLogin.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={setNombre}
         />
         <TextInput //textbox ingresar correo
-          style={stylesLogin.inputRegistrar}
-          placeholder="Apellidos"
-          placeholderTextColor="rgba(255, 255, 255, 0.5)"
+          mode= "outlined"
+          label = "Apellidos"
+          style={stylesLogin.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={setApellido}
         />
         <SelectList
@@ -194,7 +204,7 @@ export default function RegistrarPersonales({
             style={{
               backgroundColor: "white",
               width: "80%",
-              height: "50%",
+              height: "60%",
               padding: 20,
               borderRadius: 10,
               alignItems: "center",
@@ -202,17 +212,23 @@ export default function RegistrarPersonales({
           >
             <Text style={{ fontSize: 20 }}>Registrar Paciente</Text>
             <TextInput
-              placeholder="Edad"
+              mode= "outlined"
+              label = "Edad"
               value={age}
               onChangeText={setAge}
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               keyboardType="numeric"
-              style={[stylesLogin.inputRegistrar, { color: "#000000" }]}
+              style={stylesLogin.TextInput}
             />
             <TextInput
-              placeholder="Calle y número"
+            mode= "outlined"
+              label="Domicilio"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               value={address}
               onChangeText={setAddress}
-              style={[stylesLogin.inputRegistrar, { color: "#000000" }]}
+              style={stylesLogin.TextInput}
             />
             <SelectList
               setSelected={(val: string) => {

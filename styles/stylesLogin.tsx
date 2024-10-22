@@ -117,4 +117,26 @@ export default StyleSheet.create({
     borderRadius: 20,
     marginTop: 20,
   },
+
+  /*
+
+
+
+
+
+  estilos con react native paper
+
+
+
+
+
+   */
+
+  TextInput: {
+    width: 300,
+    marginBottom: 10,
+    paddingTop: 10,
+    backgroundColor: "white",
+    
+  },
 });

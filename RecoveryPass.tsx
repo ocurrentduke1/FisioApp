@@ -5,18 +5,31 @@ import {
   View,
   TouchableOpacity,
   Image,
-  TextInput,
   Alert,
 } from "react-native";
 import stylesLogin from "./styles/stylesLogin";
 import { NavigationProp } from "@react-navigation/native";
+import { TextInput } from "react-native-paper";
 
 export function RecoveryPass({
   navigation,
 }: {
   navigation: NavigationProp<any>;
 }) {
-  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+
+  const validateInput = () => {
+    if (email === "") {
+      return false;
+    }else{
+      return true;
+    }
+  }
+
+  // const validateEmail = (email: string) => {
+  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  //   return emailRegex.test(email);
+  // };
 
   return (
     <View style={stylesLogin.container}>
@@ -26,11 +39,14 @@ export function RecoveryPass({
       />
 
       <View style={stylesLogin.datos}>
-        <TextInput //textbox ingresar correo
-          style={stylesLogin.input}
-          placeholder="Correo Electronico"
-          placeholderTextColor="rgba(255, 255, 255, 0.5)"
-          keyboardType="email-address"
+      <TextInput
+          mode="outlined"
+          label="Correo Electrónico"
+          value={email}
+          onChangeText={(text) => setEmail(text)}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
+          style={stylesLogin.TextInput}
         />
         <Text
           style={{
@@ -54,6 +70,7 @@ export function RecoveryPass({
             "El correo a sido enviado, revisa tu bandeja de entrada o spam."
           )
         }
+        disabled={!validateInput()}
       >
         <Text style={{ color: "#FFFFFF", fontSize: 17 }}>Recuperar contraseña</Text>
       </TouchableOpacity>

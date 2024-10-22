@@ -5,12 +5,19 @@ import {
   View,
   TouchableOpacity,
   Image,
-  TextInput,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Dimensions,
+  StyleSheet,
+  SafeAreaView,
 } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
-import Icon from "react-native-vector-icons/FontAwesome";
 import stylesLogin from "./styles/stylesLogin";
+import { TextInput } from "react-native-paper";
+
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 
 export default function Registrar({
   navigation, 
@@ -63,7 +70,7 @@ export default function Registrar({
   };
 
   return (
-    <View style={stylesLogin.container}>
+    <SafeAreaView style={stylesLogin.container}>
       <Text style={{ fontSize: 30, color: "#FFFFFF" }}> Registrar cuenta</Text>
       <Image
         style={stylesLogin.imageRegistrar}
@@ -72,55 +79,52 @@ export default function Registrar({
 
       <View style={stylesLogin.datosRegistrar}>
         <TextInput 
-          style={stylesLogin.inputRegistrar} //estilo de la caja de texto
-          placeholder="Correo Electronico"
-          placeholderTextColor="rgba(255, 255, 255, 0.5)"
+          mode = "outlined"
+          style={stylesLogin.TextInput}
+          label="Correo Electrónico"
           keyboardType="email-address"
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(text) => setEmail(text)}
           value={email}
         />
         <TextInput //textbox telefono
-          style={stylesLogin.inputRegistrar}
-          placeholder="Telefono"
-          placeholderTextColor="rgba(255, 255, 255, 0.5)"
+          mode = "outlined"
+          style={stylesLogin.TextInput}
+          label="Número de teléfono"
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           keyboardType="numeric"
           maxLength={10}
           onChangeText={(text) => setPhone(text)}
           value={phone}
         />
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
           <TextInput
-            style={stylesLogin.inputContrasena}
-            placeholder="Contraseña"
-          placeholderTextColor="rgba(255, 255, 255, 0.5)"
+            mode = "outlined"
+            style={stylesLogin.TextInput}
+            label = "Contraseña"
+            outlineColor="#c5cae9"
+            activeOutlineColor="#c5cae9"
             secureTextEntry={!showPassword}
             onChangeText={(text) => setPassword(text)}
             value={password}
+            right={<TextInput.Icon icon={showPassword ? "eye-off" : "eye"}
+          onPress={() => setShowPassword(!showPassword)}/>}
           />
-          <Icon
-            name={showPassword ? "eye" : "eye-slash"}
-            size={30}
-            color="#FFFFFF"
-            onPress={() => setShowPassword(!showPassword)}
-          />
-        </View>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
+        
+        
           <TextInput
-            style={stylesLogin.inputContrasena}
-            placeholder="Confirmar contraseña"
-          placeholderTextColor="rgba(255, 255, 255, 0.5)"
+          mode = "outlined"
+          label = "Confirmar contraseña"
+            style={stylesLogin.TextInput}
+            outlineColor="#c5cae9"
+            activeOutlineColor="#c5cae9"
             secureTextEntry={!ShowConfirm}
             onChangeText={(text) => setConfirmPassword(text)}
             value={confirmPassword}
+            right ={<TextInput.Icon icon={ShowConfirm ? "eye-off" : "eye"} onPress={() => setShowConfirm(!ShowConfirm)}/>}
           />
-          <Icon
-            name={ShowConfirm ? "eye" : "eye-slash"}
-            size={30}
-            color="#FFFFFF"
-            onPress={() => setShowConfirm(!ShowConfirm)}
-          />
-          
-        </View>
+        
         <View style= {{alignItems: 'flex-start', width: 280, marginTop: 15}}>
         <Text style={{fontSize: 12, color: '#FFFFFF', textAlign: 'justify'}}>
         Debe contener las siguientes características:
@@ -179,6 +183,37 @@ export default function Registrar({
       </TouchableOpacity>
 
       <StatusBar style="auto" />
-    </View>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#00BCD4",
+    width: windowWidth * 0.8,
+    borderRadius: 25,
+    marginBottom: 20,
+    paddingBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 2, height: 16 },
+    shadowOpacity: 0.5, 
+    shadowRadius: 6, 
+    elevation: 8,
+  },
+  label: {
+    fontSize: 16,
+    marginVertical: 10,
+    color: "white",
+  },
+  title: {
+    fontSize: 22, fontWeight: "bold", alignSelf: "center", color: "white", paddingTop: 20
+  },
+  radioButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+});
