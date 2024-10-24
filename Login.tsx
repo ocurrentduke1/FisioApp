@@ -15,7 +15,7 @@ import {
 import stylesLogin from "./styles/stylesLogin";
 import { NavigationProp } from "@react-navigation/native";
 import { BACKEND_URL } from "@env";
-import JWT, { SupportedAlgorithms } from "expo-jwt";
+import JWT, { SupportedAlgorithms } from 'expo-jwt';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TextInput } from "react-native-paper";
 
@@ -28,68 +28,88 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
   const [modalAuth, setModalAuth] = useState(false);
   const inputRefs = useRef<any[]>([]);
 
+  useEffect(() => {
+    const checkExpiration = async () => {
+      const exp = Number(await AsyncStorage.getItem("expiracion"));
+      console.log("expiracion", await AsyncStorage.multiGet(["expiracion", "idSesion", "tipoUsuario"]));
+      if (exp) {
+        const expDate = new Date(exp * 1000);
+        if (expDate < new Date()) {
+          await AsyncStorage.removeItem("idSesion");
+          await AsyncStorage.removeItem("expiracion");
+
+          navigation.navigate("login");
+          return;
+        }
+        const tipoUsuario = await AsyncStorage.getItem("tipoUsuario");
+        navigation.navigate(tipoUsuario === "fisioterapeuta" ? "mainFisio" : "mainPaciente");
+      }
+    };
+
+    checkExpiration();
+  }, []);
+
   const LoginData = {
     email: email,
     password: password,
   };
 
-  // const loggin = async () => {
-  //   try {
-  //     const response = await axios.post(BACKEND_URL + "/login", {
-  //       email,
-  //       password,
-  //     });
-  //     // const { key } = response.data;
+  const loggin = async () => {
+    try {
+      const response = await axios.post(BACKEND_URL + "/login", {
+        email,
+        password,
+      });
 
-  //     // JWT.encode({ foo: "bar" }, key, { algorithm: SupportedAlgorithms.HS512 });
-  //     // //Aquí puedes almacenar el token de forma segura
-  //     // await AsyncStorage.setItem("jwt", key);
-  //     // Alert.alert("Login successful");
-  //     // console.log(key);
-  //     // console.log(response.data);
-
-  //     if (response.data.code == 404 || response.data.code == 500) {
-  //       Alert.alert("Correo o contraseña incorrectos");
-  //       return;
-  //     }
-  //     const idSesion = response.data.id;
-  //     //const idSesion = "1";
-  //     await AsyncStorage.setItem("idSesion", idSesion);
-  //     //console.log(idSesion + " LOGIN");
-
-  //     //navigation.navigate( 'mainFisio' );
-  //     navigation.navigate(
-  //       response.data.tipoUsuario === "fisioterapeuta"
-  //         ? "mainFisio"
-  //         : "mainPaciente"
-  //     );
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
-  const loggin = () => {
-    if (
-      (email === "Fisio" && password === "123") ||
-      (email === "fisio" && password === "123")
-    ) {
-      if(auth){
-        navigation.navigate("mainFisio");
-      }else{
-        setModalAuth(true);
+      if (response.data.code == 404 || response.data.code == 500) {
+        Alert.alert("Correo o contraseña incorrectos");
+        return;
       }
-      
-    } else if (email === "p" && password === "123") {
-      if(auth){
-        navigation.navigate("mainPaciente");
-      }else{
-        setModalAuth(true);
+
+      const { key, token } = response.data;
+
+      const jwtDecode = JWT.decode(token, key);
+      await AsyncStorage.setItem("idSesion", jwtDecode.id.toString());
+      await AsyncStorage.setItem("tipoUsuario", jwtDecode.tipoUsuario);
+      if (jwtDecode?.exp) {
+        await AsyncStorage.setItem("expiracion", jwtDecode.exp.toString());
       }
-      
-    } else {
-      Alert.alert("Correo o contraseña incorrectos");
+
+      console.log("jwt local: ", JSON.stringify(jwtDecode));
+      console.log("jwt servidor", response.data);
+
+      navigation.navigate(
+        jwtDecode.tipoUsuario === "fisioterapeuta"
+          ? "mainFisio"
+          : "mainPaciente"
+      );
+    } catch (error) {
+      console.error(error);
     }
   };
+
+  // const loggin = () => {
+  //   if (
+  //     (email === "Fisio" && password === "123") ||
+  //     (email === "fisio" && password === "123")
+  //   ) {
+  //     if(auth){
+  //       navigation.navigate("mainFisio");
+  //     }else{
+  //       setModalAuth(true);
+  //     }
+      
+  //   } else if (email === "p" && password === "123") {
+  //     if(auth){
+  //       navigation.navigate("mainPaciente");
+  //     }else{
+  //       setModalAuth(true);
+  //     }
+      
+  //   } else {
+  //     Alert.alert("Correo o contraseña incorrectos");
+  //   }
+  // };
 
   const handleAuthCodeChange = (index: number, value: string) => {
     const newAuthCode = [...authCode];
@@ -253,13 +273,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 16,
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 8,
   },
   modalContainer: {
     flex: 1,

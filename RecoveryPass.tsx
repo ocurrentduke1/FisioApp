@@ -63,7 +63,7 @@ export function RecoveryPass({
       </View>
 
       <TouchableOpacity //boton de recuperar contraseña
-        style={stylesLogin.buttonRecovery}
+        style={[stylesLogin.button, { paddingHorizontal: 70}]}
         onPress={() =>
           Alert.alert(
             "Recuperar contraseña",
@@ -76,7 +76,7 @@ export function RecoveryPass({
       </TouchableOpacity>
 
       <TouchableOpacity //boton de registrar cuenta
-        style={stylesLogin.SecondarybuttonRegistrar}
+        style={[stylesLogin.Secondarybutton, { paddingHorizontal: 115 }]}
         onPress={() => navigation.navigate("login")} // Función que se ejecuta cuando se presiona el botón
       >
         <Text style={{ color: "#FFFFFF", fontSize: 17 }}>Regresar</Text>

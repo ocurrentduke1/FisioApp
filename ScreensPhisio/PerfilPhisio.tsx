@@ -1,4 +1,3 @@
-import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   View,
@@ -7,7 +6,6 @@ import {
   Text,
   Image,
   Modal,
-  TextInput,
   StyleSheet,
 } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
@@ -15,15 +13,30 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import stylesHistorial from "../styles/stylesHistorial";
 import * as ImagePicker from "expo-image-picker";
 import Icon from "react-native-vector-icons/FontAwesome";
+import Icon2 from "react-native-vector-icons/SimpleLineIcons";
+import stylesMain from "../styles/stylesMain";
+import { TextInput } from "react-native-paper";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const PerfilPhisio = () => {
+const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [image, setImage] = useState<string | null>(null);
     //declaracion de modales
     const [modalName, setModalName] = useState(false);
     const [modalContraseña, setModalContraseña] = useState(false);
+    const [modalTel, setModalTel] = useState(false);
     const [Name, setName] = useState("");
+    const [tel, setTel] = useState("");
     const [pastPassword, setPastPassword] = useState("");
     const [password, setPassword] = useState("");
+    const [ModalLogout, setModalLogout] = useState(false);
+
+    const toggleLogout = () => {
+      setModalLogout(!ModalLogout);
+    };
+    const logout = async () => {
+      await AsyncStorage.multiRemove(["idSesion", "expiracion", "tipoUsuario"]);
+      navigation.navigate("login");
+    }
   
     //declaracion de modal Name
     const openModalName = () => {
@@ -37,6 +50,18 @@ const PerfilPhisio = () => {
       closeModalName();
     };
   
+    //declaracion de modal Name
+    const openModalTel = () => {
+      setModalTel(true);
+    };
+    const closeModalTel = () => {
+      setModalTel(false);
+    };
+    const changeTel = () => {
+      console.log("Telefono: ", tel);
+      closeModalTel();
+    };
+
     //declaracion de modal Contraseña
     const openModalContraseña = () => {
       setModalContraseña(true);
@@ -120,10 +145,13 @@ const PerfilPhisio = () => {
                 <View style={styles.modalView}>
                   <Text style={styles.modalText}>Cambiar nombre de usuario</Text>
                   <TextInput
-                    style={styles.input}
-                    placeholder="Nombre del usuario"
+                  mode = "outlined"
+                  label = "Nombre"
+                    style={stylesMain.TextInputPerfil}
                     value={Name}
                     onChangeText={(value) => setName(value)}
+                    outlineColor="#c5cae9"
+                    activeOutlineColor="#c5cae9"
                   />
                   <View style={styles.buttonContainer}>
                     <TouchableOpacity
@@ -158,8 +186,46 @@ const PerfilPhisio = () => {
             </TouchableOpacity>
   
             {/* Boton de telefono */}
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalTel}
+              onRequestClose={closeModalTel}
+            >
+              <View style={styles.modalContainer}>
+                <View style={styles.modalView}>
+                  <Text style={styles.modalText}>Cambiar Telefono de contacto</Text>
+                  <TextInput
+                  mode = "outlined"
+                  label = "Telefono"
+                    style={stylesMain.TextInputPerfil}
+                    value={tel}
+                    onChangeText={(value) => setTel(value)}
+                    outlineColor="#c5cae9"
+                    activeOutlineColor="#c5cae9"
+                    keyboardType="numeric"
+                    maxLength={10}
+                  />
+                  <View style={styles.buttonContainer}>
+                    <TouchableOpacity
+                      style={[styles.button, styles.buttonClose]}
+                      onPress={closeModalTel}
+                    >
+                      <Text style={styles.textStyle}>Cancelar</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.button, styles.buttonSearch]}
+                      onPress={changeTel}
+                    >
+                      <Text style={styles.textStyle}>Guardar</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </Modal>
   
-            <TouchableOpacity style={{paddingVertical: 10, borderTopWidth: 2, borderColor: '#BDBDBD', paddingHorizontal: 10}}>
+            <TouchableOpacity style={{paddingVertical: 10, borderTopWidth: 2, borderColor: '#BDBDBD', paddingHorizontal: 10}}
+            onPress={openModalTel}>
               <Text style={stylesHistorial.buttonText}>Telefono</Text>
             </TouchableOpacity>
   
@@ -174,16 +240,22 @@ const PerfilPhisio = () => {
                 <View style={styles.modalView}>
                   <Text style={styles.modalText}>Cambiar contraseña</Text>
                   <TextInput
-                    style={styles.input}
-                    placeholder="Contraseña anterior"
+                  mode = "outlined"
+                  label = "Contraseña anterior"
+                    style={stylesMain.TextInputPerfil}
                     value={pastPassword}
                     onChangeText={(value) => setPastPassword(value)}
+                    outlineColor="#c5cae9"
+                    activeOutlineColor="#c5cae9"
                   />
                   <TextInput
-                    style={styles.input}
-                    placeholder="Contraseña nueva"
+                  mode = "outlined"
+                  label = "Contraseña nueva"
+                    style={stylesMain.TextInputPerfil}
                     value={password}
                     onChangeText={(value) => setPassword(value)}
+                    outlineColor="#c5cae9"
+                    activeOutlineColor="#c5cae9"
                   />
                   <View style={styles.buttonContainer}>
                     <TouchableOpacity
@@ -240,8 +312,51 @@ const PerfilPhisio = () => {
             >
               <Text style={stylesHistorial.buttonText}>Metodos de pago</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                paddingVertical: 10,
+                borderBottomWidth: 2,
+                borderColor: "#BDBDBD",
+                paddingHorizontal: 10,
+                flexDirection: "row",
+                justifyContent: "flex-start",
+                alignItems: "center"
+              }}
+              onPress={toggleLogout}
+            >
+              <Icon2 name="logout" size={20} color={"#000"}/>
+              <Text style={stylesHistorial.buttonText}>Cerrar Sesion</Text>
+            </TouchableOpacity>
           </ScrollView>
         </View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={ModalLogout}
+          onRequestClose={toggleLogout}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>
+                ¿Seguro que quieres salir de tu sesion?
+              </Text>
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                  style={[styles.button, styles.buttonClose]}
+                  onPress={toggleLogout}
+                >
+                  <Text style={styles.textStyle}>Cancelar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.buttonSearch]}
+                  onPress={logout}
+                >
+                  <Text style={styles.textStyle}>Eliminar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </SafeAreaView>
     );
   };

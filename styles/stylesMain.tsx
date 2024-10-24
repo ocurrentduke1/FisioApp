@@ -7,7 +7,8 @@ const windowHeight = Dimensions.get("window").height;
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#00bcd4",
+    // backgroundColor: "#00bcd4",
+    backgroundColor: "#4971ac",
     justifyContent: "flex-start", // Alinea los elementos verticalmente al principio
   },
   scrollView: {
@@ -104,12 +105,6 @@ export default StyleSheet.create({
     borderColor: "#000",
     // borderWidth: 1,
   },
-  containerMetrics: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-    alignItems: "center",
-    justifyContent: "flex-start",
-  },
   datosMetricas: {
     alignItems: "center",
     justifyContent: "flex-start", // Alinea los elementos verticalmente al principio
@@ -121,6 +116,7 @@ export default StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginTop: 10,
   },
 
   metricText: {
@@ -185,5 +181,27 @@ export default StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
     paddingRight: 30
+  },
+
+  /*
+
+
+
+
+
+  estilos con react native paper
+
+
+
+
+
+   */
+
+  TextInputPerfil: {
+    width: 250,
+    marginBottom: 10,
+    paddingTop: 10,
+    backgroundColor: "white",
+    
   },
 });

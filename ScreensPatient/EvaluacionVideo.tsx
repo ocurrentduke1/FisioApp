@@ -19,7 +19,7 @@ export default function EvaluacionVideo({
         <Text
           style={{
             fontSize: 20,
-            color: "#FFFFFF",
+            color: "#000",
             textAlign: "center",
             paddingTop: 10,
             fontWeight: "bold",
@@ -36,7 +36,7 @@ export default function EvaluacionVideo({
         <Text
           style={{
             fontSize: 20,
-            color: "#FFFFFF",
+            color: "#000",
             textAlign: "center",
             paddingTop: 10,
             fontWeight: "bold",
@@ -53,7 +53,7 @@ export default function EvaluacionVideo({
         <Text
           style={{
             fontSize: 20,
-            color: "#FFFFFF",
+            color: "#000",
             textAlign: "center",
             paddingTop: 10,
             fontWeight: "bold",
@@ -70,7 +70,7 @@ export default function EvaluacionVideo({
         <Text
           style={{
             fontSize: 20,
-            color: "#FFFFFF",
+            color: "#000",
             textAlign: "center",
             paddingTop: 10,
             fontWeight: "bold",
@@ -87,7 +87,7 @@ export default function EvaluacionVideo({
         <Text
           style={{
             fontSize: 20,
-            color: "#FFFFFF",
+            color: "#000",
             textAlign: "center",
             paddingTop: 10,
             fontWeight: "bold",
@@ -104,7 +104,7 @@ export default function EvaluacionVideo({
         <Text
           style={{
             fontSize: 20,
-            color: "#FFFFFF",
+            color: "#000",
             textAlign: "center",
             paddingTop: 10,
             fontWeight: "bold",
@@ -121,7 +121,7 @@ export default function EvaluacionVideo({
         <Text
           style={{
             fontSize: 20,
-            color: "#FFFFFF",
+            color: "#000",
             textAlign: "center",
             paddingTop: 10,
             fontWeight: "bold",
@@ -138,7 +138,7 @@ export default function EvaluacionVideo({
         <Text
           style={{
             fontSize: 20,
-            color: "#FFFFFF",
+            color: "#000",
             textAlign: "center",
             paddingTop: 10,
             fontWeight: "bold",
@@ -155,7 +155,7 @@ export default function EvaluacionVideo({
         <Text
           style={{
             fontSize: 20,
-            color: "#FFFFFF",
+            color: "#000",
             textAlign: "center",
             paddingTop: 10,
             fontWeight: "bold",
@@ -172,7 +172,7 @@ export default function EvaluacionVideo({
         <Text
           style={{
             fontSize: 20,
-            color: "#FFFFFF",
+            color: "#000",
             textAlign: "center",
             paddingTop: 10,
             fontWeight: "bold",
@@ -189,7 +189,7 @@ export default function EvaluacionVideo({
         <Text
           style={{
             fontSize: 20,
-            color: "#FFFFFF",
+            color: "#000",
             textAlign: "center",
             paddingTop: 10,
             fontWeight: "bold",
@@ -206,7 +206,7 @@ export default function EvaluacionVideo({
         <Text
           style={{
             fontSize: 20,
-            color: "#FFFFFF",
+            color: "#000",
             textAlign: "center",
             paddingTop: 10,
             fontWeight: "bold",

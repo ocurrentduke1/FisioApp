@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   ScrollView,
-  TextInput,
   TouchableOpacity,
   Text,
   Alert,
@@ -13,8 +12,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import stylesHistorial from "../styles/stylesHistorial";
 import { BACKEND_URL } from "@env";
 import axios from "axios";
-import { RadioButton } from 'react-native-paper';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { RadioButton } from "react-native-paper";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { TextInput } from "react-native-paper";
 
 // Suponiendo que este es tu componente
 const RegistrarNuevoPaciente = ({
@@ -39,106 +39,131 @@ const RegistrarNuevoPaciente = ({
     sexo: sexo,
     edad: Number(edad),
   };
-  
+
   const isFormValid = () => {
-    return nombre !== '' && apellidos !== '' && telefono !== '' && calle !== '' && edad !== '' && sexo !== '';
+    return (
+      nombre !== "" &&
+      apellidos !== "" &&
+      telefono !== "" &&
+      calle !== "" &&
+      edad !== "" &&
+      sexo !== ""
+    );
   };
 
   const RegisterPatient = async () => {
-      try {
-        const response = await axios.post(BACKEND_URL + '/vincular-paciente', {
-          ...DataPatient, idFisio: Number(userID)
-        });
- 
-       if(response.data.code == 500){
-         Alert.alert("Error en el servidor, intentelo mas tarde");
-         return;
-       }
-       navigation.navigate( 'mainFisio' );
-       console.log(response.data.code);
-     } catch (error) {
-       console.error(error);
-     }
-};
+    try {
+      const response = await axios.post(BACKEND_URL + "/vincular-paciente", {
+        ...DataPatient,
+        idFisio: Number(userID),
+      });
 
-useEffect(() => {
-
-  const getUserID = async () => {
-    const id = await AsyncStorage.getItem('idSesion');
-    setUserID(id);
+      if (response.data.code == 500) {
+        Alert.alert("Error en el servidor, intentelo mas tarde");
+        return;
+      }
+      navigation.navigate("mainFisio");
+      console.log(response.data.code);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  getUserID();
+  useEffect(() => {
+    const getUserID = async () => {
+      const id = await AsyncStorage.getItem("idSesion");
+      setUserID(id);
+    };
 
-}, []);
+    getUserID();
+  }, []);
 
   return (
     <SafeAreaView style={stylesHistorial.container}>
-      <View style={[stylesHistorial.containerRegistro, {flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',}]}>
+      <View
+        style={[
+          stylesHistorial.containerRegistro,
+          { flex: 1, alignItems: "center", justifyContent: "center" },
+        ]}
+      >
         <ScrollView style={stylesHistorial.scrollViewRegistro}>
-          <TextInput 
-          value={nombre}
-            style={stylesHistorial.input}
-            placeholder="Nombre(s) del paciente"
-            placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          <TextInput
+            mode="outlined"
+            label="Nombre(s)"
+            value={nombre}
+            style={stylesHistorial.TextInput}
+            outlineColor="#c5cae9"
+            activeOutlineColor="#c5cae9"
             onChangeText={(value) => setNombre(value)}
           />
-          <TextInput 
-          value={apellidos}
-            style={stylesHistorial.input}
-            placeholder="Apellidos del paciente"
-            placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          <TextInput
+           mode="outlined"
+            label="Apellidos"
+            value={apellidos}
+            style={stylesHistorial.TextInput}
+            outlineColor="#c5cae9"
+            activeOutlineColor="#c5cae9"
             onChangeText={(value) => setApellidos(value)}
           />
-          <TextInput 
-          value={telefono}
-            style={stylesHistorial.input}
-            placeholder="Telefono del paciente"
+          <TextInput
+           mode="outlined"
+            label="Telefono"
+            value={telefono}
+            style={stylesHistorial.TextInput}
+            outlineColor="#c5cae9"
+            activeOutlineColor="#c5cae9"
             keyboardType="numeric"
             maxLength={10}
-            placeholderTextColor="rgba(255, 255, 255, 0.8)"
             onChangeText={(value) => setTelefono(value)}
           />
-          <TextInput 
-          value={calle}
-            style={stylesHistorial.input}
-            placeholder="Calle y numero de casa"
-            placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          <TextInput
+           mode="outlined"
+            label="Domicilio"
+            value={calle}
+            style={stylesHistorial.TextInput}
+            outlineColor="#c5cae9"
+            activeOutlineColor="#c5cae9"
             onChangeText={(value) => setCalle(value)}
           />
-          <TextInput 
-          value={edad}
-            style={stylesHistorial.input}
-            placeholder="Edad del paciente"
+          <TextInput
+           mode="outlined"
+            label="Edad"
+            value={edad}
+            style={stylesHistorial.TextInput}
+            outlineColor="#c5cae9"
+            activeOutlineColor="#c5cae9"
             keyboardType="numeric"
-            placeholderTextColor="rgba(255, 255, 255, 0.8)"
             onChangeText={(value) => setEdad(value)}
           />
           <View>
-          <Text style={[styles.label, {color: "white"}]}>Sexo</Text>
-          <RadioButton.Group
-            onValueChange={newValue => setSexo(newValue)}
-            value={sexo}
-          >
-            <View style={styles.radioButtonContainer}>
-              <RadioButton value="Masculino" 
-              color="white"
-              uncheckedColor="#BDBDBD"/>
-              <Text style={{color: "white"}}>Masculino</Text>
-            </View>
-            <View style={styles.radioButtonContainer}>
-              <RadioButton value="Femenino"
-              color="white"
-              uncheckedColor="#BDBDBD"/>
-              <Text style={{color: "white"}}>Femenino</Text>
-            </View>
-          </RadioButton.Group>
-        </View>
+            <Text style={[styles.label, { color: "black" }]}>Sexo</Text>
+            <RadioButton.Group
+              onValueChange={(newValue) => setSexo(newValue)}
+              value={sexo}
+            >
+              <View style={styles.radioButtonContainer}>
+                <RadioButton
+                  value="Masculino"
+                  uncheckedColor="#BDBDBD"
+                />
+                <Text style={{ color: "black" }}>Masculino</Text>
+              </View>
+              <View style={styles.radioButtonContainer}>
+                <RadioButton
+                  value="Femenino"
+                  uncheckedColor="#BDBDBD"
+                />
+                <Text style={{ color: "black" }}>Femenino</Text>
+              </View>
+            </RadioButton.Group>
+          </View>
         </ScrollView>
       </View>
-      <TouchableOpacity style={stylesHistorial.button} onPress={RegisterPatient} disabled={!isFormValid()}>
+      <TouchableOpacity
+        style={stylesHistorial.button}
+        onPress={RegisterPatient}
+        disabled={!isFormValid()}
+      >
         <Text style={stylesHistorial.buttonText}>Guardar Registro</Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -151,8 +176,8 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   radioButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 10,
   },
 });

@@ -104,7 +104,7 @@ const BuscarPacientes = ({
         style={{
           margin: 10,
           width: 350,
-          backgroundColor: "#",
+          backgroundColor: "#FFF",
           borderColor: "black",
           borderWidth: 1,
           alignSelf: "center",

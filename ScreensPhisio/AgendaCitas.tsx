@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import { Agenda } from "react-native-calendars";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 export default function AgendaCitas({
   navigation,
@@ -237,7 +238,12 @@ export default function AgendaCitas({
       </Modal>
 
       {/* Modal para agregar una cita */}
-      <Button title="Agregar Cita" onPress={openModal} />
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={openModal}
+      >
+        <Icon name="plus-circle" size={40} color="#FFF" />
+      </TouchableOpacity>
       <Modal
         animationType="slide"
         transparent={true}
@@ -337,5 +343,18 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 }, // Desplazamiento de la sombra para iOS
     shadowOpacity: 0.1, // Opacidad de la sombra para iOS
     shadowRadius: 3, // Radio de difuminado de la sombra para iOS
+  },
+  addButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    backgroundColor: '#2196F3',
+    borderRadius: 50,
+    padding: 10,
+    elevation: 5,
+  },
+  addButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });

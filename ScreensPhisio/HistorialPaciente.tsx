@@ -18,10 +18,10 @@ import { NavigationProp } from "@react-navigation/native";
 import stylesHistorial from "../styles/stylesHistorial";
 import Icon from "react-native-vector-icons/FontAwesome";
 import IconFoundation from "react-native-vector-icons/Foundation";
-import { Dropdown } from "react-native-element-dropdown";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LineChart } from "react-native-chart-kit";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { FAB, Portal, PaperProvider } from 'react-native-paper';
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -101,15 +101,11 @@ export default function HistorialPaciente({
   const [date, setDate] = useState(new Date());
   const [Fecha1, setFecha1] = useState("");
   const [Fecha2, setFecha2] = useState("");
-  const [selected, setSelected] = React.useState([]);
-  const [value, setValue] = useState("");
-  const options = [
-    { label: "Agregar expediente", value: "CrearExpediente" },
-    { label: "Agregar escala", value: "CrearEscala" },
-    { label: "Compartir perfil", value: "CompartirPerfil" },
-    { label: "Eliminar paciente", value: "EliminarPaciente" },
-    // Agrega más opciones según sea necesario
-  ];
+
+  const [state, setState] = React.useState({ open: false });
+  const onStateChange = ({ open }: { open: boolean }) => setState({ open });
+  const { open } = state;
+
   const paciente = route.params.paciente;
 
   const togglePicker1 = () => {
@@ -202,17 +198,6 @@ export default function HistorialPaciente({
     closeDelete();
   };
 
-  const handleChange = (item: { label: string; value: string }) => {
-    if (item.value === "CompartirPerfil") {
-      openShare();
-    } else if (item.value === "EliminarPaciente") {
-      openDelete();
-    } else {
-      navigation.navigate(item.value);
-    }
-    setValue(item.value);
-  };
-
   const openWhatsApp = () => {
     const url = `https://api.whatsapp.com/send?phone=${
       paciente.numeroContacto
@@ -223,6 +208,7 @@ export default function HistorialPaciente({
   };
 
   return (
+    <PaperProvider>
     <SafeAreaView style={stylesHistorial.container}>
       <View style={stylesHistorial.datosPaciente}>
         <View style={stylesHistorial.viewpaciente}>
@@ -283,24 +269,12 @@ export default function HistorialPaciente({
           </Text>
           <View>
             <Text style={{ marginLeft: 10, color: "black" }}>
-              {paciente.numeroContacto}
+              Contacto: {paciente.numeroContacto}
             </Text>
           </View>
           <Text style={{ marginLeft: 10, color: "black" }}>
             correo@direccion.com
           </Text>
-          <Dropdown
-            data={options}
-            labelField="label"
-            valueField="value"
-            value={value}
-            onChange={handleChange}
-            style={stylesHistorial.dropdown} // Ajusta el estilo del dropdown aquí
-            renderRightIcon={() => (
-              <Icon name="ellipsis-h" size={20} color="black" />
-            )} // Usa el icono de tres puntos aquí
-            containerStyle={stylesHistorial.dropdownContainer} // Ajusta el estilo del contenedor aquí
-          />
         </View>
       </View>
       <View style={stylesHistorial.menuPaciente}>
@@ -492,7 +466,64 @@ export default function HistorialPaciente({
         </Modal>
         {/* Modal para eliminar paciente */}
       </View>
+      <Portal>
+        <FAB.Group
+          open={open}
+          visible
+          icon={open ? 'menu-down' : 'plus'}
+          backdropColor="rgba(0, 0, 0, 0.5)"
+          fabStyle={{ backgroundColor: "#FFF" }}
+          actions={[
+            { icon: 'plus',
+              label: "Agregar escala",
+              labelStyle: { color: "white"},
+              style: { backgroundColor: '#FFF' },
+              color: "#000",
+               onPress: () => navigation.navigate("CrearEscala")
+            },
+            {
+              icon: 'file-document-edit',
+              label: 'Nuevo Expediente',
+              labelStyle: { color: "white"},
+              style: { backgroundColor: '#FFF' },
+              color: "#000",
+              onPress: () => navigation.navigate("CrearExpediente"),
+            },
+            {
+              icon: 'email',
+              label: 'Enviar Mensaje',
+              labelStyle: { color: "white"},
+              style: { backgroundColor: '#FFF' },
+              color: "#000",
+              onPress: () => openWhatsApp(),
+            },
+            {
+              icon: 'share',
+              label: 'Compartir',
+              labelStyle: { color: "white"},
+              style: { backgroundColor: '#FFF' },
+              color: "#000",
+              onPress: () => openShare(),
+            },
+            {
+              icon: 'delete',
+              label: 'Eliminar paciente',
+              labelStyle: { color: "white"},
+              style: { backgroundColor: '#FFF' },
+              color: "#000",
+              onPress: () => openDelete(),
+            },
+          ]}
+          onStateChange={onStateChange}
+          onPress={() => {
+            if (open) {
+
+            }
+          }}
+        />
+      </Portal>
     </SafeAreaView>
+    </PaperProvider>
   );
 }
 

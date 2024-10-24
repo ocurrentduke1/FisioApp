@@ -38,7 +38,7 @@ const enviarAlServidor = () => {
 };
 
   return (
-    <View style={stylesMain.containerMetrics}>
+    <View style={[stylesMain.container, {alignItems: "center"}]}>
       <View style={stylesMain.datosMetricas}>
     <SafeAreaView>
       <ScrollView style={stylesMain.formatMetrics}>
@@ -74,7 +74,7 @@ const enviarAlServidor = () => {
         </View>
         <View style={ stylesMain.metricsEnabler}>
         <Text>
-        Escala/test Tinetti
+        Escala Tinetti
        </Text>
        <Switch value={metricas.tinetti} onValueChange={() => toggleMetrica('tinetti')}/>
         </View>
@@ -109,7 +109,7 @@ const enviarAlServidor = () => {
           paddingEnd: windowHeight * 0.115,
           paddingStart: windowHeight * 0.115,
           borderRadius: 20,
-          marginTop: 20,
+          marginTop: 100,
           marginBottom: 20,
           marginHorizontal: 1,
           shadowColor: "#000",

@@ -69,15 +69,25 @@ export default function Registrar({
     return true;
   };
 
+  const hasErrors = () => {
+    return !email.includes('@');
+  };
+
   return (
+    
     <SafeAreaView style={stylesLogin.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={0}
+        style={styles.container}
+      >
       <Text style={{ fontSize: 30, color: "#FFFFFF" }}> Registrar cuenta</Text>
       <Image
-        style={stylesLogin.imageRegistrar}
+        style={[stylesLogin.image, { width: 180, height: 180 }] }
         source={require("./assets/logoFisioApp.png")}
       />
 
-      <View style={stylesLogin.datosRegistrar}>
+      <View style={[stylesLogin.datos, {height: 350}]}>
         <TextInput 
           mode = "outlined"
           style={stylesLogin.TextInput}
@@ -88,6 +98,7 @@ export default function Registrar({
           onChangeText={(text) => setEmail(text)}
           value={email}
         />
+        
         <TextInput //textbox telefono
           mode = "outlined"
           style={stylesLogin.TextInput}
@@ -144,7 +155,7 @@ export default function Registrar({
         </View>
       </View>
       <TouchableOpacity //boton de inicio de sesion
-        style={stylesLogin.buttonRegistrar}
+        style={[stylesLogin.button, { paddingHorizontal: 115 }]}
         onPress={() => {
           if (validateData()) {
             if (validatePassword()) {
@@ -176,13 +187,13 @@ export default function Registrar({
       </TouchableOpacity>
 
       <TouchableOpacity //boton de registrar cuenta
-        style={stylesLogin.SecondarybuttonRegistrar}
+        style={[stylesLogin.Secondarybutton, { paddingHorizontal: 113 }]}
         onPress={() => navigation.navigate("login")} 
       >
         <Text style={{ color: "#FFFFFF", fontSize: 16 }}>Regresar</Text>
       </TouchableOpacity>
-
       <StatusBar style="auto" />
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -192,16 +203,16 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#00BCD4",
+    // backgroundColor: "#00BCD4",
     width: windowWidth * 0.8,
     borderRadius: 25,
-    marginBottom: 20,
+    // marginBottom: 20,
     paddingBottom: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 2, height: 16 },
-    shadowOpacity: 0.5, 
-    shadowRadius: 6, 
-    elevation: 8,
+    // shadowColor: "#000",
+    // shadowOffset: { width: 2, height: 16 },
+    // shadowOpacity: 0.5, 
+    // shadowRadius: 6, 
+    // elevation: 8,
   },
   label: {
     fontSize: 16,

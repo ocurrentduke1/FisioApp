@@ -53,7 +53,7 @@ export default function SeidelMetric({ navigation }: { navigation: NavigationPro
     console.log("Save result");
   }
   return (
-    <View style={stylesMain.containerMetrics}>
+    <View style={[stylesMain.container, {alignItems: "center"}]}>
       <SafeAreaView style={stylesMain.datosMetricas}>
         <ScrollView style={stylesMain.scrollMetrics}>
           <View style={[stylesMain.ContainerInput, { height: 550 }]}>

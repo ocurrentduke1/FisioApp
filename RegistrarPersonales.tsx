@@ -141,11 +141,11 @@ export default function RegistrarPersonales({
     <View style={stylesLogin.container}>
       <Text style={{ fontSize: 30, color: "#FFFFFF" }}> Registrar cuenta</Text>
       <Image
-        style={stylesLogin.imageRegistrar}
+        style={[stylesLogin.image, { width: 180, height: 180 }]}
         source={require("./assets/logoFisioApp.png")}
       />
 
-      <View style={stylesLogin.datosRegistrar}>
+      <View style={[stylesLogin.datos, {height: 350}]}>
         <TextInput //textbox ingresar correo
           mode= "outlined"
           label = "Nombre(s)"
@@ -204,13 +204,13 @@ export default function RegistrarPersonales({
             style={{
               backgroundColor: "white",
               width: "80%",
-              height: "60%",
+              height: "70%",
               padding: 20,
               borderRadius: 10,
               alignItems: "center",
             }}
           >
-            <Text style={{ fontSize: 20 }}>Registrar Paciente</Text>
+            <Text style={{ fontSize: 20 }}>Datos de Paciente</Text>
             <TextInput
               mode= "outlined"
               label = "Edad"
@@ -275,14 +275,28 @@ export default function RegistrarPersonales({
                 Registrar Datos
               </Text>
             </TouchableOpacity>
-            <Button title="Cerrar" onPress={toggleModal} />
+            <TouchableOpacity //boton de registrar cuenta
+              style={{
+                width: "100%",
+                padding: 15,
+                backgroundColor: "#3F51B5",
+                borderRadius: 20,
+                alignItems: "center",
+                marginVertical: 10,
+              }}
+              onPress={toggleModal} // Función que se ejecuta cuando se presiona el botón
+            >
+              <Text style={{ color: "#FFFFFF", fontSize: 16 }}>
+                Cerrar
+              </Text>
+            </TouchableOpacity>
           </View>
           </View>
         </Modal>
       </View>
 
       <TouchableOpacity //boton de inicio de sesion
-        style={stylesLogin.buttonRegistrar}
+        style={[stylesLogin.button, { paddingHorizontal: 115 }]}
         onPress={() => {
           registerUser();
         }}
@@ -292,7 +306,7 @@ export default function RegistrarPersonales({
       </TouchableOpacity>
 
       <TouchableOpacity //boton de registrar cuenta
-        style={stylesLogin.SecondarybuttonRegistrar}
+        style={[stylesLogin.Secondarybutton, { paddingHorizontal: 115 }]}
         onPress={() => navigation.navigate("registrar")} // Función que se ejecuta cuando se presiona el botón
       >
         <Text style={{ color: "#FFFFFF", fontSize: 16 }}>Regresar</Text>

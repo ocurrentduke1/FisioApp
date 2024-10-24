@@ -31,7 +31,7 @@ const ConfirmPosture = ({
           source={{uri: imageUrl}} // Asegúrate de cambiar la ruta al lugar correcto donde tienes tu GIF
           style={styles.gifStyle}
         />
-        <Text style={{color: "white"}}>
+        <Text style={{color: "black"}}>
           Instrucciones para la realizacion de la postura y su visualizacion
         </Text>
       </View>
@@ -47,7 +47,7 @@ const ConfirmPosture = ({
 const styles = StyleSheet.create({
   Text: {
     fontSize: 24,
-    color: "white",
+    color: "black",
     textAlign: "center",
   },
   gifStyle: {

@@ -11,7 +11,8 @@ export default StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: "#2196F3",
+    // backgroundColor: "#2196F3",
+    backgroundColor: "#4971ac",
     alignItems: "center",
     justifyContent: "center",
     ...StyleSheet.absoluteFillObject,

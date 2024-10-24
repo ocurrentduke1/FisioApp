@@ -81,7 +81,7 @@ export default function TinettiMetric({
   }
 
   return (
-    <View style={stylesMain.containerMetrics}>
+    <View style={[stylesMain.container, {alignItems: "center"}]}>
       <SafeAreaView style={stylesMain.datosMetricas}>
         <ScrollView style={stylesMain.scrollMetrics}>
           <Text style={stylesMain.exersiceTitle}>Evaluacion de equilibrio</Text>

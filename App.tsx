@@ -9,7 +9,7 @@ import {
 } from "@react-navigation/drawer";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import "react-native-gesture-handler";
-import { Image, Platform } from "react-native";
+import { Image} from "react-native";
 import { Login } from "./Login";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { enableScreens } from 'react-native-screens';
@@ -52,6 +52,7 @@ import TinettiMetric from "./ScreensMetrics/TinettiMetric";
 enableScreens();
 
 export default function App() {
+
   const Stack = createNativeStackNavigator();
   const PatientDrawer = createDrawerNavigator();
   const FisioDrawer = createDrawerNavigator();
@@ -108,12 +109,6 @@ export default function App() {
           }}
         />
         <DrawerItemList {...props} />
-        <DrawerItem
-          label="Salir"
-          onPress={() => {
-            props.navigation.navigate("login");
-          }}
-        />
       </DrawerContentScrollView>
     );
   }
@@ -136,12 +131,6 @@ export default function App() {
           }}
         />
         <DrawerItemList {...props} />
-        <DrawerItem
-          label="Salir"
-          onPress={() => {
-            props.navigation.navigate("login");
-          }}
-        />
       </DrawerContentScrollView>
     );
   }
@@ -152,7 +141,7 @@ export default function App() {
         initialRouteName="mainPaciente"
         screenOptions={{
           drawerStyle: { backgroundColor: "#f6f6f6" },
-          headerStyle: { backgroundColor: "#303F9F" },
+          headerStyle: { backgroundColor: "#1e5099" },
           headerTintColor: "#FFFFFF",
         }}
         drawerContent={(props) => <PatientCustomDrawerContent {...props} />}
@@ -171,14 +160,14 @@ export default function App() {
         initialRouteName="mainFisio"
         screenOptions={{
           drawerStyle: { backgroundColor: "#f6f6f6" },
-          headerStyle: { backgroundColor: "#303F9F" },
+          headerStyle: { backgroundColor: "#1e5099" },
           headerTintColor: "#FFFFFF",
         }}
         drawerContent={(props) => <CustomDrawerContent {...props} />}
       >
-        <FisioDrawer.Screen name="menu Principal" component={MainPhisio} />
+        <FisioDrawer.Screen name="Menu principal" component={MainPhisio} />
         <FisioDrawer.Screen
-          name="SelectorMetricas"
+          name="Selector de Escalas"
           component={SelectorMetricas}
         />
         <FisioDrawer.Screen
@@ -195,10 +184,15 @@ export default function App() {
       <Stack.Navigator
         initialRouteName="login"
         screenOptions={{
-          headerStyle: { backgroundColor: "#303F9F" },
+          headerStyle: { backgroundColor: "#1e5099" },
           headerTintColor: "#FFFFFF",
         }}
       >
+        <Stack.Screen
+        name="App"
+        component={App}
+        options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="login"
           component={Login}
@@ -343,3 +337,4 @@ export default function App() {
     </NavigationContainer>
   );
 }
+

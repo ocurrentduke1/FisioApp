@@ -12,7 +12,7 @@ export default function MainPatient({ navigation }: { navigation: NavigationProp
     <TouchableOpacity style={stylesMain.opcPatient}
      onPress={() => navigation.navigate('EvaluacionVideo')}>
       <Text style={stylesMain.buttonText}>Evaluacion de video</Text>
-      <Icon name="video-camera" size={150} color="#FFFFFF" />
+      <Icon name="video-camera" size={150} color="#000" />
       {/* <Image
           style={stylesMain.image}
           source={require("./assets/video-camara-alt.png")}
@@ -21,7 +21,7 @@ export default function MainPatient({ navigation }: { navigation: NavigationProp
       <TouchableOpacity style={stylesMain.opcPatient}
      onPress={() => navigation.navigate('EvaluacionImagen')}>
       <Text style={stylesMain.buttonText}>Evaluacion de imagen</Text>
-      <Icon name="camera" size={140} color="#FFFFFF"/>
+      <Icon name="camera" size={140} color="#000"/>
       {/* <Image
           style={stylesMain.image}
           source={require("./assets/imagen.png")}
@@ -31,7 +31,7 @@ export default function MainPatient({ navigation }: { navigation: NavigationProp
       <TouchableOpacity style={stylesMain.opcPatient}
        onPress={() => navigation.navigate('Expediente')}>
         <Text style={stylesMain.buttonText}>Expediente</Text>
-        <Icon name="file-text-o" size={150} color="#FFFFFF" />
+        <Icon name="file-text-o" size={150} color="#000" />
         {/* <Image
           style={stylesMain.image}
           source={require("./assets/documento-firmado.png")}

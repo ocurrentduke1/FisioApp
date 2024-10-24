@@ -10,7 +10,8 @@ export default StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "flex-start",
-    backgroundColor: "#00BCD4",
+    // backgroundColor: "#00BCD4",
+    backgroundColor: "#4971ac",
     // Alinea los elementos verticalmente al principio
   },
   scrollView: {
@@ -128,6 +129,7 @@ export default StyleSheet.create({
     display: "flex",
     width: windowWidth * 0.73,
     height: windowHeight * 1,
+    marginTop: 20,
   },
   button: {
     backgroundColor: "#FFFFFF",
@@ -147,5 +149,27 @@ export default StyleSheet.create({
   buttonText: {
     fontSize: 20,
     color: "#000000",
+  },
+
+   /*
+
+
+
+
+
+  estilos con react native paper
+
+
+
+
+
+   */
+
+  TextInput: {
+    width: 300,
+    marginBottom: 10,
+    paddingTop: 10,
+    backgroundColor: "white",
+    
   },
 });

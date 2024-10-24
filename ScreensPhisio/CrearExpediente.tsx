@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   ScrollView,
-  TextInput,
   TouchableOpacity,
   Text,
   KeyboardAvoidingView,
@@ -20,6 +19,7 @@ import { RadioButton } from 'react-native-paper';
 import { randomUUID } from 'expo-crypto';
 import axios from "axios";
 import { BACKEND_URL } from "@env";
+import { TextInput } from "react-native-paper";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -484,11 +484,7 @@ const CrearExpediente = ({ navigation }: { navigation: NavigationProp<any> }) =>
     ];
 
   return (
-    <SafeAreaView style={{display: "flex",
-      flex: 1,
-      //backgroundColor: "#2196F3",
-      alignItems: "center",
-      justifyContent: "flex-start",}}>
+    <SafeAreaView style={stylesHistorial.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={200}
@@ -506,43 +502,53 @@ const CrearExpediente = ({ navigation }: { navigation: NavigationProp<any> }) =>
         )}
           <TouchableOpacity
           onPress={toggleDatePicker}>
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode = "outlined"
+          label={"Fecha de Creacion"}
           value={FechaCreacion}
-          style={stylesHistorial.input}
-          placeholder="Fecha de Creacion"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setFechaCreacion(value)}
           editable={false}
           onPressIn={toggleDatePicker}
         />
         </TouchableOpacity>
 
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode = "outlined"
+          label={"Nombre(s)"}
           value={nombre}
-          style={stylesHistorial.input}
-          placeholder="Nombre(s)"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setNombre(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode = "outlined"
+          label={"Apellidos"}
           value={apellidos}
-          style={stylesHistorial.input}
-          placeholder="Apellidos"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setapellidos(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode = "outlined"
+          label={"Estado Civil"}
           value={estadoCivil}
-          style={stylesHistorial.input}
-          placeholder="Estado Civil"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setEstadoCivil(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode = "outlined"
+          label={"Edad"}
           value={edad}
-          style={stylesHistorial.input}
-          placeholder="Edad"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           keyboardType="numeric"
           onChangeText={(value) => setedad(value)}
         />
@@ -592,74 +598,92 @@ const CrearExpediente = ({ navigation }: { navigation: NavigationProp<any> }) =>
         )}
         <TouchableOpacity
           onPress={toggleBirthdayPicker}>
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode = "outlined"
+          label={"Fecha de Nacimiento"}
           value={nacimiento}
-          style={stylesHistorial.input}
-          placeholder="Fecha de Nacimiento"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setnacimiento(value)}
           editable={false}
         />
         </TouchableOpacity>
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode = "outlined"
+          label={"Telefono"}
           value={telefono}
-          style={stylesHistorial.input}
+          style={stylesHistorial.TextInput}
           keyboardType="numeric"
-          placeholder="Telefono"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => settelefono(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode = "outlined"
+          label={"Correo"}
           value={correo}
-          style={stylesHistorial.input}
-          placeholder="Correo"
+          style={stylesHistorial.TextInput}
           keyboardType="email-address"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setcorreo(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode = "outlined"
+          label={"Peso (Kg)"}
           value={peso}
-          style={stylesHistorial.input}
-          placeholder="Peso (Kg)"
+          style={stylesHistorial.TextInput}
           keyboardType="numeric"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setpeso(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode = "outlined"
+          label={"Estatura (cm)"}
           value={estatura}
-          style={stylesHistorial.input}
-          placeholder="Estatura (cm)"
+          style={stylesHistorial.TextInput}
           keyboardType="numeric"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setestatura(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode = "outlined"
+          label={"IMC"}
           value={imc}
-          style={stylesHistorial.input}
-          placeholder="IMC"
+          style={stylesHistorial.TextInput}
           keyboardType="numeric"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setimc(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode = "outlined"
+          label={"Frecuencia Cardiaca"}
           value={frecuencia}
-          style={stylesHistorial.input}
-          placeholder="Frecuencia Cardiaca"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setfrecuencia(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode = "outlined"
+          label={"Presion Arterial"}
           value={presion}
-          style={stylesHistorial.input}
-          placeholder="Presion Arterial"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setpresion(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode = "outlined"
+          label={"Temperatura (C°)"}
           value={temperatura}
-          style={stylesHistorial.input}
-          placeholder="Temperatura (C°)"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           keyboardType="numeric"
           onChangeText={(value) => settemperatura(value)}
         />
@@ -673,13 +697,11 @@ const CrearExpediente = ({ navigation }: { navigation: NavigationProp<any> }) =>
           >
             <View style={styles.radioButtonContainer}>
               <RadioButton value="si"
-              color="white"
               uncheckedColor="#BDBDBD" />
               <Text style={styles.label}>Sí</Text>
             </View>
             <View style={styles.radioButtonContainer}>
               <RadioButton value="no"
-              color="white"
               uncheckedColor="#BDBDBD" />
               <Text style={styles.label}>No</Text>
             </View>
@@ -693,13 +715,11 @@ const CrearExpediente = ({ navigation }: { navigation: NavigationProp<any> }) =>
           >
             <View style={styles.radioButtonContainer}>
               <RadioButton value="si"
-              color="white"
               uncheckedColor="#BDBDBD" />
               <Text style={styles.label}>Sí</Text>
             </View>
             <View style={styles.radioButtonContainer}>
               <RadioButton value="no"
-              color="white"
               uncheckedColor="#BDBDBD" />
               <Text style={styles.label}>No</Text>
             </View>
@@ -713,13 +733,11 @@ const CrearExpediente = ({ navigation }: { navigation: NavigationProp<any> }) =>
           >
             <View style={styles.radioButtonContainer}>
               <RadioButton value="si"
-              color="white"
               uncheckedColor="#BDBDBD" />
               <Text style={styles.label}>Sí</Text>
             </View>
             <View style={styles.radioButtonContainer}>
               <RadioButton value="no"
-              color="white"
               uncheckedColor="#BDBDBD" />
               <Text style={styles.label}>No</Text>
             </View>
@@ -733,13 +751,11 @@ const CrearExpediente = ({ navigation }: { navigation: NavigationProp<any> }) =>
           >
             <View style={styles.radioButtonContainer}>
               <RadioButton value="si"
-              color="white"
               uncheckedColor="#BDBDBD" />
               <Text style={styles.label}>Sí</Text>
             </View>
             <View style={styles.radioButtonContainer}>
               <RadioButton value="no"
-              color="white"
               uncheckedColor="#BDBDBD" />
               <Text style={styles.label}>No</Text>
             </View>
@@ -753,13 +769,11 @@ const CrearExpediente = ({ navigation }: { navigation: NavigationProp<any> }) =>
           >
             <View style={styles.radioButtonContainer}>
               <RadioButton value="si"
-              color="white"
               uncheckedColor="#BDBDBD" />
               <Text style={styles.label}>Sí</Text>
             </View>
             <View style={styles.radioButtonContainer}>
               <RadioButton value="no"
-              color="white"
               uncheckedColor="#BDBDBD" />
               <Text style={styles.label}>No</Text>
             </View>
@@ -773,13 +787,11 @@ const CrearExpediente = ({ navigation }: { navigation: NavigationProp<any> }) =>
           >
             <View style={styles.radioButtonContainer}>
               <RadioButton value="si"
-              color="white"
               uncheckedColor="#BDBDBD" />
               <Text style={styles.label}>Sí</Text>
             </View>
             <View style={styles.radioButtonContainer}>
               <RadioButton value="no"
-              color="white"
               uncheckedColor="#BDBDBD" />
               <Text style={styles.label}>No</Text>
             </View>
@@ -796,13 +808,11 @@ const CrearExpediente = ({ navigation }: { navigation: NavigationProp<any> }) =>
           >
             <View style={styles.radioButtonContainer}>
               <RadioButton value="si"
-              color="white"
               uncheckedColor="#BDBDBD" />
               <Text style={styles.label}>Sí</Text>
             </View>
             <View style={styles.radioButtonContainer}>
               <RadioButton value="no"
-              color="white"
               uncheckedColor="#BDBDBD" />
               <Text style={styles.label}>No</Text>
             </View>
@@ -816,13 +826,11 @@ const CrearExpediente = ({ navigation }: { navigation: NavigationProp<any> }) =>
           >
             <View style={styles.radioButtonContainer}>
               <RadioButton value="si"
-              color="white"
               uncheckedColor="#BDBDBD" />
               <Text style={styles.label}>Sí</Text>
             </View>
             <View style={styles.radioButtonContainer}>
               <RadioButton value="no"
-              color="white"
               uncheckedColor="#BDBDBD" />
               <Text style={styles.label}>No</Text>
             </View>
@@ -836,13 +844,11 @@ const CrearExpediente = ({ navigation }: { navigation: NavigationProp<any> }) =>
           >
             <View style={styles.radioButtonContainer}>
               <RadioButton value="si"
-              color="white"
               uncheckedColor="#BDBDBD" />
               <Text style={styles.label}>Sí</Text>
             </View>
             <View style={styles.radioButtonContainer}>
               <RadioButton value="no"
-              color="white"
               uncheckedColor="#BDBDBD" />
               <Text style={styles.label}>No</Text>
             </View>
@@ -856,13 +862,11 @@ const CrearExpediente = ({ navigation }: { navigation: NavigationProp<any> }) =>
           >
             <View style={styles.radioButtonContainer}>
               <RadioButton value="si"
-              color="white"
               uncheckedColor="#BDBDBD" />
               <Text style={styles.label}>Sí</Text>
             </View>
             <View style={styles.radioButtonContainer}>
               <RadioButton value="no" 
-              color="white"
               uncheckedColor="#BDBDBD"/>
               <Text style={styles.label}>No</Text>
             </View>
@@ -876,13 +880,11 @@ const CrearExpediente = ({ navigation }: { navigation: NavigationProp<any> }) =>
           >
             <View style={styles.radioButtonContainer}>
               <RadioButton value="si"
-              color="white"
               uncheckedColor="#BDBDBD" />
               <Text style={styles.label}>Sí</Text>
             </View>
             <View style={styles.radioButtonContainer}>
               <RadioButton value="no"
-              color="white"
               uncheckedColor="#BDBDBD" />
               <Text style={styles.label}>No</Text>
             </View>
@@ -896,243 +898,305 @@ const CrearExpediente = ({ navigation }: { navigation: NavigationProp<any> }) =>
           >
             <View style={styles.radioButtonContainer}>
               <RadioButton value="si"
-              color="white"
               uncheckedColor="#BDBDBD" />
               <Text style={styles.label}>Sí</Text>
             </View>
             <View style={styles.radioButtonContainer}>
               <RadioButton value="no"
-              color="white"
               uncheckedColor="#BDBDBD" />
               <Text style={styles.label}>No</Text>
             </View>
           </RadioButton.Group>
         </View>
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Cirugias"}
           value={cirugias}
-          style={stylesHistorial.input}
-          placeholder="Cirugias"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setcirugias(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Trauma(s)"}
           value={trauma}
-          style={stylesHistorial.input}
-          placeholder="Trauma(s)"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => settrauma(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Hospitalizacione(s)"}
           value={Hospitalizacion}
-          style={stylesHistorial.input}
-          placeholder="Hospitalizacione(s)"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setHospitalizacion(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Enfermedades congenitas"}
           value={congenitas}
-          style={stylesHistorial.input}
-          placeholder="Enfermedades congenitas"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setcongenitas(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Padecimiento actual"}
           value={Pactual}
-          style={stylesHistorial.input}
-          placeholder="Padecimiento actual"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setPactual(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Diagnostico previo"}
           value={Dprevio}
-          style={stylesHistorial.input}
-          placeholder="Diagnostico previo"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setDprevio(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Tratamiento previo"}
           value={Tprevio}
-          style={stylesHistorial.input}
-          placeholder="Tratamiento previo"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setTprevio(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Descripcion de dolor"}
           value={Ddolor}
-          style={stylesHistorial.input}
-          placeholder="Descripcion de dolor"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setDdolor(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"EVA"}
           value={EVA}
-          style={stylesHistorial.input}
-          placeholder="EVA"
+          style={stylesHistorial.TextInput}
           keyboardType="numeric"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setEVA(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Observaciones"}
           value={Observaciones}
-          style={stylesHistorial.input}
-          placeholder="Observaciones"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setObservaciones(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Farmacos prescritos y no prescritos"}
           value={farmacos}
-          style={stylesHistorial.input}
-          placeholder="Farmacos prescritos y no prescritos"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setfarmacos(value)}
         />
         <Text style={styles.title}>Habitos</Text>
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Tabaquismo"}
           value={tabaquismo}
-          style={stylesHistorial.input}
-          placeholder="Tabaquismo"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => settabaquismo(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Frecuencia"}
           value={frecuenciaT}
-          style={stylesHistorial.input}
-          placeholder="Frecuencia"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setfrecuenciaT(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Alcoholismo"}
           value={alcoholismo}
-          style={stylesHistorial.input}
-          placeholder="Alcoholismo"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setalcoholismo(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Frecuencia"}
           value={frecuenciaA}
-          style={stylesHistorial.input}
-          placeholder="Frecuencia"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setfrecuenciaA(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Otros Habitos"}
           value={Otras}
-          style={stylesHistorial.input}
-          placeholder="Otros Habitos"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setOtras(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Frecuencia"}
           value={Fotras}
-          style={stylesHistorial.input}
-          placeholder="Frecuencia"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setFotras(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Ejercicio"}
           value={ejercicio}
-          style={stylesHistorial.input}
-          placeholder="Ejercicio"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setejercicio(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Frecuencia"}
           value={frecuenciaE}
-          style={stylesHistorial.input}
-          placeholder="Frecuencia"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setfrecuenciaE(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Alimentacion"}
           value={alimentacion}
-          style={stylesHistorial.input}
-          placeholder="Alimentacion"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setalimentacion(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Hidratacion"}
           value={hidratacion}
-          style={stylesHistorial.input}
-          placeholder="Hidratacion"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => sethidratacion(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Ocupacion"}
           value={ocupacion}
-          style={stylesHistorial.input}
-          placeholder="Ocupacion"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setocupacion(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Actividades Repetitivas"}
           value={ActividadesR}
-          style={stylesHistorial.input}
-          placeholder="Actividades Repetitivas"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setActividadesR(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Horas"}
           value={HorasAR}
-          style={stylesHistorial.input}
-          placeholder="Horas"
+          style={stylesHistorial.TextInput}
           keyboardType="numeric"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setHorasAR(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Lesion Anatomica"}
           value={lesionAnatomica}
-          style={stylesHistorial.input}
-          placeholder="Lesion Anatomica"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setlesionAnatomica(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"EMM"}
           value={EMM}
-          style={stylesHistorial.input}
-          placeholder="EMM"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setEMM(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Pruebas Especificas"}
           value={PruebasE}
-          style={stylesHistorial.input}
-          placeholder="Pruebas Especificas"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setPruebasE(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Valoracion Postural"}
           value={valoracionPostural}
-          style={stylesHistorial.input}
-          placeholder="Valoracion Postural"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setvaloracionPostural(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Palpacion"}
           value={Palpacion}
-          style={stylesHistorial.input}
-          placeholder="Palpacion"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setPalpacion(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Diagnostico Fisico"}
           value={DiagnosticoFisio}
-          style={stylesHistorial.input}
-          placeholder="Diagnostico Fisico"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setDiagnosticoFisio(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Objetivo General"}
           value={ObjetivoG}
-          style={stylesHistorial.input}
-          placeholder="Objetivo General"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setObjetivoG(value)}
         />
-        <TextInput //textbox ingresar correo
+        <TextInput
+          mode="outlined"
+          label={"Objetivo Especifico"}
           value={ObjetivoE}
-          style={stylesHistorial.input}
-          placeholder="Objetivo Especifico"
-          placeholderTextColor="rgba(255, 255, 255, 0.8)"
+          style={stylesHistorial.TextInput}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
           onChangeText={(value) => setObjetivoE(value)}
         />
       </ScrollView>
@@ -1150,7 +1214,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#00BCD4",
+    backgroundColor: "#FFF",
     width: windowWidth * 0.8,
     height: windowHeight * 0.75,
     borderRadius: 25,
@@ -1165,10 +1229,10 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginVertical: 10,
-    color: "white",
+    color: "#000",
   },
   title: {
-    fontSize: 22, fontWeight: "bold", alignSelf: "center", color: "white", paddingTop: 20
+    fontSize: 22, fontWeight: "bold", alignSelf: "center", color: "#000", paddingTop: 20
   },
   radioButtonContainer: {
     flexDirection: 'row',

@@ -6,12 +6,16 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Dimensions,
 } from "react-native";
 import stylesMain from "../styles/stylesMain";
 import { NavigationProp } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Searchbar } from 'react-native-paper';
+
+const windowHeight = Dimensions.get("window").height;
+const windowWidth = Dimensions.get("window").width;
 
 // Suponiendo que este es tu componente
 const ContactosPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
@@ -74,7 +78,7 @@ const ContactosPhisio = ({ navigation }: { navigation: NavigationProp<any> }) =>
       placeholder="Search"
       onChangeText={setSearchQuery}
       value={searchQuery}
-      style={{margin: 10, width: 350, backgroundColor: "#",borderColor: "black", borderWidth: 1,}}
+      style={{margin: 10, width: 350, backgroundColor: "#FFF",borderColor: "black", borderWidth: 1, alignSelf: "center", maxWidth: windowWidth * 0.9,}}
     />
       <ScrollView style={stylesMain.scrollView}>
         {pacientes.map((paciente, index) => (
@@ -90,7 +94,7 @@ const ContactosPhisio = ({ navigation }: { navigation: NavigationProp<any> }) =>
                   style={stylesMain.imagenpaciente}
                 />
               ) : (
-                <Icon name="user-circle" size={70} color="#FFFFFF" style={stylesMain.imagenpaciente} />
+                <Icon name="user-circle" size={70} color="#000" style={stylesMain.imagenpaciente} />
               )}
               <View style={{flexWrap: "wrap", justifyContent: "flex-start",}}>
                 <Text style={stylesMain.datosPacienteMenuFisio}>

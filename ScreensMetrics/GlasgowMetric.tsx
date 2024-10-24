@@ -52,7 +52,7 @@ export default function GlasgowMetric({
     console.log("Save result");
   }
   return (
-    <View style={stylesMain.containerMetrics}>
+    <View style={[stylesMain.container, {alignItems: "center"}]}>
       <SafeAreaView style={stylesMain.datosMetricas}>
         <ScrollView
           style={stylesMain.scrollMetrics}
