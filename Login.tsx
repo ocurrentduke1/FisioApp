@@ -15,7 +15,7 @@ import {
 import stylesLogin from "./styles/stylesLogin";
 import { NavigationProp } from "@react-navigation/native";
 import { BACKEND_URL } from "@env";
-import JWT, { SupportedAlgorithms } from 'expo-jwt';
+import JWT, { SupportedAlgorithms } from "expo-jwt";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TextInput } from "react-native-paper";
 
@@ -24,30 +24,99 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [auth, setAuth] = useState(false);
-  const [authCode, setAuthCode] = useState(['', '', '', '', '']);
+  const [authCode, setAuthCode] = useState(["", "", "", "", ""]);
   const [modalAuth, setModalAuth] = useState(false);
   const inputRefs = useRef<any[]>([]);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(60);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // useEffect(() => {
-  //   const checkExpiration = async () => {
-  //     const exp = Number(await AsyncStorage.getItem("expiracion"));
-  //     console.log("expiracion", await AsyncStorage.multiGet(["expiracion", "idSesion", "tipoUsuario"]));
-  //     if (exp) {
-  //       const expDate = new Date(exp * 1000);
-  //       if (expDate < new Date()) {
-  //         await AsyncStorage.removeItem("idSesion");
-  //         await AsyncStorage.removeItem("expiracion");
+  const handleAuthCodeChange = (index: number, value: string) => {
+    const newAuthCode = [...authCode];
+    newAuthCode[index] = value;
+    setAuthCode(newAuthCode);
 
-  //         navigation.navigate("login");
-  //         return;
-  //       }
-  //       const tipoUsuario = await AsyncStorage.getItem("tipoUsuario");
-  //       navigation.navigate(tipoUsuario === "fisioterapeuta" ? "mainFisio" : "mainPaciente");
-  //     }
-  //   };
+    if (value !== "" && index < inputRefs.current.length - 1) {
+      inputRefs.current[index + 1].focus();
+    }
+  };
 
-  //   checkExpiration();
-  // }, []);
+  const verifyAuthCode = () => {
+    const enteredCode = authCode.join("");
+    if (enteredCode === "12345") {
+      setModalAuth(false);
+      setAuth(true);
+      // navigation.navigate("registrarPersonales", { registerData: registerData });
+    } else {
+      Alert.alert("Código de autenticación incorrecto");
+    }
+  };
+
+  const sendEmail = async () => {
+    const response = await axios.post(BACKEND_URL + "/verificar-correo", {
+      destinatario: email,
+    });
+
+    console.log("enviado");
+
+    if (response.data.code == 500) {
+      Alert.alert("Error", "No se pudo enviar el correo de verificación");
+      return false;
+    }
+
+    setModalAuth(true);
+  };
+
+  const handleButtonPress = () => {
+    setIsButtonDisabled(true);
+    setTimeLeft(60);
+
+    // Iniciar el temporizador
+    intervalRef.current = setInterval(() => {
+      setTimeLeft((prevTime) => {
+        if (prevTime <= 1) {
+          clearInterval(intervalRef.current!);
+          setIsButtonDisabled(false);
+          return 60;
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const checkExpiration = async () => {
+      const exp = Number(await AsyncStorage.getItem("expiracion"));
+      console.log(
+        "expiracion",
+        await AsyncStorage.multiGet(["expiracion", "idSesion", "tipoUsuario"])
+      );
+      if (exp) {
+        const expDate = new Date(exp * 1000);
+        if (expDate < new Date()) {
+          await AsyncStorage.removeItem("idSesion");
+          await AsyncStorage.removeItem("expiracion");
+
+          navigation.navigate("login");
+          return;
+        }
+        const tipoUsuario = await AsyncStorage.getItem("tipoUsuario");
+        navigation.navigate(
+          tipoUsuario === "fisioterapeuta" ? "mainFisio" : "mainPaciente"
+        );
+      }
+    };
+
+    checkExpiration();
+  }, []);
 
   const LoginData = {
     email: email,
@@ -56,14 +125,27 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
 
   const loggin = async () => {
     try {
-      const response = await axios.post(BACKEND_URL + "/login", {
-        email,
-        password,
-      });
+      const response = await axios.post(
+        BACKEND_URL + "/login",
+        {
+          email,
+          password,
+        },
+        {
+          headers: { "User-Agent": Platform.OS + "/" + Platform.Version },
+        }
+      );
+
+      console.log(response.headers);
 
       if (response.data.code == 404 || response.data.code == 500) {
         Alert.alert("Correo o contraseña incorrectos");
         return;
+      }
+
+      if (response.data.code == 401) {
+        sendEmail();
+        setModalAuth(true);
       }
 
       const { key, token } = response.data;
@@ -98,39 +180,18 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
   //     }else{
   //       setModalAuth(true);
   //     }
-      
+
   //   } else if (email === "p" && password === "123") {
   //     if(auth){
   //       navigation.navigate("mainPaciente");
   //     }else{
   //       setModalAuth(true);
   //     }
-      
+
   //   } else {
   //     Alert.alert("Correo o contraseña incorrectos");
   //   }
   // };
-
-  const handleAuthCodeChange = (index: number, value: string) => {
-    const newAuthCode = [...authCode];
-    newAuthCode[index] = value;
-    setAuthCode(newAuthCode);
-
-    if (value !== "" && index < inputRefs.current.length - 1) {
-      inputRefs.current[index + 1].focus();
-    }
-  };
-
-  const verifyAuthCode = () => {
-    const enteredCode = authCode.join('');
-    if (enteredCode === '12345') {
-      setModalAuth(false);
-      setAuth(true);
-      navigation.navigate("mainFisio");
-    } else {
-      Alert.alert("Código de autenticación incorrecto");
-    }
-  };
 
   //console.log(BACKEND_URL + '/login');
 
@@ -142,10 +203,10 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
     }
   };
 
-  // const validateEmail = (email: string) => {
-  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  //   return emailRegex.test(email);
-  // };
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   return (
     <View style={stylesLogin.container}>
@@ -167,14 +228,18 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
         <TextInput //textbox ingresar Contraseña
           mode="outlined"
           value={password}
-          label= "Contraseña"
+          label="Contraseña"
           onChangeText={(value) => setPassword(value)}
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
           style={stylesLogin.TextInput}
           secureTextEntry={!showPassword}
-          right={<TextInput.Icon icon={showPassword ? "eye-off" : "eye"}
-          onPress={() => setShowPassword(!showPassword)}/>}
+          right={
+            <TextInput.Icon
+              icon={showPassword ? "eye-off" : "eye"}
+              onPress={() => setShowPassword(!showPassword)}
+            />
+          }
         />
       </View>
       <TouchableOpacity // boton de recuperar contraseña
@@ -194,10 +259,7 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
         </Text>
       </TouchableOpacity>
 
-
       {/*modal de autenticacion */}
-
-
       <Modal
         visible={modalAuth}
         transparent={true}
@@ -206,14 +268,21 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalText}>Introduzca el código de autenticación</Text>
+            <Text style={styles.modalText}>
+              Introduzca el código de autenticación
+            </Text>
+            <Text style={{ marginBottom: 20 }}>
+              Revisa tu correo, te hemos enviado un codigo de verificacion
+            </Text>
             <View style={styles.codeContainer}>
-                {authCode.map((code: string, index: number) => (
+              {authCode.map((code: string, index: number) => (
                 <TextInput
-                  mode = "outlined"
+                  mode="outlined"
                   key={index}
                   value={code}
-                  onChangeText={(value: string) => handleAuthCodeChange(index, value)}
+                  onChangeText={(value: string) =>
+                    handleAuthCodeChange(index, value)
+                  }
                   outlineColor="#c5cae9"
                   activeOutlineColor="#c5cae9"
                   style={styles.codeInput}
@@ -222,13 +291,30 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
                   // Asigna la referencia a cada TextInput
                   ref={(ref: any) => (inputRefs.current[index] = ref)}
                 />
-                ))}
+              ))}
             </View>
-            <View style={{flexDirection: "row"}}>
-            <TouchableOpacity style={styles.Cancelbutton} onPress={() => setModalAuth(false)}>
+            <TouchableOpacity
+              onPress={handleButtonPress}
+              disabled={isButtonDisabled}
+            >
+              <Text
+                style={
+                  isButtonDisabled ? styles.disabledtext : styles.resendtext
+                }
+              >
+                {isButtonDisabled
+                  ? `Reenviar código (${timeLeft}s)`
+                  : "Reenviar código"}
+              </Text>
+            </TouchableOpacity>
+            <View style={{ flexDirection: "row" }}>
+              <TouchableOpacity
+                style={styles.Cancelbutton}
+                onPress={() => setModalAuth(false)}
+              >
                 <Text style={styles.buttonText}>Cancelar</Text>
               </TouchableOpacity>
-            <TouchableOpacity
+              <TouchableOpacity
                 style={styles.button}
                 onPress={() => {
                   verifyAuthCode();
@@ -236,17 +322,20 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
               >
                 <Text style={styles.buttonText}>Ingresar</Text>
               </TouchableOpacity>
-              </View>
+            </View>
           </View>
         </View>
       </Modal>
-
 
       <TouchableOpacity //boton de inicio de sesion
         style={stylesLogin.button}
         onPress={() => {
           if (validateData()) {
-            loggin();
+            if(!validateEmail(email)){
+              Alert.alert("Error", "Correo electrónico no válido");
+            }else{
+              loggin();
+            }
           } else {
             alert("Datos incompletos");
           }
@@ -271,30 +360,30 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     padding: 16,
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
     width: 300,
     padding: 20,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   modalText: {
     marginBottom: 20,
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   codeContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 20,
   },
   codeInput: {
@@ -304,14 +393,14 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   button: {
-    backgroundColor: '#3F51B5',
+    backgroundColor: "#3F51B5",
     padding: 10,
     borderRadius: 5,
-    alignItems: 'center',
+    alignItems: "center",
     margin: 10,
   },
   buttonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
   },
   Cancelbutton: {
@@ -320,5 +409,13 @@ const styles = StyleSheet.create({
     margin: 10,
     borderRadius: 5,
     alignItems: "center",
+  },
+  disabledtext: {
+    color: "#B0BEC5",
+    marginBottom: 20,
+  },
+  resendtext: {
+    color: "#3F51B5",
+    marginBottom: 20,
   },
 });
