@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import axios from "axios";
 import {
   Text,
@@ -9,6 +9,7 @@ import {
   Alert,
   Modal,
   Button,
+  StyleSheet,
 } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import { RouteProp } from "@react-navigation/native";
@@ -316,5 +317,61 @@ export default function RegistrarPersonales({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 16,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: 300,
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    marginBottom: 20,
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  codeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  codeInput: {
+    width: 40,
+    height: 40,
+    marginHorizontal: 5,
+    backgroundColor: "white",
+  },
+  button: {
+    backgroundColor: '#3F51B5',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    margin: 10,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  Cancelbutton: {
+    backgroundColor: "#f44336",
+    padding: 10,
+    margin: 10,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+});
+
 
 

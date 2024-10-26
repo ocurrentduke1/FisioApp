@@ -1,5 +1,7 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
+import axios from "axios";
+
+import React, { useRef, useState } from "react";
 import {
   Text,
   View,
@@ -11,10 +13,12 @@ import {
   Dimensions,
   StyleSheet,
   SafeAreaView,
+  Modal,
 } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import stylesLogin from "./styles/stylesLogin";
 import { TextInput } from "react-native-paper";
+import { BACKEND_URL } from "@env";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -33,6 +37,47 @@ export default function Registrar({
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [auth, setAuth] = useState(false);
+  const [authCode, setAuthCode] = useState(['', '', '', '', '']);
+  const [modalAuth, setModalAuth] = useState(false);
+  const inputRefs = useRef<any[]>([]);
+
+  const handleAuthCodeChange = (index: number, value: string) => {
+    const newAuthCode = [...authCode];
+    newAuthCode[index] = value;
+    setAuthCode(newAuthCode);
+
+    if (value !== "" && index < inputRefs.current.length - 1) {
+      inputRefs.current[index + 1].focus();
+    }
+  };
+
+  const verifyAuthCode = () => {
+    const enteredCode = authCode.join('');
+    if (enteredCode === '12345') {
+      setModalAuth(false);
+      setAuth(true);
+      navigation.navigate("registrarTarjeta");
+    } else {
+      Alert.alert("Código de autenticación incorrecto");
+    }
+  };
+
+  const sendEmail = async () => {
+    const response = await axios.post(BACKEND_URL + "/verificar-correo", {
+      destinatario: email,
+    });
+
+    console.log("enviado");
+
+    if(response.data.code == 500){
+      Alert.alert("Error", "No se pudo enviar el correo de verificación");
+      return false;
+    }
+
+    setModalAuth(true);
+
+  }
 
   const registerData = {
     email: email,
@@ -154,32 +199,79 @@ export default function Registrar({
         </Text>
         </View>
       </View>
+
+         {/* Modal de autenticación */}
+         <Modal
+        visible={modalAuth}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setModalAuth(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>Introduzca el código de autenticación</Text>
+            <Text style={{marginBottom: 20}}>Revisa tu correo, te hemos enviado un codigo de verificacion</Text>
+            <View style={styles.codeContainer}>
+                {authCode.map((code: string, index: number) => (
+                <TextInput
+                  mode = "outlined"
+                  key={index}
+                  value={code}
+                  onChangeText={(value: string) => handleAuthCodeChange(index, value)}
+                  outlineColor="#c5cae9"
+                  activeOutlineColor="#c5cae9"
+                  style={styles.codeInput}
+                  maxLength={1}
+                  keyboardType="numeric"
+                  // Asigna la referencia a cada TextInput
+                  ref={(ref: any) => (inputRefs.current[index] = ref)}
+                />
+                ))}
+            </View>
+            <TouchableOpacity>
+              <Text style={{color: "#3F51B5", marginBottom: 20}}>Reenviar código</Text>
+            </TouchableOpacity>
+            <View style={{flexDirection: "row"}}>
+            <TouchableOpacity style={styles.Cancelbutton} onPress={() => setModalAuth(false)}>
+                <Text style={styles.buttonText}>Cancelar</Text>
+              </TouchableOpacity>
+            <TouchableOpacity
+                style={styles.button}
+                onPress={() => {
+                  verifyAuthCode();
+                }}
+              >
+                <Text style={styles.buttonText}>Ingresar</Text>
+              </TouchableOpacity>
+              </View>
+          </View>
+        </View>
+      </Modal>
+
       <TouchableOpacity //boton de inicio de sesion
         style={[stylesLogin.button, { paddingHorizontal: 115 }]}
         onPress={() => {
-          if (validateData()) {
             if (validatePassword()) {
-              console.log(registerData);
-              navigation.navigate('registrarPersonales', { registerData: registerData });
-              //console.log(registerData);
+              if (!validateEmail(email)) {
+                Alert.alert("Error", "Correo electrónico no válido");
+              }else{
+                // if(auth){
+                //   console.log(registerData);
+                //   navigation.navigate('registrarPersonales', { registerData: registerData });
+                //   //console.log(registerData);
+                //   }else{
+                //     setModalAuth(true);
+                //     // sendEmail();
+                //   }
+
+                sendEmail();
+              }
             } else {
               Alert.alert(
                 "Error",
                 "La contraseña no cumple con los requisitos minimos o no coinciden"
               );
             }
-            // if (!validateEmail(email)) {
-            //   Alert.alert("Error", "Correo electrónico no válido");
-            // }
-            // if(phone.length < 10){
-            //   Alert.alert("Error", "Número de teléfono no válido")
-            // }
-          } else {
-            Alert.alert(
-              "Error",
-              "Los datos ingresados no coinciden o no son correctos"
-            );
-          }
         }}
         disabled={!validateData()}
       >
@@ -227,4 +319,58 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
+
+  // containerAuth: {
+  //   flex: 1,
+  //   justifyContent: 'center',
+  //   padding: 16,
+  // },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: 300,
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    marginBottom: 20,
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  codeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  codeInput: {
+    width: 40,
+    height: 40,
+    marginHorizontal: 5,
+    backgroundColor: "white",
+  },
+  button: {
+    backgroundColor: '#3F51B5',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    margin: 10,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  Cancelbutton: {
+    backgroundColor: "#f44336",
+    padding: 10,
+    margin: 10,
+    borderRadius: 5,
+    alignItems: "center",
+  },
 });
+

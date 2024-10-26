@@ -24,8 +24,14 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const [modalName, setModalName] = useState(false);
     const [modalContraseña, setModalContraseña] = useState(false);
     const [modalTel, setModalTel] = useState(false);
+    const [modalConsultorio, setModalConsultorio] = useState(false);
+    const [modalPago, setModalPago] = useState(false);
     const [Name, setName] = useState("");
     const [tel, setTel] = useState("");
+    const [consultorio, setConsultorio] = useState("");
+    const [numCard, setNumCard] = useState("");
+    const [expCard, setExpCard] = useState("");
+    const [CVC, setCVC] = useState("");
     const [pastPassword, setPastPassword] = useState("");
     const [password, setPassword] = useState("");
     const [ModalLogout, setModalLogout] = useState(false);
@@ -50,7 +56,7 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
       closeModalName();
     };
   
-    //declaracion de modal Name
+    //declaracion de modal Tel
     const openModalTel = () => {
       setModalTel(true);
     };
@@ -60,6 +66,30 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const changeTel = () => {
       console.log("Telefono: ", tel);
       closeModalTel();
+    };
+
+    //declaracion de modal Consultorio
+    const openModalConsultorio = () => {
+      setModalConsultorio(true);
+    };
+    const closeModalConsultorio = () => {
+      setModalConsultorio(false);
+    };
+    const changeConsultorio = () => {
+      console.log("consultorio: ", consultorio);
+      closeModalConsultorio();
+    };
+
+    //declaracion de modal Pago
+    const openModalPago = () => {
+      setModalPago(true);
+    };
+    const closeModalPago = () => {
+      setModalPago(false);
+    };
+    const changePago = () => {
+      console.log("Datos de pago: ", numCard, expCard, CVC);
+      closeModalPago();
     };
 
     //declaracion de modal Contraseña
@@ -287,6 +317,41 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
             </TouchableOpacity>
   
             {/* Boton de Consultorio */}
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalConsultorio}
+              onRequestClose={closeModalConsultorio}
+            >
+              <View style={styles.modalContainer}>
+                <View style={styles.modalView}>
+                  <Text style={styles.modalText}>Cambiar Consultorio</Text>
+                  <TextInput
+                  mode = "outlined"
+                  label = "Consultorio"
+                    style={stylesMain.TextInputPerfil}
+                    value={consultorio}
+                    onChangeText={(value) => setConsultorio(value)}
+                    outlineColor="#c5cae9"
+                    activeOutlineColor="#c5cae9"
+                  />
+                  <View style={styles.buttonContainer}>
+                    <TouchableOpacity
+                      style={[styles.button, styles.buttonClose]}
+                      onPress={closeModalConsultorio}
+                    >
+                      <Text style={styles.textStyle}>Cancelar</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.button, styles.buttonSearch]}
+                      onPress={changeConsultorio}
+                    >
+                      <Text style={styles.textStyle}>Guardar</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </Modal>
             <TouchableOpacity
               style={{
                 paddingVertical: 10,
@@ -294,6 +359,7 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 borderColor: "#BDBDBD",
                 paddingHorizontal: 10,
               }}
+              onPress={openModalConsultorio}
             >
               <Text style={stylesHistorial.buttonText}>
                 Consultorio (opcional)
@@ -301,6 +367,67 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
             </TouchableOpacity>
   
             {/* Boton de Datos Bancarios */}
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalPago}
+              onRequestClose={closeModalPago}
+            >
+              <View style={styles.modalContainer}>
+                <View style={styles.modalView}>
+                  <Text style={styles.modalText}>Cambiar Metodo de pago</Text>
+                  <TextInput
+                  mode = "outlined"
+                  label = "Numero de tarjeta"
+                    style={stylesMain.TextInputPerfil}
+                    value={tel}
+                    onChangeText={(value) => setNumCard(value)}
+                    outlineColor="#c5cae9"
+                    activeOutlineColor="#c5cae9"
+                    keyboardType="numeric"
+                    maxLength={16}
+                  />
+                  <View style={{flexDirection: "row"}}>
+                  <TextInput
+                  mode = "outlined"
+                  label = "Expiracion"
+                    style={[stylesMain.TextInputPerfil, {width: "65%"}]}
+                    value={tel}
+                    onChangeText={(value) => setExpCard(value)}
+                    outlineColor="#c5cae9"
+                    activeOutlineColor="#c5cae9"
+                    keyboardType="numeric"
+                    maxLength={5}
+                  />
+                  <TextInput
+                  mode = "outlined"
+                  label = "CVC"
+                    style={[stylesMain.TextInputPerfil, {marginLeft: 15, width: "25%"}]}
+                    value={tel}
+                    onChangeText={(value) => setCVC(value)}
+                    outlineColor="#c5cae9"
+                    activeOutlineColor="#c5cae9"
+                    keyboardType="numeric"
+                    maxLength={3}
+                  />
+                  </View>
+                  <View style={styles.buttonContainer}>
+                    <TouchableOpacity
+                      style={[styles.button, styles.buttonClose]}
+                      onPress={closeModalPago}
+                    >
+                      <Text style={styles.textStyle}>Cancelar</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.button, styles.buttonSearch]}
+                      onPress={changePago}
+                    >
+                      <Text style={styles.textStyle}>Guardar</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </Modal>
             <TouchableOpacity
               style={{
                 paddingVertical: 10,
@@ -309,6 +436,7 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 borderColor: "#BDBDBD",
                 paddingHorizontal: 10,
               }}
+              onPress={openModalPago}
             >
               <Text style={stylesHistorial.buttonText}>Metodos de pago</Text>
             </TouchableOpacity>
@@ -325,7 +453,7 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
               onPress={toggleLogout}
             >
               <Icon2 name="logout" size={20} color={"#000"}/>
-              <Text style={stylesHistorial.buttonText}>Cerrar Sesion</Text>
+              <Text style={[stylesHistorial.buttonText, {paddingLeft: 10}]}>Cerrar Sesion</Text>
             </TouchableOpacity>
           </ScrollView>
         </View>
@@ -351,7 +479,7 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
                   style={[styles.button, styles.buttonSearch]}
                   onPress={logout}
                 >
-                  <Text style={styles.textStyle}>Eliminar</Text>
+                  <Text style={styles.textStyle}>Cerrar sesion</Text>
                 </TouchableOpacity>
               </View>
             </View>

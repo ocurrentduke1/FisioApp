@@ -78,7 +78,7 @@ const PerfilPaciente = ({ navigation }: { navigation: NavigationProp<any> }) => 
                   }}
                 />
               ) : (
-                <Icon name="user-circle" size={120} color="#FFFFFF" style={{alignSelf: 'center'}} />
+                <Icon name="user-circle" size={120} color="#000" style={{alignSelf: 'center'}} />
               )}
             </TouchableOpacity>
           </View>

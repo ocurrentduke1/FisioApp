@@ -28,26 +28,26 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
   const [modalAuth, setModalAuth] = useState(false);
   const inputRefs = useRef<any[]>([]);
 
-  useEffect(() => {
-    const checkExpiration = async () => {
-      const exp = Number(await AsyncStorage.getItem("expiracion"));
-      console.log("expiracion", await AsyncStorage.multiGet(["expiracion", "idSesion", "tipoUsuario"]));
-      if (exp) {
-        const expDate = new Date(exp * 1000);
-        if (expDate < new Date()) {
-          await AsyncStorage.removeItem("idSesion");
-          await AsyncStorage.removeItem("expiracion");
+  // useEffect(() => {
+  //   const checkExpiration = async () => {
+  //     const exp = Number(await AsyncStorage.getItem("expiracion"));
+  //     console.log("expiracion", await AsyncStorage.multiGet(["expiracion", "idSesion", "tipoUsuario"]));
+  //     if (exp) {
+  //       const expDate = new Date(exp * 1000);
+  //       if (expDate < new Date()) {
+  //         await AsyncStorage.removeItem("idSesion");
+  //         await AsyncStorage.removeItem("expiracion");
 
-          navigation.navigate("login");
-          return;
-        }
-        const tipoUsuario = await AsyncStorage.getItem("tipoUsuario");
-        navigation.navigate(tipoUsuario === "fisioterapeuta" ? "mainFisio" : "mainPaciente");
-      }
-    };
+  //         navigation.navigate("login");
+  //         return;
+  //       }
+  //       const tipoUsuario = await AsyncStorage.getItem("tipoUsuario");
+  //       navigation.navigate(tipoUsuario === "fisioterapeuta" ? "mainFisio" : "mainPaciente");
+  //     }
+  //   };
 
-    checkExpiration();
-  }, []);
+  //   checkExpiration();
+  // }, []);
 
   const LoginData = {
     email: email,
