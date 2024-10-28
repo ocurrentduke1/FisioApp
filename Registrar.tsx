@@ -50,22 +50,33 @@ export default function Registrar({
     }
   };
 
-  {/* Función para verificar el código de autenticación */}
+  {
+    /* Función para verificar el código de autenticación */
+  }
   const verifyAuthCode = async () => {
     const enteredCode = authCode.join("");
-    const response = await axios.post(BACKEND_URL + "/verificar-correo-codigo", {
-      codigo: enteredCode,
-      destinatario: email,
-    });
+    const response = await axios.post(
+      BACKEND_URL + "/verificar-correo-codigo",
+      {
+        codigo: enteredCode,
+        destinatario: email,
+      }
+    );
 
     console.log(response.data);
 
     if (response.data.code == 404) {
-      Alert.alert("Error", "Error al verificar el código de autenticación, reenvíe el correo de verificación");
+      Alert.alert(
+        "Error",
+        "Error al verificar el código de autenticación, reenvíe el correo de verificación"
+      );
       return false;
     }
     if (response.data.code == 403) {
-      Alert.alert("Error", "El código de autenticación ha expirado, reenvíe el correo de verificación");
+      Alert.alert(
+        "Error",
+        "El código de autenticación ha expirado, reenvíe el correo de verificación"
+      );
       return false;
     }
     if (response.data.code == 401) {
@@ -73,21 +84,26 @@ export default function Registrar({
       return false;
     }
 
-      setModalAuth(false);
-      navigation.navigate("registrarPersonales", {
-        registerData: registerData,
-      });
+    setModalAuth(false);
+    navigation.navigate("registrarPersonales", {
+      registerData: registerData,
+    });
   };
 
   const hasErrors = () => {
     return !email.includes("@");
   };
 
-  {/* Función para enviar el correo de verificación */}
+  {
+    /* Función para enviar el correo de verificación */
+  }
   const sendEmail = async () => {
-    const response = await axios.post(BACKEND_URL + "/verificar-correo", {
-      destinatario: email,
-    });
+    const response = await axios.post(
+      BACKEND_URL + "/enviar-correo-verificacion",
+      {
+        destinatario: email,
+      }
+    );
 
     console.log("enviado");
 
@@ -103,11 +119,16 @@ export default function Registrar({
     setModalAuth(true);
   };
 
-  {/* Reenviar correo de verificación */}
+  {
+    /* Reenviar correo de verificación */
+  }
   const reSendEmail = async () => {
-    const response = await axios.post(BACKEND_URL + "/verificar-correo", {
-      destinatario: email,
-    });
+    const response = await axios.post(
+      BACKEND_URL + "/enviar-correo-verificacion",
+      {
+        destinatario: email,
+      }
+    );
 
     console.log("enviado");
 
@@ -130,8 +151,7 @@ export default function Registrar({
         return prevTime - 1;
       });
     }, 1000);
-
-  }
+  };
 
   useEffect(() => {
     return () => {

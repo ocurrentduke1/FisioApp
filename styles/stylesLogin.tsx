@@ -30,7 +30,7 @@ export default StyleSheet.create({
     resizeMode: "contain",
   },
   button: {
-    backgroundColor: "#00bcd4",
+    backgroundColor: "#99BF0F",
     paddingVertical: 20,
     paddingHorizontal: 105,
     borderRadius: 20,
@@ -42,7 +42,7 @@ export default StyleSheet.create({
     elevation: 4,
   },
   Secondarybutton: {
-    backgroundColor: "#3F51B5",
+    backgroundColor: "#04ADBF",
     paddingVertical: 20,
     paddingHorizontal: 120,
     marginHorizontal: 10,

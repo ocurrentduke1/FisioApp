@@ -44,10 +44,14 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
   {/* Función para verificar el código de autenticación */}
   const verifyAuthCode = async () => {
     const enteredCode = authCode.join("");
-    const response = await axios.post(BACKEND_URL + "/verificar-correo-codigo", {
+    const response = await axios.post(BACKEND_URL + "/verificar-login-codigo", {
       codigo: enteredCode,
       destinatario: email,
-    });
+    },
+    {
+      headers: { "User-Agent": Platform.OS + "/" + Platform.Version },
+    }
+  );
 
     console.log(response.data);
 
@@ -69,7 +73,19 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
     }
   };
 
-  const handleButtonPress = () => {
+  {/* Reenviar correo de verificación */}
+  const reSendEmail = async () => {
+    const response = await axios.post(BACKEND_URL + "/enviar-correo-verificacion", {
+      destinatario: email,
+    });
+
+    console.log("enviado");
+
+    if (response.data.code == 500) {
+      Alert.alert("Error", "No se pudo enviar el correo de verificación");
+      return false;
+    }
+
     setIsButtonDisabled(true);
     setTimeLeft(60);
 
@@ -84,7 +100,8 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
         return prevTime - 1;
       });
     }, 1000);
-  };
+
+  }
 
   useEffect(() => {
     return () => {
@@ -138,7 +155,7 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
         }
       );
 
-      console.log(response.headers);
+      console.log(response.data);
 
       if (response.data.code == 404 || response.data.code == 500) {
         Alert.alert("Correo o contraseña incorrectos");
@@ -149,8 +166,8 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
         setModalAuth(true);
       }
 
-      const { key, token } = response.data;
-
+      if (response.data.code == 200) {
+        const { key, token } = response.data;
       const jwtDecode = JWT.decode(token, key);
       await AsyncStorage.setItem("idSesion", jwtDecode.id.toString());
       await AsyncStorage.setItem("tipoUsuario", jwtDecode.tipoUsuario);
@@ -158,14 +175,16 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
         await AsyncStorage.setItem("expiracion", jwtDecode.exp.toString());
       }
 
-      console.log("jwt local: ", JSON.stringify(jwtDecode));
-      console.log("jwt servidor", response.data);
+      // console.log("jwt local: ", JSON.stringify(jwtDecode));
+      // console.log("jwt servidor", response.data);
 
       navigation.navigate(
         jwtDecode.tipoUsuario === "fisioterapeuta"
           ? "mainFisio"
           : "mainPaciente"
       );
+      }
+      
     } catch (error) {
       console.error(error);
     }
@@ -295,7 +314,7 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
               ))}
             </View>
             <TouchableOpacity
-              onPress={handleButtonPress}
+              onPress={reSendEmail}
               disabled={isButtonDisabled}
             >
               <Text
@@ -334,9 +353,10 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
           if (validateData()) {
             if(!validateEmail(email)){
               Alert.alert("Error", "Correo electrónico no válido");
-            }else{
-              loggin();
+              return false;
             }
+            loggin();
+
           } else {
             alert("Datos incompletos");
           }
