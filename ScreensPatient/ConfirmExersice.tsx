@@ -28,7 +28,7 @@ const ConfirmExercise = ({
   navigation: NavigationProp<any>;
   route: RouteProp<RouteParams, "params">;
 }) => {
-  const [side, setSide] = React.useState("Derecho");
+  const [side, setSide] = React.useState("Derecha");
 
   const { gifSource } = route.params;
   const { exercise } = route.params;
@@ -50,11 +50,11 @@ const ConfirmExercise = ({
           >
             <View style={styles.radioGroupContainer}>
             <View style={styles.radioButtonContainer}>
-              <RadioButton value="Izquierdo"/>
+              <RadioButton value="Izquierda"/>
               <Text >Izquierdo</Text>
             </View>
             <View style={styles.radioButtonContainer}>
-              <RadioButton value="Derecho" />
+              <RadioButton value="Derecha" />
               <Text >Derecho</Text>
             </View>
             </View>
@@ -65,7 +65,7 @@ const ConfirmExercise = ({
       </View>
       <TouchableOpacity
         style={stylesHistorial.button}
-        onPress={() => navigation.navigate("CamaraVideo", {exercise}) }
+        onPress={() => navigation.navigate("CamaraVideo", {exercise: exercise + side}) }
       >
         <Text style={stylesHistorial.buttonText}>Evaluar</Text>
       </TouchableOpacity>

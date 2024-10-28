@@ -65,67 +65,67 @@ export default function MainPhisio({
 
 
 
-  // const takePatients = async () => {
-  //   if (userID) {
-  //     const response = await axios.post(
-  //       BACKEND_URL + "/obtener-pacientes",
-  //       {
-  //         idFisio: Number(userID),
-  //       }
-  //     );
-  //     console.log("UserID:", userID);
-  //     console.log("Response data:", response.data);
-  //     return response.data || [];
-  //   }
-  // };
+  const takePatients = async () => {
+    if (userID) {
+      const response = await axios.post(
+        BACKEND_URL + "/obtener-pacientes",
+        {
+          idFisio: Number(userID),
+        }
+      );
+      console.log("UserID:", userID);
+      console.log("Response data:", response.data);
+      return response.data || [];
+    }
+  };
 
-  // const getUserID = async () => {
-  //   const id = await AsyncStorage.getItem('idSesion');
-  //   console.log("Fetched UserID:", id); // Verifica que el ID se obtenga correctamente
-  //   setUserID(id);
-  // };
+  const getUserID = async () => {
+    const id = await AsyncStorage.getItem('idSesion');
+    console.log("Fetched UserID:", id); // Verifica que el ID se obtenga correctamente
+    setUserID(id);
+  };
 
-  // const fetchData = async () => {
-  //   const datosDelServidor = await takePatients();
-  //   setPacientes(datosDelServidor);
-  // };
-
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     getUserID();
-  //   }, [])
-  // );
-
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     if (userID) {
-  //       fetchData();
-  //     }
-  //   }, [userID])
-  // );
-
-  useEffect(() => {
-    // Funcion para obtener ID de la sesion
-    const getUserID = async () => {
-      const id = await AsyncStorage.getItem('idSesion');
-      setUserID(id);
-    };
-    getUserID();
-
-    const datosDelServidor = [
-      {
-        id: "1",
-        nombre: "Juan",
-        apellidos: "Pérez",
-        proximaCita: "2023-04-15",
-        ubicacion: "Ciudad Central",
-        imagenPerfil:
-          "https://imgs.search.brave.com/8ExXYVb8oTB9fWM1IvIH-QRrnpIM5ifHCiXrTuchK-I/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93d3cu/aXN0b2NrcGhvdG8u/Y29tL3Jlc291cmNl/cy9pbWFnZXMvSG9t/ZVBhZ2UvRm91clBh/Y2svQzItUGhvdG9z/LWlTdG9jay0xMzU2/MTk3Njk1LmpwZw",
-        numeroContacto: "1234567890",
-        },
-    ];
+  const fetchData = async () => {
+    const datosDelServidor = await takePatients();
     setPacientes(datosDelServidor);
-  }, []);
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      getUserID();
+    }, [])
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      if (userID) {
+        fetchData();
+      }
+    }, [userID])
+  );
+
+  // useEffect(() => {
+  //  // Funcion para obtener ID de la sesion
+  //   const getUserID = async () => {
+  //     const id = await AsyncStorage.getItem('idSesion');
+  //     setUserID(id);
+  //   };
+  //   getUserID();
+
+  //   const datosDelServidor = [
+  //     {
+  //       id: "1",
+  //       nombre: "Juan",
+  //       apellidos: "Pérez",
+  //       proximaCita: "2023-04-15",
+  //       ubicacion: "Ciudad Central",
+  //       imagenPerfil:
+  //         "https://imgs.search.brave.com/8ExXYVb8oTB9fWM1IvIH-QRrnpIM5ifHCiXrTuchK-I/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93d3cu/aXN0b2NrcGhvdG8u/Y29tL3Jlc291cmNl/cy9pbWFnZXMvSG9t/ZVBhZ2UvRm91clBh/Y2svQzItUGhvdG9z/LWlTdG9jay0xMzU2/MTk3Njk1LmpwZw",
+  //       numeroContacto: "1234567890",
+  //       },
+  //   ];
+  //   setPacientes(datosDelServidor);
+  // }, []);
 
   //console.log(userID + " MAINFISIO");
 

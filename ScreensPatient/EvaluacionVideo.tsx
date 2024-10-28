@@ -14,7 +14,7 @@ export default function EvaluacionVideo({
       <ScrollView style={stylesMain.scrollView}>
       <TouchableOpacity
         style={stylesMain.opcPatient}
-        onPress={() => navigation.navigate("ConfirmExercise", { gifSource: require("../assets/gifs/flexionHombro.gif"), exercise: "flexionHombro" })}
+        onPress={() => navigation.navigate("ConfirmExercise", { gifSource: require("../assets/gifs/flexionHombro.gif"), exercise: "FlexionHombro" })}
       >
         <Text
           style={{
@@ -31,7 +31,7 @@ export default function EvaluacionVideo({
 
       <TouchableOpacity
         style={stylesMain.opcPatient}
-        onPress={() => navigation.navigate("ConfirmExercise", { gifSource: require("../assets/gifs/extensionHombro.gif"), exercise: "extensionHombro" })}
+        onPress={() => navigation.navigate("ConfirmExercise", { gifSource: require("../assets/gifs/extensionHombro.gif"), exercise: "ExtensionHombro" })}
       >
         <Text
           style={{
@@ -48,7 +48,7 @@ export default function EvaluacionVideo({
 
       <TouchableOpacity
         style={stylesMain.opcPatient}
-        onPress={() => navigation.navigate("ConfirmExercise", { gifSource: require("../assets/gifs/abduccionHombro.gif"), exercise: "abduccionHombro" })}
+        onPress={() => navigation.navigate("ConfirmExercise", { gifSource: require("../assets/gifs/abduccionHombro.gif"), exercise: "AbduccionHombro" })}
       >
         <Text
           style={{
@@ -65,7 +65,7 @@ export default function EvaluacionVideo({
 
       <TouchableOpacity
         style={stylesMain.opcPatient}
-        onPress={() => navigation.navigate("ConfirmExercise", { gifSource: require("../assets/gifs/aduccionHombro.gif"), exercise: "aduccionHombro" })}
+        onPress={() => navigation.navigate("ConfirmExercise", { gifSource: require("../assets/gifs/aduccionHombro.gif"), exercise: "AduccionHombro" })}
       >
         <Text
           style={{
@@ -82,7 +82,7 @@ export default function EvaluacionVideo({
 
       <TouchableOpacity
         style={stylesMain.opcPatient}
-        onPress={() => navigation.navigate("ConfirmExercise", { gifSource: require("../assets/gifs/extensionFlexionCodo.gif"), exercise: "extensionCodo" })}
+        onPress={() => navigation.navigate("ConfirmExercise", { gifSource: require("../assets/gifs/extensionFlexionCodo.gif"), exercise: "ExtensionCodo" })}
       >
         <Text
           style={{
@@ -99,7 +99,7 @@ export default function EvaluacionVideo({
 
       <TouchableOpacity
         style={stylesMain.opcPatient}
-        onPress={() => navigation.navigate("ConfirmExercise", { gifSource: require("../assets/gifs/extensionFlexionCodo.gif"), exercise: "flexionCodo" })}
+        onPress={() => navigation.navigate("ConfirmExercise", { gifSource: require("../assets/gifs/extensionFlexionCodo.gif"), exercise: "FlexionCodo" })}
       >
         <Text
           style={{
@@ -116,7 +116,7 @@ export default function EvaluacionVideo({
 
       <TouchableOpacity
         style={stylesMain.opcPatient}
-        onPress={() => navigation.navigate("ConfirmExercise", { gifSource: require("../assets/gifs/flexionCadera.gif"), exercise: "flexionCadera" })}
+        onPress={() => navigation.navigate("ConfirmExercise", { gifSource: require("../assets/gifs/flexionCadera.gif"), exercise: "FlexionCadera" })}
       >
         <Text
           style={{
@@ -133,7 +133,7 @@ export default function EvaluacionVideo({
 
       <TouchableOpacity
         style={stylesMain.opcPatient}
-        onPress={() => navigation.navigate("ConfirmExercise", { gifSource: require("../assets/gifs/extensionCadera.gif"), exercise: "extensionCadera" })}
+        onPress={() => navigation.navigate("ConfirmExercise", { gifSource: require("../assets/gifs/extensionCadera.gif"), exercise: "ExtensionCadera" })}
       >
         <Text
           style={{
@@ -150,7 +150,7 @@ export default function EvaluacionVideo({
 
       <TouchableOpacity
         style={stylesMain.opcPatient}
-        onPress={() => navigation.navigate("ConfirmExercise", { gifSource: require("../assets/gifs/abduccionCadera.gif"), exercise: "abduccionCadera" })}
+        onPress={() => navigation.navigate("ConfirmExercise", { gifSource: require("../assets/gifs/abduccionCadera.gif"), exercise: "AbduccionCadera" })}
       >
         <Text
           style={{
@@ -167,7 +167,7 @@ export default function EvaluacionVideo({
 
       <TouchableOpacity
         style={stylesMain.opcPatient}
-        onPress={() => navigation.navigate("ConfirmExercise", { gifSource: require("../assets/gifs/aduccionCadera.gif"), exercise: "aduccionCadera" })}
+        onPress={() => navigation.navigate("ConfirmExercise", { gifSource: require("../assets/gifs/aduccionCadera.gif"), exercise: "AduccionCadera" })}
       >
         <Text
           style={{
@@ -184,7 +184,7 @@ export default function EvaluacionVideo({
 
       <TouchableOpacity
         style={stylesMain.opcPatient}
-        onPress={() => navigation.navigate("ConfirmExercise", { gifSource: require("../assets/gifs/flexionRodilla.gif"), exercise: "flexionRodilla" })}
+        onPress={() => navigation.navigate("ConfirmExercise", { gifSource: require("../assets/gifs/flexionRodilla.gif"), exercise: "FlexionRodilla" })}
       >
         <Text
           style={{
@@ -201,7 +201,7 @@ export default function EvaluacionVideo({
 
       <TouchableOpacity
         style={stylesMain.opcPatient}
-        onPress={() => navigation.navigate("ConfirmExercise", { gifSource: require("../assets/gifs/extensionRodilla.gif"), exercise: "extensionRodilla" })}
+        onPress={() => navigation.navigate("ConfirmExercise", { gifSource: require("../assets/gifs/extensionRodilla.gif"), exercise: "ExtensionRodilla" })}
       >
         <Text
           style={{

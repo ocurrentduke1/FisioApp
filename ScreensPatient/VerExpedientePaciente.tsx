@@ -151,21 +151,21 @@ export default function VerExpedientePaciente({
                   marginLeft: -30,
                   borderRadius: 100,}} />
               )} */}
-              <Icon name="user-circle" size={70} color="#FFFFFF" style={{alignItems: "flex-end",
+              <Icon name="user-circle" size={70} color="#000" style={{alignItems: "flex-end",
                   width: windowWidth * 0.19,
                   height: windowHeight * 0.095,
                   marginLeft: -30,
                   borderRadius: 100,}} />
-          <Text style={{ marginLeft: -40, alignSelf: 'flex-start', color: "white", fontWeight: "bold" }}> jorge</Text>
-          <Text style={{ marginLeft: -40, alignSelf: 'flex-start', color: "white", fontWeight: "bold" }}> perez</Text>
+          <Text style={{ marginLeft: -40, alignSelf: 'flex-start', color: "black", fontWeight: "bold" }}> victo</Text>
+          <Text style={{ marginLeft: -40, alignSelf: 'flex-start', color: "black", fontWeight: "bold" }}> medina</Text>
         </View>
         <View style={{ alignItems: "flex-start", paddingTop: 20 }}>
-          <Text style={{ marginLeft: 10, color: "white" }}>proxima cita: sin definir</Text>
-          <Text style={{ marginLeft: 10, color: "white" }}>localidad: guadalajara</Text>
+          <Text style={{ marginLeft: 10, color: "black" }}>proxima cita: sin cita</Text>
+          <Text style={{ marginLeft: 10, color: "black" }}>localidad: guadalajara</Text>
           <View>
-          <Text style={{ marginLeft: 10, color: "white" }}>3322783345</Text>
+          <Text style={{ marginLeft: 10, color: "black" }}>3322112278</Text>
           </View>
-          <Text style={{ marginLeft: 10, color: "white" }}>correo@direccion.com</Text>
+          <Text style={{ marginLeft: 10, color: "black" }}>a21110128@ceti.mx</Text>
         </View>
       </View>
       <View style={stylesHistorial.menuPaciente}>

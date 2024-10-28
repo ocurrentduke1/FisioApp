@@ -58,6 +58,8 @@ export default function App() {
   const FisioDrawer = createDrawerNavigator();
   const MetricsTab = createMaterialTopTabNavigator();
 
+  
+
   const tabs = [
     { name: "Ashwort", component: AshwortMetric, visible: true },
     { name: "Barthel", component: BarthelMetric, visible: true },

@@ -29,7 +29,7 @@ export default function ConfirmImage({
     navigation.goBack();
   }
 
-  const { image, Posture } = route.params as { image: string; Posture: string };
+  const { image, exercise } = route.params as { image: string; exercise: string };
   const [userID, setUserID] = useState<string | null>(null);
 
   const getUserID = async () => {
@@ -54,7 +54,7 @@ export default function ConfirmImage({
       } as any;
 
       formData.append('image', imageBlob);
-      formData.append('posture', Posture);
+      formData.append('exercise', exercise);
       formData.append('idFisio', userID!);
 
       // Imprime el contenido de FormData para verificar

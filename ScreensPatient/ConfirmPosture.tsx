@@ -21,7 +21,7 @@ const ConfirmPosture = ({
 }) => {
   
   const { imageUrl } = route.params as { imageUrl: string };
-  const { Posture } = route.params as { Posture: string };
+  const { exercise } = route.params as { exercise: string };
 
   return (
     <SafeAreaView style={stylesHistorial.container}>
@@ -37,7 +37,7 @@ const ConfirmPosture = ({
       </View>
       <TouchableOpacity
         style={stylesHistorial.button}
-        onPress={() => navigation.navigate("CamaraImagen", { Posture })}
+        onPress={() => navigation.navigate("CamaraImagen", { exercise })}
       >
         <Text style={stylesHistorial.buttonText}>Evaluar</Text>
       </TouchableOpacity>

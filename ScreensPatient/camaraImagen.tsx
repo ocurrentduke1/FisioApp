@@ -24,7 +24,7 @@ export default function CamaraImagen({
   const [image, setImage] = useState<string | null>(null); // Update the type of the image state variable
   const [cameraReady, setCameraReady] = useState<boolean>(false)
 
-  const { Posture } = route.params as { Posture: string };
+  const { exercise } = route.params as { exercise: string };
   const onCameraReady = async () => {
     setCameraReady(true)
   }
@@ -35,7 +35,7 @@ export default function CamaraImagen({
         const data = await cameraRef.current?.takePictureAsync({});
         console.log(data);
         setImage(data!.uri);
-        navigation.navigate("ConfirmImage", { image: data!.uri, Posture });
+        navigation.navigate("ConfirmImage", { image: data!.uri, exercise });
       } catch (e) {
         console.log(e);
       }

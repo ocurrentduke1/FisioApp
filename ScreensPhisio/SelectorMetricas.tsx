@@ -4,6 +4,7 @@ import { View, Text, ScrollView, SafeAreaView, Switch, Touchable, TouchableOpaci
 import { NavigationProp } from '@react-navigation/native';
 import stylesMain from '../styles/stylesMain';
 import stylesHistorial from '../styles/stylesHistorial';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -34,6 +35,8 @@ const toggleMetrica = (metrica: keyof typeof metricas) => {
 // Paso 5: Método para enviar los valores al servidor (implementación básica)
 const enviarAlServidor = () => {
   // Aquí iría tu lógica para enviar los datos al servidor, por ejemplo:
+
+  
   console.log(metricas); // Reemplazar con una llamada a tu API
 };
 

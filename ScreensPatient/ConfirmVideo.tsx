@@ -56,7 +56,7 @@ export default function ConfirmVideo({
       } as any;
 
       formData.append('video', videoBlob);
-      formData.append('Exercise', exercise);
+      formData.append('exercise', exercise);
       formData.append('idFisio', userID!);
 
       // Imprime el contenido de FormData para verificar
