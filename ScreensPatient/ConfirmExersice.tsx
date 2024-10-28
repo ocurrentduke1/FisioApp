@@ -18,6 +18,7 @@ type RouteParams = {
       uri: string;
     };
     exercise: string;
+    port: string;
   };
 };
 
@@ -32,7 +33,9 @@ const ConfirmExercise = ({
 
   const { gifSource } = route.params;
   const { exercise } = route.params;
+  const { port } = route.params;
   //const { Instructions } = route.params;
+  console.log(port)
 
   return (
     <SafeAreaView style={stylesHistorial.container}>

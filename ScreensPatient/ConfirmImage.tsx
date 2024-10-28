@@ -29,8 +29,9 @@ export default function ConfirmImage({
     navigation.goBack();
   }
 
-  const { image, exercise } = route.params as { image: string; exercise: string };
+  const { image, exercise, port } = route.params as { image: string; exercise: string, port: string };
   const [userID, setUserID] = useState<string | null>(null);
+  console.log(port);
 
   const getUserID = async () => {
     const id = await AsyncStorage.getItem('idSesion');
@@ -55,6 +56,7 @@ export default function ConfirmImage({
 
       formData.append('image', imageBlob);
       formData.append('exercise', exercise);
+      formData.append('port', port);
       formData.append('idFisio', userID!);
 
       // Imprime el contenido de FormData para verificar

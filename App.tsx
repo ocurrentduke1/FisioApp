@@ -48,6 +48,7 @@ import GlasgowMetric from "./ScreensMetrics/GlasgowMetric";
 import GodetMetric from "./ScreensMetrics/GodetMetric";
 import SeidelMetric from "./ScreensMetrics/SeidelMetric";
 import TinettiMetric from "./ScreensMetrics/TinettiMetric";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 enableScreens();
 
@@ -58,20 +59,46 @@ export default function App() {
   const FisioDrawer = createDrawerNavigator();
   const MetricsTab = createMaterialTopTabNavigator();
 
-  
+  const [metricasVisibles, setMetricasVisibles] = useState({
+    Ashwort: true,
+    Barthel: true,
+    Braden: true,
+    Daniels: true,
+    Glasgow: true,
+    Godet: true,
+    Seidel: true,
+    Tinetti: true,
+  });
 
-  const tabs = [
-    { name: "Ashwort", component: AshwortMetric, visible: true },
-    { name: "Barthel", component: BarthelMetric, visible: true },
-    { name: "Braden", component: BradenMetric, visible: true },
-    { name: "Daniels", component: DanielsMetric, visible: true },
-    { name: "Glasgow", component: GlasgowMetric, visible: true },
-    { name: "Godet", component: GodetMetric, visible: true },
-    { name: "Seidel", component: SeidelMetric, visible: true },
-    { name: "Tinetti", component: TinettiMetric, visible: true },
-  ];
 
   function MyTabs() {
+
+    useEffect(() => {
+      const obtenerMetricasVisibles = async () => {
+        try {
+          const jsonValue = await AsyncStorage.getItem('@metricas');
+          if (jsonValue != null) {
+            setMetricasVisibles(JSON.parse(jsonValue));
+          }
+        } catch (e) {
+          console.error('Error obteniendo las métricas de AsyncStorage', e);
+        }
+      };
+  
+      obtenerMetricasVisibles();
+    }, []);
+
+    const tabs = [
+      { name: "Ashwort", component: AshwortMetric, visible: metricasVisibles.Ashwort },
+      { name: "Barthel", component: BarthelMetric, visible: metricasVisibles.Barthel },
+      { name: "Braden", component: BradenMetric, visible: metricasVisibles.Braden },
+      { name: "Daniels", component: DanielsMetric, visible: metricasVisibles.Daniels },
+      { name: "Glasgow", component: GlasgowMetric, visible: metricasVisibles.Glasgow },
+      { name: "Godet", component: GodetMetric, visible: metricasVisibles.Godet },
+      { name: "Seidel", component: SeidelMetric, visible: metricasVisibles.Seidel },
+      { name: "Tinetti", component: TinettiMetric, visible: metricasVisibles.Tinetti },
+    ];
+    
     return (
       <MetricsTab.Navigator
         initialRouteName="CrearEscala"

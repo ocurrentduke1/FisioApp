@@ -29,8 +29,9 @@ export default function ConfirmVideo({
     navigation.goBack();
   }
 
-  const { video, exercise } = route.params as { video: string, exercise: string };
+  const { video, exercise, port } = route.params as { video: string, exercise: string, port: string };
   const [userID, setUserID] = useState<string | null>(null);
+  console.log(port);
 
   const getUserID = async () => {
     const id = await AsyncStorage.getItem('idSesion');
@@ -57,6 +58,7 @@ export default function ConfirmVideo({
 
       formData.append('video', videoBlob);
       formData.append('exercise', exercise);
+      formData.append('port', port);
       formData.append('idFisio', userID!);
 
       // Imprime el contenido de FormData para verificar

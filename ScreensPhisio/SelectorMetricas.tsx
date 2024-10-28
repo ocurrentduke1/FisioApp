@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { Component, useState } from "react";
+import React, { Component, useEffect, useState } from "react";
 import { View, Text, ScrollView, SafeAreaView, Switch, Touchable, TouchableOpacity, Dimensions } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
 import stylesMain from '../styles/stylesMain';
@@ -10,6 +10,21 @@ const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
 export default function SelectorMetricas({ navigation }: { navigation: NavigationProp<any> }){
+
+  useEffect(() => {
+    const obtenerMetricasVisibles = async () => {
+      try {
+        const jsonValue = await AsyncStorage.getItem('@metricas');
+        if (jsonValue != null) {
+          setMetricas(JSON.parse(jsonValue));
+        }
+      } catch (e) {
+        console.error('Error obteniendo las métricas de AsyncStorage', e);
+      }
+    };
+
+    obtenerMetricasVisibles();
+  }, []);
 // Paso 1 y 2: Definir e inicializar el estado
 const [metricas, setMetricas] = useState({
   daniels: true,
@@ -24,6 +39,17 @@ const [metricas, setMetricas] = useState({
   godet: true,
 });
 
+
+const guardarEnAsyncStorage = async (metricas: any) => {
+  try {
+    const jsonValue = JSON.stringify(metricas);
+    await AsyncStorage.setItem('@metricas', jsonValue);
+    console.log('Datos guardados en AsyncStorage');
+  } catch (e) {
+    console.error('Error guardando en AsyncStorage', e);
+  }
+};
+
 // Paso 3: Crear un método para cambiar el estado
 const toggleMetrica = (metrica: keyof typeof metricas) => {
   setMetricas(prevMetricas => ({
@@ -36,7 +62,7 @@ const toggleMetrica = (metrica: keyof typeof metricas) => {
 const enviarAlServidor = () => {
   // Aquí iría tu lógica para enviar los datos al servidor, por ejemplo:
 
-  
+  guardarEnAsyncStorage(metricas);
   console.log(metricas); // Reemplazar con una llamada a tu API
 };
 

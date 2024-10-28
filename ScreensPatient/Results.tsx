@@ -36,7 +36,7 @@ const Results = ({
         Resultados de la evaluación
       </Text>
         <Text style={styles.Text}>
-            {results.Angulo}
+            {results.angulo}
         </Text>
 
       <Text style={styles.Text}>
@@ -60,9 +60,9 @@ const Results = ({
 const styles = StyleSheet.create({
     Text: {
         fontSize: 24,
-        color: 'white',
+        color: 'black',
         textAlign: 'center',
-
+        marginTop: 20
     },
 })
 
