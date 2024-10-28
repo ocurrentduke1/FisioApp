@@ -41,30 +41,32 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
     }
   };
 
-  const verifyAuthCode = () => {
+  {/* Función para verificar el código de autenticación */}
+  const verifyAuthCode = async () => {
     const enteredCode = authCode.join("");
-    if (enteredCode === "12345") {
-      setModalAuth(false);
-      setAuth(true);
-      // navigation.navigate("registrarPersonales", { registerData: registerData });
-    } else {
-      Alert.alert("Código de autenticación incorrecto");
-    }
-  };
-
-  const sendEmail = async () => {
-    const response = await axios.post(BACKEND_URL + "/verificar-correo", {
+    const response = await axios.post(BACKEND_URL + "/verificar-correo-codigo", {
+      codigo: enteredCode,
       destinatario: email,
     });
 
-    console.log("enviado");
+    console.log(response.data);
 
-    if (response.data.code == 500) {
-      Alert.alert("Error", "No se pudo enviar el correo de verificación");
+    if (response.data.code == 404) {
+      Alert.alert("Error", "Error al verificar el código de autenticación, reenvíe el correo de verificación");
       return false;
     }
-
-    setModalAuth(true);
+    if (response.data.code == 403) {
+      Alert.alert("Error", "El código de autenticación ha expirado, reenvíe el correo de verificación");
+      return false;
+    }
+    if (response.data.code == 401) {
+      Alert.alert("Error", "Codigo de autenticación incorrecto");
+      return false;
+    }
+    if(response.data.code == 200){
+      loggin();
+      setModalAuth(false);
+    }
   };
 
   const handleButtonPress = () => {
@@ -144,7 +146,6 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
       }
 
       if (response.data.code == 401) {
-        sendEmail();
         setModalAuth(true);
       }
 

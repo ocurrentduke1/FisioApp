@@ -16,7 +16,7 @@ import {
 } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import stylesLogin from "./styles/stylesLogin";
-import { TextInput } from "react-native-paper";
+import { HelperText, TextInput } from "react-native-paper";
 import { BACKEND_URL } from "@env";
 
 const windowWidth = Dimensions.get("window").width;
@@ -79,6 +79,10 @@ export default function Registrar({
       });
   };
 
+  const hasErrors = () => {
+    return !email.includes("@");
+  };
+
   {/* Función para enviar el correo de verificación */}
   const sendEmail = async () => {
     const response = await axios.post(BACKEND_URL + "/verificar-correo", {
@@ -87,6 +91,10 @@ export default function Registrar({
 
     console.log("enviado");
 
+    if (response.data.code == 409) {
+      Alert.alert("Error", "Correo ya registrado");
+      return false;
+    }
     if (response.data.code == 500) {
       Alert.alert("Error", "No se pudo enviar el correo de verificación");
       return false;
@@ -168,10 +176,6 @@ export default function Registrar({
     return true;
   };
 
-  const hasErrors = () => {
-    return !email.includes("@");
-  };
-
   return (
     <SafeAreaView style={stylesLogin.container}>
       <KeyboardAvoidingView
@@ -199,6 +203,9 @@ export default function Registrar({
             onChangeText={(text) => setEmail(text)}
             value={email}
           />
+          <HelperText type="error" visible={hasErrors()}>
+            Correo ya registrado
+          </HelperText>
 
           <TextInput //textbox telefono
             mode="outlined"
