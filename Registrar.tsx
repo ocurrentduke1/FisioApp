@@ -39,6 +39,38 @@ export default function Registrar({
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [ShowRequirements, setShowRequirements] = useState(false);
+  const [showConfirmRequirements, setShowConfirmRequirements] = useState(false);
+  const [showEmailRequirements, setShowEmailRequirements] = useState(false);
+
+  const requirements = [
+    {
+      label: "Contener 8-16 caracteres",
+      isValid: password.length >= 8 && password.length <= 16,
+    },
+    { label: "Contener mínimo 1 minúscula", isValid: /[a-z]/.test(password) },
+    { label: "Contener mínimo 1 mayúscula", isValid: /[A-Z]/.test(password) },
+    { label: "Contener mínimo 1 número", isValid: /\d/.test(password) },
+  ];
+
+  const confirmRequirements = [
+    {
+      label: "La contraseña debe coincidir",
+      isValid: confirmPassword === password,
+    },
+  ];
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const emailRequirements = [
+    {
+      label: "El correo debe ser válido",
+      isValid: validateEmail(email),
+    },
+  ];
 
   const handleAuthCodeChange = (index: number, value: string) => {
     const newAuthCode = [...authCode];
@@ -90,34 +122,9 @@ export default function Registrar({
     });
   };
 
-  const hasErrors = () => {
-    return !email.includes("@");
-  };
-
   {
     /* Función para enviar el correo de verificación */
   }
-  const sendEmail = async () => {
-    const response = await axios.post(
-      BACKEND_URL + "/enviar-correo-verificacion",
-      {
-        destinatario: email,
-      }
-    );
-
-    console.log("enviado");
-
-    if (response.data.code == 409) {
-      Alert.alert("Error", "Correo ya registrado");
-      return false;
-    }
-    if (response.data.code == 500) {
-      Alert.alert("Error", "No se pudo enviar el correo de verificación");
-      return false;
-    }
-
-    setModalAuth(true);
-  };
 
   {
     /* Reenviar correo de verificación */
@@ -167,11 +174,6 @@ export default function Registrar({
     password: password,
   };
 
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
   const validatePassword = () => {
     if (
       password.length <= 8 ||
@@ -194,6 +196,32 @@ export default function Registrar({
       return false;
     }
     return true;
+  };
+
+  const hasErrors = () => {
+    return !email.includes("@");
+  };
+
+  const sendEmail = async () => {
+    const response = await axios.post(
+      BACKEND_URL + "/enviar-correo-verificacion",
+      {
+        destinatario: email,
+      }
+    );
+
+    console.log("enviado");
+
+    if (response.data.code == 409) {
+      Alert.alert("Error", "Correo ya registrado");
+      return false;
+    }
+    if (response.data.code == 500) {
+      Alert.alert("Error", "No se pudo enviar el correo de verificación");
+      return false;
+    }
+
+    setModalAuth(true);
   };
 
   return (
@@ -220,12 +248,25 @@ export default function Registrar({
             keyboardType="email-address"
             outlineColor="#c5cae9"
             activeOutlineColor="#c5cae9"
+            onFocus={() => setShowEmailRequirements(true)}
+            onBlur={() => setShowEmailRequirements(false)}
             onChangeText={(text) => setEmail(text)}
             value={email}
           />
-          <HelperText type="error" visible={hasErrors()}>
-            Correo ya registrado
-          </HelperText>
+
+          {showEmailRequirements && (
+            <View style={{ marginVertical: 1 }}>
+              {emailRequirements.map(
+                (req, index) =>
+                  !req.isValid && (
+                    <Text key={index} style={{ color: "#c5cae9", fontSize: 12 }}>
+                      {req.label}
+                    </Text>
+                  )
+              )}
+            </View>
+          )}
+
 
           <TextInput //textbox telefono
             mode="outlined"
@@ -242,6 +283,8 @@ export default function Registrar({
             mode="outlined"
             style={stylesLogin.TextInput}
             label="Contraseña"
+            onFocus={() => setShowRequirements(true)}
+            onBlur={() => setShowRequirements(false)}
             outlineColor="#c5cae9"
             activeOutlineColor="#c5cae9"
             secureTextEntry={!showPassword}
@@ -255,6 +298,19 @@ export default function Registrar({
             }
           />
 
+          {ShowRequirements && (
+            <View style={{ marginVertical: 1 }}>
+              {requirements.map(
+                (req, index) =>
+                  !req.isValid && (
+                    <Text key={index} style={{ color: "#c5cae9", fontSize: 12 }}>
+                      {req.label}
+                    </Text>
+                  )
+              )}
+            </View>
+          )}
+
           <TextInput
             mode="outlined"
             label="Confirmar contraseña"
@@ -262,6 +318,8 @@ export default function Registrar({
             outlineColor="#c5cae9"
             activeOutlineColor="#c5cae9"
             secureTextEntry={!ShowConfirm}
+            onFocus={() => setShowConfirmRequirements(true)}
+            onBlur={() => setShowConfirmRequirements(false)}
             onChangeText={(text) => setConfirmPassword(text)}
             value={confirmPassword}
             right={
@@ -272,33 +330,18 @@ export default function Registrar({
             }
           />
 
-          <View style={{ alignItems: "flex-start", width: 280, marginTop: 15 }}>
-            <Text
-              style={{ fontSize: 12, color: "#FFFFFF", textAlign: "justify" }}
-            >
-              Debe contener las siguientes características:
-            </Text>
-            <Text
-              style={{ fontSize: 12, color: "#FFFFFF", textAlign: "justify" }}
-            >
-              - Contener 8-16 caracteres
-            </Text>
-            <Text
-              style={{ fontSize: 12, color: "#FFFFFF", textAlign: "justify" }}
-            >
-              - Contener mínimo 1 minúscula
-            </Text>
-            <Text
-              style={{ fontSize: 12, color: "#FFFFFF", textAlign: "justify" }}
-            >
-              - Contener mínimo 1 mayúscula
-            </Text>
-            <Text
-              style={{ fontSize: 12, color: "#FFFFFF", textAlign: "justify" }}
-            >
-              - Contener mínimo 1 número
-            </Text>
-          </View>
+          {showConfirmRequirements && (
+            <View style={{ marginVertical: 1 }}>
+              {confirmRequirements.map(
+                (req, index) =>
+                  !req.isValid && (
+                    <Text key={index} style={{ color: "#c5cae9", fontSize: 12 }}>
+                      {req.label}
+                    </Text>
+                  )
+              )}
+            </View>
+          )}
         </View>
 
         {/* Modal de autenticación */}

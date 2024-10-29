@@ -195,18 +195,11 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
   //     (email === "Fisio" && password === "123") ||
   //     (email === "fisio" && password === "123")
   //   ) {
-  //     if(auth){
   //       navigation.navigate("mainFisio");
-  //     }else{
-  //       setModalAuth(true);
-  //     }
 
   //   } else if (email === "p" && password === "123") {
-  //     if(auth){
+      
   //       navigation.navigate("mainPaciente");
-  //     }else{
-  //       setModalAuth(true);
-  //     }
 
   //   } else {
   //     Alert.alert("Correo o contraseña incorrectos");
@@ -244,6 +237,9 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
           style={stylesLogin.TextInput}
+          left={<TextInput.Icon
+            style={{ marginTop: 25 }} 
+            icon="email" />}
         />
         <TextInput //textbox ingresar Contraseña
           mode="outlined"
@@ -351,10 +347,10 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
         style={stylesLogin.button}
         onPress={() => {
           if (validateData()) {
-            if(!validateEmail(email)){
-              Alert.alert("Error", "Correo electrónico no válido");
-              return false;
-            }
+            // if(!validateEmail(email)){
+            //   Alert.alert("Error", "Correo electrónico no válido");
+            //   return false;
+            // }
             loggin();
 
           } else {

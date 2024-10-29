@@ -106,7 +106,7 @@ export default StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start", // Alinea los elementos verticalmente al principio
     width: windowWidth * 0.8,
-    height: windowHeight * 0.75,
+    height: windowHeight * 0.70,
     borderRadius: 25,
     marginBottom: 20,
     paddingBottom: 10,

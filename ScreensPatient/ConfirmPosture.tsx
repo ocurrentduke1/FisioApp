@@ -12,26 +12,38 @@ import { RouteProp } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import stylesHistorial from "../styles/stylesHistorial";
 
+type RouteParams = {
+  params: {
+    imageSource: {
+      uri: string;
+    };
+    exercise: string;
+    port: string;
+  };
+};
+
 // Suponiendo que este es tu componente
 const ConfirmPosture = ({
   navigation, route,
 }: {
-  route: RouteProp<any, any>;
+  route: RouteProp<RouteParams, "params">;
   navigation: NavigationProp<any>;
 }) => {
   
-  const { imageUrl } = route.params as { imageUrl: string };
-  const { exercise } = route.params as { exercise: string };
-  const { port } = route.params as { port: string}
+  const { imageSource } = route.params;
+  const { exercise } = route.params;
+  const { port } = route.params;
+
   console.log(port);
   console.log(exercise)
+  console.log(imageSource)
 
   return (
     <SafeAreaView style={stylesHistorial.container}>
       <View style={stylesHistorial.containerRegistro}>
         <Text style={styles.Text}>Ejemplo de realizacion de postura</Text>
         <Image
-          source={{uri: imageUrl}} // Asegúrate de cambiar la ruta al lugar correcto donde tienes tu GIF
+          source={imageSource} // Asegúrate de cambiar la ruta al lugar correcto donde tienes tu GIF
           style={styles.gifStyle}
         />
         <Text style={{color: "black"}}>
@@ -56,7 +68,8 @@ const styles = StyleSheet.create({
   gifStyle: {
     // Estilos para tu GIF
     width: 200, // Ancho del GIF
-    height: 200, // Alto del GIF
+    height: 250, // Alto del GIF
+    resizeMode: "contain",
   },
 });
 
