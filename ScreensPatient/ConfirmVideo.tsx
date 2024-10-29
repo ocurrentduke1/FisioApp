@@ -29,7 +29,8 @@ export default function ConfirmVideo({
     navigation.goBack();
   }
 
-  const { video, exercise, port } = route.params as { video: string, exercise: string, port: string };
+  const { video, exercise} = route.params as { video: string, exercise: string};
+  const { port } = route.params as { port: string };
   const [userID, setUserID] = useState<string | null>(null);
   console.log(port);
 

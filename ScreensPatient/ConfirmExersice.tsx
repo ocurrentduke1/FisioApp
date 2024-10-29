@@ -68,7 +68,7 @@ const ConfirmExercise = ({
       </View>
       <TouchableOpacity
         style={stylesHistorial.button}
-        onPress={() => navigation.navigate("CamaraVideo", {exercise: exercise + side}) }
+        onPress={() => navigation.navigate("CamaraVideo", {exercise: exercise + side, port}) }
       >
         <Text style={stylesHistorial.buttonText}>Evaluar</Text>
       </TouchableOpacity>

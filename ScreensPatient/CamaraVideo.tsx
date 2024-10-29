@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { CameraView, FlashMode, CameraType, Camera } from 'expo-camera'
+import { CameraView, CameraType, Camera } from 'expo-camera'
 import { NavigationProp } from "@react-navigation/native";
 import { RouteProp } from "@react-navigation/native";
 import {
@@ -29,6 +29,7 @@ export default function CamaraVideo({
   const [cameraReady, setCameraReady] = useState<boolean>(false)
 
   const { exercise } = route.params as { exercise: string };
+  const { port } = route.params as { port: string };
 
   const onCameraReady = async () => {
     setCameraReady(true)
@@ -67,7 +68,7 @@ export default function CamaraVideo({
           const response = await cameraRef.current.recordAsync({});
           if (response) {
             setRecord(response.uri);
-            navigation.navigate('ConfirmVideo', { video: response.uri, exercise });
+            navigation.navigate('ConfirmVideo', { video: response.uri, exercise, port });
           }
           console.log(response);
         } catch (e) {
