@@ -229,6 +229,15 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
       />
 
       <View style={stylesLogin.datos}>
+        
+        <Text style={{
+          color: '#FFF',
+          height: 50,
+          textShadowColor: '#000',
+          textShadowRadius: 20,
+          fontSize: 30,
+          fontWeight: 'bold'
+          }}>{'Bienvenido'}</Text>
         <TextInput
           mode="outlined"
           label="Correo Electrónico"
@@ -238,7 +247,7 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
           activeOutlineColor="#c5cae9"
           style={stylesLogin.TextInput}
           left={<TextInput.Icon
-            style={{ marginTop: 25 }} 
+            style={{ marginTop: 20 }} 
             icon="email" />}
         />
         <TextInput //textbox ingresar Contraseña
@@ -252,6 +261,9 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
           secureTextEntry={!showPassword}
           right={
             <TextInput.Icon
+              style= {{
+                marginTop: 20,
+              }}
               icon={showPassword ? "eye-off" : "eye"}
               onPress={() => setShowPassword(!showPassword)}
             />
