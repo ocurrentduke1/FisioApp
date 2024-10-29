@@ -46,17 +46,17 @@ export default function Registrar({
 
   const requirements = [
     {
-      label: "Contener 8-16 caracteres",
+      label: "Debe contener entre 8 a 16 caracteres.",
       isValid: password.length >= 8 && password.length <= 16,
     },
-    { label: "Contener mínimo 1 minúscula", isValid: /[a-z]/.test(password) },
-    { label: "Contener mínimo 1 mayúscula", isValid: /[A-Z]/.test(password) },
-    { label: "Contener mínimo 1 número", isValid: /\d/.test(password) },
+    { label: "Debe contener mínimo 1 minúscula.", isValid: /[a-z]/.test(password) },
+    { label: "Debe contener mínimo 1 mayúscula.", isValid: /[A-Z]/.test(password) },
+    { label: "Debe contener mínimo 1 número.", isValid: /\d/.test(password) },
   ];
 
   const confirmRequirements = [
     {
-      label: "La contraseña debe coincidir",
+      label: "¡Las contraseñas no coinciden!",
       isValid: confirmPassword === password,
     },
   ];
@@ -336,9 +336,21 @@ export default function Registrar({
               {requirements.map(
                 (req, index) =>
                   !req.isValid && (
-                    <Text key={index} style={{ color: "#c5cae9", fontSize: 12 }}>
-                      {req.label}
-                    </Text>
+                    <View style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}>
+                      <View style={styles.dot} />
+                      <Text key={index} style={{
+                        color: "#CC0000", 
+                        fontSize: 12,
+                        fontWeight: 'bold',
+                        textShadowColor: '#000',
+                        textShadowRadius: 10,   
+                      }}>
+                        {req.label}
+                      </Text>
+                    </View>
                   )
               )}
             </View>
@@ -374,7 +386,13 @@ export default function Registrar({
               {confirmRequirements.map(
                 (req, index) =>
                   !req.isValid && (
-                    <Text key={index} style={{ color: "#c5cae9", fontSize: 12 }}>
+                    <Text key={index} style={{ 
+                      color: "#CC0000", 
+                      fontSize: 12,
+                      fontWeight: 'bold',
+                      textShadowColor: '#000',
+                      textShadowRadius: 10,   
+                    }}>
                       {req.label}
                     </Text>
                   )
@@ -594,5 +612,13 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     height: 200
+  },
+  dot: {
+    width: 5,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: 'black', 
+    marginRight: 5,
+    marginTop: 3,
   },
 });
