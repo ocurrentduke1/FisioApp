@@ -16,6 +16,7 @@ export default StyleSheet.create({
     justifyContent: "flex-start",
     height: 250,
     width: 300,
+    
   },
 
   image: {

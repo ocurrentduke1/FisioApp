@@ -18,6 +18,7 @@ import { BACKEND_URL } from "@env";
 import JWT, { SupportedAlgorithms } from "expo-jwt";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TextInput } from "react-native-paper";
+import { LinearGradient } from "expo-linear-gradient";
 
 export function Login({ navigation }: { navigation: NavigationProp<any> }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -227,8 +228,22 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
         style={stylesLogin.image}
         source={require("./assets/logoFisioApp.png")}
       />
-
+      <LinearGradient
+        colors={['rgba(62,238,255,0.8)', 'transparent']}
+        start={{ x: 0, y: 1 }}
+        end={{ x: 0, y: 0 }}
+        style={styles.gradient}
+      />
       <View style={stylesLogin.datos}>
+        
+        <Text style={{
+          color: '#FFF',
+          height: 50,
+          textShadowColor: '#000',
+          textShadowRadius: 20,
+          fontSize: 30,
+          fontWeight: 'bold'
+          }}>{'Bienvenido de nuevo'}</Text>
         <TextInput
           mode="outlined"
           label="Correo Electrónico"
@@ -238,7 +253,7 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
           activeOutlineColor="#c5cae9"
           style={stylesLogin.TextInput}
           left={<TextInput.Icon
-            style={{ marginTop: 25 }} 
+            style={{ marginTop: 30 }} 
             icon="email" />}
         />
         <TextInput //textbox ingresar Contraseña
@@ -250,8 +265,14 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
           activeOutlineColor="#c5cae9"
           style={stylesLogin.TextInput}
           secureTextEntry={!showPassword}
+          left={<TextInput.Icon
+            style={{ marginTop: 30 }} 
+            icon="lock" />}
           right={
             <TextInput.Icon
+              style= {{
+                marginTop: 20,
+              }}
               icon={showPassword ? "eye-off" : "eye"}
               onPress={() => setShowPassword(!showPassword)}
             />
@@ -268,10 +289,13 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
             height: 60,
             color: "#FFFFFF",
             fontSize: 17,
+            fontWeight: "bold",
+            textShadowColor: '#D0680E',
+            textShadowRadius: 20,  
           }}
         >
           {" "}
-          Olvide mi contraseña
+          ¿Olvidaste tu contraseña?
         </Text>
       </TouchableOpacity>
 
@@ -288,7 +312,7 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
               Introduzca el código de autenticación
             </Text>
             <Text style={{ marginBottom: 20 }}>
-              Revisa tu correo, te hemos enviado un codigo de verificacion
+              Revisa tu correo, te hemos enviado un código de verificación
             </Text>
             <View style={styles.codeContainer}>
               {authCode.map((code: string, index: number) => (
@@ -359,7 +383,7 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
         }}
         disabled={!validateData()}
       >
-        <Text style={{ fontSize: 16, color: "white" }}>Iniciar sesion</Text>
+        <Text style={{ fontSize: 16, color: "white" }}>Ingresar</Text>
       </TouchableOpacity>
 
       <TouchableOpacity //boton de registrar cuenta
@@ -368,7 +392,6 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
       >
         <Text style={{ color: "#FFFFFF", fontSize: 16 }}>Registrar</Text>
       </TouchableOpacity>
-
       <StatusBar style="auto" />
     </View>
   );
@@ -434,5 +457,12 @@ const styles = StyleSheet.create({
   resendtext: {
     color: "#3F51B5",
     marginBottom: 20,
+  },
+  gradient: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 200
   },
 });

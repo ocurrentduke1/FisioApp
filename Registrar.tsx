@@ -18,6 +18,7 @@ import { NavigationProp } from "@react-navigation/native";
 import stylesLogin from "./styles/stylesLogin";
 import { HelperText, TextInput } from "react-native-paper";
 import { BACKEND_URL } from "@env";
+import { LinearGradient } from "expo-linear-gradient";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -45,17 +46,17 @@ export default function Registrar({
 
   const requirements = [
     {
-      label: "Contener 8-16 caracteres",
+      label: "Debe contener entre 8 a 16 caracteres.",
       isValid: password.length >= 8 && password.length <= 16,
     },
-    { label: "Contener mínimo 1 minúscula", isValid: /[a-z]/.test(password) },
-    { label: "Contener mínimo 1 mayúscula", isValid: /[A-Z]/.test(password) },
-    { label: "Contener mínimo 1 número", isValid: /\d/.test(password) },
+    { label: "Debe contener mínimo 1 minúscula.", isValid: /[a-z]/.test(password) },
+    { label: "Debe contener mínimo 1 mayúscula.", isValid: /[A-Z]/.test(password) },
+    { label: "Debe contener mínimo 1 número.", isValid: /\d/.test(password) },
   ];
 
   const confirmRequirements = [
     {
-      label: "La contraseña debe coincidir",
+      label: "¡Las contraseñas no coinciden!",
       isValid: confirmPassword === password,
     },
   ];
@@ -226,19 +227,33 @@ export default function Registrar({
 
   return (
     <SafeAreaView style={stylesLogin.container}>
+      <LinearGradient
+        colors={['rgba(62,238,255,0.8)', 'transparent']}
+        start={{ x: 0, y: 1 }}
+        end={{ x: 0, y: 0 }}
+        style={styles.gradient}
+      />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={0}
         style={styles.container}
       >
-        <Text style={{ fontSize: 30, color: "#FFFFFF" }}>
-          {" "}
-          Registrar cuenta
-        </Text>
+
         <Image
           style={[stylesLogin.image, { width: 180, height: 180 }]}
           source={require("./assets/logoFisioApp.png")}
         />
+        
+        <Text style={{
+          color: '#FFF',
+          height: 50,
+          textShadowColor: '#000',
+          textShadowRadius: 20,
+          fontSize: 30,
+          fontWeight: 'bold'
+          }}>{'¡Empieza hoy mismo!'}
+        </Text>
+
 
         <View style={[stylesLogin.datos, { height: 350 }]}>
           <TextInput
@@ -252,6 +267,9 @@ export default function Registrar({
             onBlur={() => setShowEmailRequirements(false)}
             onChangeText={(text) => setEmail(text)}
             value={email}
+            left={<TextInput.Icon
+              style={{ marginTop: 30 }} 
+              icon="email" />}
           />
 
           {showEmailRequirements && (
@@ -259,7 +277,13 @@ export default function Registrar({
               {emailRequirements.map(
                 (req, index) =>
                   !req.isValid && (
-                    <Text key={index} style={{ color: "#c5cae9", fontSize: 12 }}>
+                    <Text key={index} style={{ 
+                        color: "#CC0000", 
+                        fontSize: 12,
+                        fontWeight: 'bold',
+                        textShadowColor: '#000',
+                        textShadowRadius: 6,   
+                      }}>
                       {req.label}
                     </Text>
                   )
@@ -278,6 +302,9 @@ export default function Registrar({
             maxLength={10}
             onChangeText={(text) => setPhone(text)}
             value={phone}
+            left={<TextInput.Icon
+              style={{ marginTop: 30 }} 
+              icon="phone" />}
           />
           <TextInput
             mode="outlined"
@@ -292,10 +319,16 @@ export default function Registrar({
             value={password}
             right={
               <TextInput.Icon
+                style= {{
+                  marginTop: 20,
+                }}
                 icon={showPassword ? "eye-off" : "eye"}
                 onPress={() => setShowPassword(!showPassword)}
               />
             }
+            left={<TextInput.Icon
+              style={{ marginTop: 30 }} 
+              icon="lock" />}
           />
 
           {ShowRequirements && (
@@ -303,9 +336,21 @@ export default function Registrar({
               {requirements.map(
                 (req, index) =>
                   !req.isValid && (
-                    <Text key={index} style={{ color: "#c5cae9", fontSize: 12 }}>
-                      {req.label}
-                    </Text>
+                    <View style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}>
+                      <View style={styles.dot} />
+                      <Text key={index} style={{
+                        color: "#CC0000", 
+                        fontSize: 12,
+                        fontWeight: 'bold',
+                        textShadowColor: '#000',
+                        textShadowRadius: 10,   
+                      }}>
+                        {req.label}
+                      </Text>
+                    </View>
                   )
               )}
             </View>
@@ -324,10 +369,16 @@ export default function Registrar({
             value={confirmPassword}
             right={
               <TextInput.Icon
+                style= {{
+                  marginTop: 20,
+                }}
                 icon={ShowConfirm ? "eye-off" : "eye"}
                 onPress={() => setShowConfirm(!ShowConfirm)}
               />
             }
+            left={<TextInput.Icon
+              style={{ marginTop: 30 }} 
+              icon="lock" />}
           />
 
           {showConfirmRequirements && (
@@ -335,7 +386,13 @@ export default function Registrar({
               {confirmRequirements.map(
                 (req, index) =>
                   !req.isValid && (
-                    <Text key={index} style={{ color: "#c5cae9", fontSize: 12 }}>
+                    <Text key={index} style={{ 
+                      color: "#CC0000", 
+                      fontSize: 12,
+                      fontWeight: 'bold',
+                      textShadowColor: '#000',
+                      textShadowRadius: 10,   
+                    }}>
                       {req.label}
                     </Text>
                   )
@@ -548,5 +605,20 @@ const styles = StyleSheet.create({
   resendtext: {
     color: "#3F51B5",
     marginBottom: 20,
+  },
+  gradient: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 200
+  },
+  dot: {
+    width: 5,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: 'black', 
+    marginRight: 5,
+    marginTop: 3,
   },
 });
