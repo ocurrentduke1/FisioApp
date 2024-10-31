@@ -181,7 +181,7 @@ const PerfilPaciente = ({ navigation }: { navigation: NavigationProp<any> }) => 
                   style={[styles.button, styles.buttonSearch]}
                   onPress={logout}
                 >
-                  <Text style={styles.textStyle}>Eliminar</Text>
+                  <Text style={styles.textStyle}>Cerrar sesion</Text>
                 </TouchableOpacity>
               </View>
             </View>

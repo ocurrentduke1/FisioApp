@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
-import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, Image, TouchableOpacity, ScrollView, ImageBackground, StyleSheet } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import stylesMain from "../styles/stylesMain";
 
@@ -11,6 +11,7 @@ export default function EvaluacionVideo({
 }) {
   return (
     <View style={[stylesMain.container, {alignItems: "center"}]}>
+      <ImageBackground source={require("../assets/logo_blanco.png")} resizeMode="contain" style={styles.image} imageStyle={{opacity: 0.5}}>
       <ScrollView style={stylesMain.scrollView}>
       <TouchableOpacity
         style={stylesMain.opcPatient}
@@ -217,6 +218,14 @@ export default function EvaluacionVideo({
       </TouchableOpacity>
       </ScrollView>
       <StatusBar style="auto" />
+      </ImageBackground>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  image: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+});

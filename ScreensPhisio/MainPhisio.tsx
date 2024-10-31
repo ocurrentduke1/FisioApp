@@ -20,6 +20,7 @@ import { BACKEND_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import * as Notifications from "expo-notifications";
+import { FAB, Portal, PaperProvider } from 'react-native-paper';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -40,10 +41,10 @@ export default function MainPhisio({
   route: RouteProp<any, any>;
 }) {
   const [userID, setUserID] = useState<string | null>(null);
-  const [modalVisible, setModalVisible] = useState(false);
-  const toggleModal = () => {
-    setModalVisible(!modalVisible);
-  };
+
+  const [state, setState] = React.useState({ open: false });
+  const onStateChange = ({ open }: { open: boolean }) => setState({ open });
+  const { open } = state;
 
   const sendnotification = async () => {
     axios.get(BACKEND_URL + "/test-notificaciones");
@@ -103,78 +104,34 @@ export default function MainPhisio({
     }, [userID])
   );
 
-  // useEffect(() => {
-  //  // Funcion para obtener ID de la sesion
-  //   const getUserID = async () => {
-  //     const id = await AsyncStorage.getItem('idSesion');
-  //     setUserID(id);
-  //   };
-  //   getUserID();
+  useEffect(() => {
+   // Funcion para obtener ID de la sesion
+    const getUserID = async () => {
+      const id = await AsyncStorage.getItem('idSesion');
+      setUserID(id);
+    };
+    getUserID();
 
-  //   const datosDelServidor = [
-  //     {
-  //       id: "1",
-  //       nombre: "Juan",
-  //       apellidos: "Pérez",
-  //       proximaCita: "2023-04-15",
-  //       ubicacion: "Ciudad Central",
-  //       imagenPerfil:
-  //         "https://imgs.search.brave.com/8ExXYVb8oTB9fWM1IvIH-QRrnpIM5ifHCiXrTuchK-I/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93d3cu/aXN0b2NrcGhvdG8u/Y29tL3Jlc291cmNl/cy9pbWFnZXMvSG9t/ZVBhZ2UvRm91clBh/Y2svQzItUGhvdG9z/LWlTdG9jay0xMzU2/MTk3Njk1LmpwZw",
-  //       numeroContacto: "1234567890",
-  //       },
-  //   ];
-  //   setPacientes(datosDelServidor);
-  // }, []);
+    const datosDelServidor = [
+      {
+        id: "1",
+        nombre: "Juan",
+        apellidos: "Pérez",
+        proximaCita: "2023-04-15",
+        ubicacion: "Ciudad Central",
+        imagenPerfil:
+          "https://imgs.search.brave.com/8ExXYVb8oTB9fWM1IvIH-QRrnpIM5ifHCiXrTuchK-I/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93d3cu/aXN0b2NrcGhvdG8u/Y29tL3Jlc291cmNl/cy9pbWFnZXMvSG9t/ZVBhZ2UvRm91clBh/Y2svQzItUGhvdG9z/LWlTdG9jay0xMzU2/MTk3Njk1LmpwZw",
+        numeroContacto: "1234567890",
+        },
+    ];
+    setPacientes(datosDelServidor);
+  }, []);
 
   return (
+    <PaperProvider>
     <SafeAreaView style={stylesMain.container}>
       <ImageBackground source={require("../assets/logo_blanco.png")} resizeMode="contain" style={styles.image} imageStyle={{opacity: 0.5}}>
       <ScrollView style={stylesMain.scrollView}>
-        <TouchableOpacity
-          style={stylesMain.button}
-          onPress={toggleModal}
-        >
-          <Icon name="plus-circle" size={50} color="#000" />
-        </TouchableOpacity>
-
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={toggleModal}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => {
-                  toggleModal();
-                  navigation.navigate("BuscarPaciente");
-                }}
-              >
-                <Text style={styles.buttonText}>Buscar Paciente</Text>
-              </TouchableOpacity>
-              <View style={{ margin: 10 }} />
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => {
-                  toggleModal();
-                  navigation.navigate("RegistrarNuevoPaciente");
-                }}
-              >
-                <Text style={styles.buttonText}>Registrar Paciente</Text>
-              </TouchableOpacity>
-              <View style={{ margin: 10 }} />
-              <TouchableOpacity style={styles.Cancelbutton} onPress={sendnotification}>
-                <Text style={styles.buttonText}>Notificacion</Text>
-              </TouchableOpacity>
-              <View style={{ margin: 10 }} />
-              <TouchableOpacity style={styles.Cancelbutton} onPress={toggleModal}>
-                <Text style={styles.buttonText}>Cancelar</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
 
 {pacientes && pacientes.length > 0 ? (
       pacientes.map((paciente, index) => (
@@ -212,8 +169,42 @@ export default function MainPhisio({
       <Text></Text>
     )}
       </ScrollView>
+      <Portal>
+        <FAB.Group
+          open={open}
+          visible
+          icon={open ? 'menu-down' : 'account-multiple-plus'}
+          backdropColor="rgba(0, 0, 0, 0.5)"
+          color="#000"
+          fabStyle={{ backgroundColor: "#FFF" }}
+          actions={[
+            { icon: 'account-search',
+              label: "Buscar Paciente",
+              labelStyle: { color: "white"},
+              style: { backgroundColor: '#FFF' },
+              color: "#000",
+               onPress: () => navigation.navigate("BuscarPaciente"),
+            },
+            {
+              icon: 'account-plus',
+              label: 'Registrar paciente',
+              labelStyle: { color: "white"},
+              style: { backgroundColor: '#FFF' },
+              color: "#000",
+              onPress: () => navigation.navigate("RegistrarNuevoPaciente"),
+            },
+          ]}
+          onStateChange={onStateChange}
+          onPress={() => {
+            if (open) {
+
+            }
+          }}
+        />
+      </Portal>
       </ImageBackground>
     </SafeAreaView>
+    </PaperProvider>
   );
 };
 

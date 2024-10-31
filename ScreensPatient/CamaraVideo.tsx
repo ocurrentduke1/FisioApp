@@ -10,6 +10,7 @@ import {
   Text,
 } from "react-native";
 import { FontAwesome6 } from "@expo/vector-icons";
+import Icon from "react-native-vector-icons/FontAwesome";
 import styleCamera from "../styles/styleCamera";
 
 export default function CamaraVideo({
@@ -33,6 +34,10 @@ export default function CamaraVideo({
 
   const onCameraReady = async () => {
     setCameraReady(true)
+  }
+
+  function closeCamera() {
+    navigation.goBack();
   }
 
   useEffect(() => {
@@ -99,6 +104,7 @@ export default function CamaraVideo({
     setType((type) => (type === 'back' ? 'front' : 'back'))
    }
 
+
   return (
     <View style={styleCamera.container}>
       <SafeAreaView>
@@ -114,6 +120,16 @@ export default function CamaraVideo({
               ref={cameraRef}
               onCameraReady={onCameraReady}
             >
+              <TouchableOpacity
+          style={{
+            position: "absolute",
+            left: "5%",
+            top: "6%",
+          }}
+          onPress={closeCamera}
+        >
+          <Icon name="chevron-left" size={30} color="#757575" />
+        </TouchableOpacity>
               <View
                 style={styleCamera.CronoView}
               >

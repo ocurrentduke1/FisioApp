@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ImageBackground, StyleSheet } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
 import stylesMain from '../styles/stylesMain';
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -8,7 +8,8 @@ import Icon from "react-native-vector-icons/FontAwesome";
 export default function MainPatient({ navigation }: { navigation: NavigationProp<any> }){
 
   return (
-    <View style={[stylesMain.container, {alignItems: "center"}]}>     
+    <View style={[stylesMain.container, {alignItems: "center"}]}>  
+    <ImageBackground source={require("../assets/logo_blanco.png")} resizeMode="contain" style={styles.image} imageStyle={{opacity: 0.5}}>   
     <TouchableOpacity style={stylesMain.opcPatient}
      onPress={() => navigation.navigate('EvaluacionVideo')}>
       <Text style={stylesMain.buttonText}>Evaluacion de video</Text>
@@ -38,6 +39,14 @@ export default function MainPatient({ navigation }: { navigation: NavigationProp
         /> */}
       </TouchableOpacity>
     <StatusBar style="auto" />
+    </ImageBackground>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  image: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+});

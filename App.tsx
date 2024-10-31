@@ -9,10 +9,10 @@ import {
 } from "@react-navigation/drawer";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import "react-native-gesture-handler";
-import { Image} from "react-native";
+import { Image } from "react-native";
 import { Login } from "./Login";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { enableScreens } from 'react-native-screens';
+import { enableScreens } from "react-native-screens";
 import { RecoveryPass } from "./RecoveryPass";
 import Registrar from "./Registrar";
 import RegistrarPersonales from "./RegistrarPersonales";
@@ -49,11 +49,11 @@ import GodetMetric from "./ScreensMetrics/GodetMetric";
 import SeidelMetric from "./ScreensMetrics/SeidelMetric";
 import TinettiMetric from "./ScreensMetrics/TinettiMetric";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import BuscarContactos from "./ScreensPhisio/BuscarContactos";
 
 enableScreens();
 
 export default function App() {
-
   const Stack = createNativeStackNavigator();
   const PatientDrawer = createDrawerNavigator();
   const FisioDrawer = createDrawerNavigator();
@@ -70,35 +70,65 @@ export default function App() {
     Tinetti: true,
   });
 
-
   function MyTabs() {
-
     useEffect(() => {
       const obtenerMetricasVisibles = async () => {
         try {
-          const jsonValue = await AsyncStorage.getItem('@metricas');
+          const jsonValue = await AsyncStorage.getItem("@metricas");
           if (jsonValue != null) {
             setMetricasVisibles(JSON.parse(jsonValue));
           }
         } catch (e) {
-          console.error('Error obteniendo las métricas de AsyncStorage', e);
+          console.error("Error obteniendo las métricas de AsyncStorage", e);
         }
       };
-  
+
       obtenerMetricasVisibles();
     }, []);
 
     const tabs = [
-      { name: "Ashwort", component: AshwortMetric, visible: metricasVisibles.Ashwort },
-      { name: "Barthel", component: BarthelMetric, visible: metricasVisibles.Barthel },
-      { name: "Braden", component: BradenMetric, visible: metricasVisibles.Braden },
-      { name: "Daniels", component: DanielsMetric, visible: metricasVisibles.Daniels },
-      { name: "Glasgow", component: GlasgowMetric, visible: metricasVisibles.Glasgow },
-      { name: "Godet", component: GodetMetric, visible: metricasVisibles.Godet },
-      { name: "Seidel", component: SeidelMetric, visible: metricasVisibles.Seidel },
-      { name: "Tinetti", component: TinettiMetric, visible: metricasVisibles.Tinetti },
+      {
+        name: "Ashwort",
+        component: AshwortMetric,
+        visible: metricasVisibles.Ashwort,
+      },
+      {
+        name: "Barthel",
+        component: BarthelMetric,
+        visible: metricasVisibles.Barthel,
+      },
+      {
+        name: "Braden",
+        component: BradenMetric,
+        visible: metricasVisibles.Braden,
+      },
+      {
+        name: "Daniels",
+        component: DanielsMetric,
+        visible: metricasVisibles.Daniels,
+      },
+      {
+        name: "Glasgow",
+        component: GlasgowMetric,
+        visible: metricasVisibles.Glasgow,
+      },
+      {
+        name: "Godet",
+        component: GodetMetric,
+        visible: metricasVisibles.Godet,
+      },
+      {
+        name: "Seidel",
+        component: SeidelMetric,
+        visible: metricasVisibles.Seidel,
+      },
+      {
+        name: "Tinetti",
+        component: TinettiMetric,
+        visible: metricasVisibles.Tinetti,
+      },
     ];
-    
+
     return (
       <MetricsTab.Navigator
         initialRouteName="CrearEscala"
@@ -213,14 +243,14 @@ export default function App() {
       <Stack.Navigator
         initialRouteName="login"
         screenOptions={{
-          headerStyle: { backgroundColor: "#1e5099" },
+          headerStyle: { backgroundColor: "#2cbdbf" },
           headerTintColor: "#FFFFFF",
         }}
       >
         <Stack.Screen
-        name="App"
-        component={App}
-        options={{ headerShown: false }}
+          name="App"
+          component={App}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="login"
@@ -358,12 +388,16 @@ export default function App() {
           options={{ title: "" }}
         />
         <Stack.Screen
-        name="VisualizarPdf"
-        component={VisualizarPdf}
-        options={{ title: "" }}
-      />
+          name="VisualizarPdf"
+          component={VisualizarPdf}
+          options={{ title: "" }}
+        />
+        <Stack.Screen
+          name="BuscarContactos"
+          component={BuscarContactos}
+          options={{ title: "" }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
-

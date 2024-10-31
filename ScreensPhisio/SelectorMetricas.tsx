@@ -72,61 +72,61 @@ const enviarAlServidor = () => {
     <SafeAreaView>
       <ScrollView style={stylesMain.formatMetrics}>
         <View style={ stylesMain.metricsEnabler}>
-       <Text>
+       <Text style={{color: "#fff"}}>
        Escala Daniels modificada
        </Text>
        <Switch value={metricas.daniels} onValueChange={() => toggleMetrica('daniels')} />
         </View>
         <View style={ stylesMain.metricsEnabler}>
-        <Text>
+        <Text style={{color: "#fff"}}>
         Escala de Glasgow
        </Text>
        <Switch value={metricas.glasgow} onValueChange={() => toggleMetrica('glasgow')}/>
         </View>
         <View style={ stylesMain.metricsEnabler}>
-        <Text>
+        <Text style={{color: "#fff"}}>
         EVA (Escala Visual Analógica)
        </Text>
        <Switch value={metricas.eva} onValueChange={() => toggleMetrica('eva')}/>
         </View>
         <View style={ stylesMain.metricsEnabler}>
-       <Text>
+       <Text style={{color: "#fff"}}>
        Escala de Seidel o ROTS
        </Text>
        <Switch value={metricas.seidel} onValueChange={() => toggleMetrica('seidel')}/>
         </View>
         <View style={ stylesMain.metricsEnabler}>
-        <Text>
+        <Text style={{color: "#fff"}}>
         Escala de Ashwort
        </Text>
        <Switch value={metricas.ashwort} onValueChange={() => toggleMetrica('ashwort')}/>
         </View>
         <View style={ stylesMain.metricsEnabler}>
-        <Text>
+        <Text style={{color: "#fff"}}>
         Escala Tinetti
        </Text>
        <Switch value={metricas.tinetti} onValueChange={() => toggleMetrica('tinetti')}/>
         </View>
         <View style={ stylesMain.metricsEnabler}>
-       <Text>
+       <Text style={{color: "#fff"}}>
        Escala de Borg
        </Text>
        <Switch value={metricas.borg} onValueChange={() => toggleMetrica('borg')}/>
         </View>
         <View style={ stylesMain.metricsEnabler}>
-        <Text>
+        <Text style={{color: "#fff"}}>
         Escala de Barthel
        </Text>
        <Switch value={metricas.barthel} onValueChange={() => toggleMetrica('barthel')}/>
         </View>
         <View style={ stylesMain.metricsEnabler}>
-        <Text>
+        <Text style={{color: "#fff"}}>
         Escala de Braden
        </Text>
        <Switch value={metricas.braden} onValueChange={() => toggleMetrica('braden')}/>
         </View>
         <View style={ stylesMain.metricsEnabler}>
-       <Text>
+       <Text style={{color: "#fff"}}>
        Escala o signo de Godet
        </Text>
        <Switch value={metricas.godet} onValueChange={() => toggleMetrica('godet')}/>
@@ -147,7 +147,7 @@ const enviarAlServidor = () => {
           shadowRadius: 6, // Aumentar el radio para suavizar la sombra
           elevation: 6, // Elevación de la sombra
         }} onPress={enviarAlServidor}>
-        <Text style={stylesHistorial.buttonText}>Guardar</Text>
+        <Text style={[stylesHistorial.buttonText, { color:"#FFF"}]}>Guardar</Text>
           </TouchableOpacity> 
       </ScrollView>
     </SafeAreaView>

@@ -11,7 +11,7 @@ export default StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     // backgroundColor: "#00BCD4",
-    backgroundColor: "#4971ac",
+    backgroundColor: "#002245",
     // Alinea los elementos verticalmente al principio
   },
   scrollView: {

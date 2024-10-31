@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { StatusBar } from "expo-status-bar";
 import {
   View,
   Text,
-  TextInput,
   StyleSheet,
   Modal,
   TouchableOpacity,
-  Button,
+  Image,
 } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import { Agenda } from "react-native-calendars";
+import { FAB } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { TextInput } from "react-native-paper";
 
 export default function AgendaCitas({
   navigation,
@@ -37,6 +37,31 @@ export default function AgendaCitas({
     }[]
   >([]);
 
+  const openVisible = () => {
+    setModalVisible(true);
+  };
+
+  const closeVisible = () => {
+    setModalVisible(false);
+  };
+  //funciones para modal de busqueda
+  const openAdd = () => {
+    setModalAdd(true);
+  };
+
+  const closeAdd = () => {
+    setModalAdd(false);
+  };
+
+  const handleSaveAppointment = () => {
+    console.log(`cita creada`);
+    console.log(`Fecha: ${selectedDate}`);
+    console.log(`Paciente: ${patient}`);
+    console.log(`Lugar: ${location}`);
+    console.log(`Hora: ${time}`);
+    setModalAdd(false);
+  };
+
   {
     /* metodos para editar fecha*/
   }
@@ -53,22 +78,6 @@ export default function AgendaCitas({
   {
     /* metodos para crear fecha*/
   }
-  const openModal = () => {
-    setModalAdd(true);
-  };
-
-  const closeModal = () => {
-    setModalAdd(false);
-  };
-
-  const handleSaveAppointment = () => {
-    console.log(`cita creada`);
-    console.log(`Fecha: ${selectedDate}`);
-    console.log(`Paciente: ${patient}`);
-    console.log(`Lugar: ${location}`);
-    console.log(`Hora: ${time}`);
-    setModalAdd(false);
-  };
 
   useEffect(() => {
     let datosDelServidor = [
@@ -78,7 +87,8 @@ export default function AgendaCitas({
         proximaCita: "2024-08-06",
         ubicacion: "Ciudad Central",
         HoraCita: "11:00",
-        imagenPerfil: "https://example.com/perfil/juan.jpg",
+        imagenPerfil:
+          "https://imgs.search.brave.com/8ExXYVb8oTB9fWM1IvIH-QRrnpIM5ifHCiXrTuchK-I/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93d3cu/aXN0b2NrcGhvdG8u/Y29tL3Jlc291cmNl/cy9pbWFnZXMvSG9t/ZVBhZ2UvRm91clBh/Y2svQzItUGhvdG9z/LWlTdG9jay0xMzU2/MTk3Njk1LmpwZw",
       },
       {
         nombre: "Ana",
@@ -144,13 +154,12 @@ export default function AgendaCitas({
     <View style={styles.container}>
       <Agenda
         items={transformarDatosParaAgenda()}
+        
         selected={selectedDate}
         renderItem={(
           item: {
             name:
               | string
-              | number
-              | boolean
               | React.ReactElement<
                   any,
                   string | React.JSXElementConstructor<any>
@@ -161,8 +170,6 @@ export default function AgendaCitas({
               | undefined;
             location:
               | string
-              | number
-              | boolean
               | React.ReactElement<
                   any,
                   string | React.JSXElementConstructor<any>
@@ -174,7 +181,6 @@ export default function AgendaCitas({
             hora:
               | string
               | number
-              | boolean
               | React.ReactElement<
                   any,
                   string | React.JSXElementConstructor<any>
@@ -188,105 +194,157 @@ export default function AgendaCitas({
           isFirst: any
         ) => (
           <View style={styles.itemContainer}>
-            <View style={{ flexDirection: "row" }}>
-              <TouchableOpacity onPress={() => handleEditPress()}>
+            <TouchableOpacity
+              style={{ flexDirection: "row" }}
+              onPress={() => handleEditPress()}
+            >
+              <View style={{ marginHorizontal: 10 }}>
+                {item.image ? (
+                  <Image
+                    source={{ uri: item.image }}
+                    style={{ width: 50, height: 50, borderRadius: 25 }}
+                  />
+                ) : (
+                  <Icon name="user-circle" size={50} color="#000" />
+                )}
+              </View>
+              <View>
                 <Text>cita con: {item.name}</Text>
                 <Text>localidad: {item.location}</Text>
                 <Text>Hora: {item.hora}</Text>
-              </TouchableOpacity>
-            </View>
+              </View>
+            </TouchableOpacity>
           </View>
         )}
         onDayPress={handleDayPress}
         // Puedes añadir más propiedades específicas de Agenda aquí
       />
+
       <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(!modalVisible);
-        }}
+        onRequestClose={closeVisible}
       >
-        <View style={styles.modalView}>
-          <Text>Editar cita</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Nueva fecha de la cita"
-            value={selectedDate}
-            onChangeText={setSelectedDate}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Nueva hora de la cita"
-            value={selectedTime}
-            onChangeText={setSelectedTime}
-          />
-          <TouchableOpacity
-            style={styles.buttonClose}
-            onPress={handleDateTimeChange}
-          >
-            <Text>Guardar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.buttonClose}
-            onPress={() => setModalVisible(!modalVisible)}
-          >
-            <Text>Cancelar</Text>
-          </TouchableOpacity>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Editar Cita</Text>
+            <TextInput
+              mode="outlined"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
+              label="Fecha Actual"
+              style={styles.input}
+              value={selectedDate}
+              onChangeText={setSelectedDate}
+              editable={false}
+            />
+            <TextInput
+              mode="outlined"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
+              label="Nueva Fecha"
+              style={styles.input}
+              value={selectedDate}
+              onChangeText={setSelectedDate}
+            />
+            <TextInput
+              mode="outlined"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
+              label="Nueva Hora"
+              style={styles.input}
+              value={selectedTime}
+              onChangeText={setSelectedTime}
+            />
+
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonClose]}
+                onPress={closeVisible}
+              >
+                <Text style={styles.textStyle}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonSearch]}
+                onPress={handleDateTimeChange}
+              >
+                <Text style={styles.textStyle}>Agregar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
       </Modal>
 
       {/* Modal para agregar una cita */}
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={openModal}
-      >
-        <Icon name="plus-circle" size={40} color="#FFF" />
-      </TouchableOpacity>
+      <FAB
+        icon="calendar-plus"
+        color="#000"
+        style={styles.fab}
+        onPress={() => openAdd()}
+      />
       <Modal
         animationType="slide"
         transparent={true}
         visible={modalAdd}
-        onRequestClose={() => {
-          setModalVisible(!modalAdd);
-        }}
+        onRequestClose={closeAdd}
       >
-        <View style={styles.modalView}>
-          <Text>Agregar Cita</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Fecha"
-            value={selectedDate}
-            editable={false}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Paciente"
-            value={patient}
-            onChangeText={setPatient}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Lugar"
-            value={location}
-            onChangeText={setLocation}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Hora"
-            value={time}
-            onChangeText={setTime}
-          />
-          <TouchableOpacity
-            style={styles.buttonClose}
-            onPress={handleSaveAppointment}
-          >
-            <Text>Guardar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonClose} onPress={closeModal}>
-            <Text>Cancelar</Text>
-          </TouchableOpacity>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Agregar Cita</Text>
+            <TextInput
+              mode="outlined"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
+              label="Fecha"
+              style={styles.input}
+              value={selectedDate}
+              onChangeText={setSelectedDate}
+              editable={false}
+            />
+            <TextInput
+              mode="outlined"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
+              label="Paciente"
+              style={styles.input}
+              value={patient}
+              onChangeText={setPatient}
+            />
+            <TextInput
+              mode="outlined"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
+              label="Lugar"
+              style={styles.input}
+              value={location}
+              onChangeText={setLocation}
+            />
+            <TextInput
+              mode="outlined"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
+              label="Hora"
+              style={styles.input}
+              value={time}
+              onChangeText={setTime}
+            />
+
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonClose]}
+                onPress={closeAdd}
+              >
+                <Text style={styles.textStyle}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonSearch]}
+                onPress={handleSaveAppointment}
+              >
+                <Text style={styles.textStyle}>Agregar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
       </Modal>
     </View>
@@ -300,32 +358,37 @@ const styles = StyleSheet.create({
     alignItems: "stretch", // Centra el contenido horizontalmente
     backgroundColor: "#2196F3",
   },
-  modalView: {
-    marginTop: 22,
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    alignItems: "center",
+  modalContainer: {
+    flex: 1,
     justifyContent: "center",
-    top: "30%",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalView: {
+    width: 300,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 20,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
   input: {
     height: 40,
-    margin: 12,
-    borderWidth: 1,
+    margin: 5,
     padding: 10,
     width: "80%",
     color: "black",
+    backgroundColor: "white",
   },
   buttonClose: {
-    backgroundColor: "blue",
-    padding: 10,
-    marginTop: 10,
+    backgroundColor: "#f44336",
   },
   textStyle: {
     color: "white",
@@ -345,16 +408,43 @@ const styles = StyleSheet.create({
     shadowRadius: 3, // Radio de difuminado de la sombra para iOS
   },
   addButton: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 20,
     right: 20,
-    backgroundColor: '#2196F3',
+    backgroundColor: "#2196F3",
     borderRadius: 50,
     padding: 10,
     elevation: 5,
   },
   addButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
+  },
+  fab: {
+    position: "absolute",
+    margin: 16,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "#FFF",
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    marginTop: 20,
+  },
+  button: {
+    borderRadius: 10,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonSearch: {
+    backgroundColor: "#2196F3",
   },
 });

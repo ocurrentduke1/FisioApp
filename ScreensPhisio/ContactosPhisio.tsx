@@ -6,21 +6,16 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Dimensions,
+  ImageBackground,
 } from "react-native";
 import stylesMain from "../styles/stylesMain";
 import { NavigationProp } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { Searchbar } from 'react-native-paper';
-
-const windowHeight = Dimensions.get("window").height;
-const windowWidth = Dimensions.get("window").width;
+import { FAB } from 'react-native-paper';
 
 // Suponiendo que este es tu componente
 const ContactosPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
-  
-  const [searchQuery, setSearchQuery] = React.useState('');
   // Estado que almacena los datos de los pacientes
   const [pacientes, setPacientes] = useState<
     {
@@ -74,12 +69,7 @@ const ContactosPhisio = ({ navigation }: { navigation: NavigationProp<any> }) =>
 
   return (
     <SafeAreaView style={stylesMain.container}>
-      <Searchbar
-      placeholder="Search"
-      onChangeText={setSearchQuery}
-      value={searchQuery}
-      style={{margin: 10, width: 350, backgroundColor: "#FFF",borderColor: "black", borderWidth: 1, alignSelf: "center", maxWidth: windowWidth * 0.9,}}
-    />
+      <ImageBackground source={require("../assets/logo_blanco.png")} resizeMode="contain" style={styles.image} imageStyle={{opacity: 0.5}}>
       <ScrollView style={stylesMain.scrollView}>
         {pacientes.map((paciente, index) => (
           <TouchableOpacity
@@ -110,10 +100,32 @@ const ContactosPhisio = ({ navigation }: { navigation: NavigationProp<any> }) =>
             </View>
           </TouchableOpacity>
         ))}
-
       </ScrollView>
+      <FAB
+    icon="account-plus"
+    color="#000"
+    
+    style={styles.fab}
+    onPress={() => navigation.navigate("BuscarContactos")}
+  />
+      </ImageBackground>
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  image: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  fab: {
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "#FFF",
+  },
+});
+
 
 export default ContactosPhisio;
