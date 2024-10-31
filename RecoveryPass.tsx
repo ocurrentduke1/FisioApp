@@ -17,6 +17,7 @@ import { NavigationProp } from "@react-navigation/native";
 import { TextInput } from "react-native-paper";
 import { BACKEND_URL } from "@env";
 import stylesMain from "./styles/stylesMain";
+import { LinearGradient } from "expo-linear-gradient";
 
 const windowWidth = Dimensions.get("window").width;
 
@@ -36,6 +37,21 @@ export function RecoveryPass({
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [timeLeft, setTimeLeft] = useState(60);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [showEmailRequirements, setShowEmailRequirements] = useState(false);
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const emailRequirements = [
+    {
+      label: "El correo debe ser válido",
+      isValid: validateEmail(email),
+    },
+  ];
+
+  
 
   //declaracion de modal Contraseña
   const openModalContraseña = () => {
@@ -203,11 +219,6 @@ export function RecoveryPass({
     };
   }, []);
 
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
   const validateInput = () => {
     if (email === "") {
       return false;
@@ -227,17 +238,48 @@ export function RecoveryPass({
         style={stylesLogin.image}
         source={require("./assets/logoFisioApp.png")}
       />
+<LinearGradient
+        colors={['rgba(44,189,191,0.8)', 'transparent']}
+        start={{ x: 0, y: 1 }}
+        end={{ x: 0, y: 0 }}
+        style={styles.gradient}
+      />
 
       <View style={stylesLogin.datos}>
         <TextInput
           mode="outlined"
           label="Correo Electrónico"
           value={email}
+          onFocus={() => setShowEmailRequirements(true)}
+          onBlur={() => setShowEmailRequirements(false)}
           onChangeText={(text) => setEmail(text)}
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
           style={stylesLogin.TextInput}
         />
+
+        {showEmailRequirements && (
+          <View style={{ marginVertical: 1 }}>
+            {emailRequirements.map(
+              (req, index) =>
+                !req.isValid && (
+                  <Text
+                    key={index}
+                    style={{
+                      color: "#FF0000",
+                      fontSize: 12,
+                      fontWeight: "bold",
+                      textShadowColor: "#000",
+                      textShadowRadius: 6,
+                    }}
+                  >
+                    {req.label}
+                  </Text>
+                )
+            )}
+          </View>
+        )}
+
         <Text
           style={{
             fontSize: 16,
@@ -534,5 +576,12 @@ const styles = StyleSheet.create({
   },
   buttonSearch: {
     backgroundColor: "#2196F3",
+  },
+  gradient: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 200
   },
 });

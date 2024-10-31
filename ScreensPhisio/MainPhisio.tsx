@@ -9,6 +9,7 @@ import {
   Modal,
   StyleSheet,
   Dimensions,
+  ImageBackground,
 } from "react-native";
 import stylesMain from "../styles/stylesMain";
 import { NavigationProp, useRoute } from "@react-navigation/native";
@@ -18,9 +19,7 @@ import { RouteProp } from "@react-navigation/native";
 import { BACKEND_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
-import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
-import Constants from "expo-constants";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -127,10 +126,9 @@ export default function MainPhisio({
   //   setPacientes(datosDelServidor);
   // }, []);
 
-  //console.log(userID + " MAINFISIO");
-
   return (
     <SafeAreaView style={stylesMain.container}>
+      <ImageBackground source={require("../assets/logo_blanco.png")} resizeMode="contain" style={styles.image} imageStyle={{opacity: 0.5}}>
       <ScrollView style={stylesMain.scrollView}>
         <TouchableOpacity
           style={stylesMain.button}
@@ -214,6 +212,7 @@ export default function MainPhisio({
       <Text></Text>
     )}
       </ScrollView>
+      </ImageBackground>
     </SafeAreaView>
   );
 };
@@ -253,6 +252,10 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     alignItems: "center",
+  },
+  image: {
+    flex: 1,
+    justifyContent: 'center',
   },
 });
 

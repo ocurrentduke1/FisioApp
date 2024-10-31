@@ -16,7 +16,7 @@ import {
 } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import stylesLogin from "./styles/stylesLogin";
-import { HelperText, TextInput } from "react-native-paper";
+import { TextInput } from "react-native-paper";
 import { BACKEND_URL } from "@env";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -178,6 +178,7 @@ export default function Registrar({
   const validatePassword = () => {
     if (
       password.length <= 8 ||
+      password.length >= 16 ||
       !/[a-z]/.test(password) ||
       !/[A-Z]/.test(password) ||
       !/[0-9]/.test(password) ||
@@ -278,7 +279,7 @@ export default function Registrar({
                 (req, index) =>
                   !req.isValid && (
                     <Text key={index} style={{ 
-                        color: "#CC0000", 
+                        color: "#FF0000", 
                         fontSize: 12,
                         fontWeight: 'bold',
                         textShadowColor: '#000',
@@ -342,7 +343,7 @@ export default function Registrar({
                     }}>
                       <View style={styles.dot} />
                       <Text key={index} style={{
-                        color: "#CC0000", 
+                        color: "#FF0000", 
                         fontSize: 12,
                         fontWeight: 'bold',
                         textShadowColor: '#000',
@@ -501,7 +502,7 @@ export default function Registrar({
         </TouchableOpacity>
 
         <TouchableOpacity //boton de registrar cuenta
-          style={[stylesLogin.Secondarybutton, { paddingHorizontal: 113 }]}
+          style={[stylesLogin.Secondarybutton, { paddingHorizontal: 110 }]}
           onPress={() => navigation.navigate("login")}
         >
           <Text style={{ color: "#FFFFFF", fontSize: 16 }}>Regresar</Text>
@@ -617,7 +618,7 @@ const styles = StyleSheet.create({
     width: 5,
     height: 5,
     borderRadius: 3,
-    backgroundColor: 'black', 
+    backgroundColor: '#c5cae9', 
     marginRight: 5,
     marginTop: 3,
   },

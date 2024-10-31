@@ -8,7 +8,8 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     // backgroundColor: "#00bcd4",
-    backgroundColor: "#4971ac",
+    // backgroundColor: "#4971ac",
+    backgroundColor: "#002245",
     justifyContent: "flex-start", // Alinea los elementos verticalmente al principio
   },
   scrollView: {

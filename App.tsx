@@ -170,7 +170,7 @@ export default function App() {
         initialRouteName="mainPaciente"
         screenOptions={{
           drawerStyle: { backgroundColor: "#f6f6f6" },
-          headerStyle: { backgroundColor: "#1e5099" },
+          headerStyle: { backgroundColor: "#2cbdbf" },
           headerTintColor: "#FFFFFF",
         }}
         drawerContent={(props) => <PatientCustomDrawerContent {...props} />}
@@ -189,7 +189,7 @@ export default function App() {
         initialRouteName="mainFisio"
         screenOptions={{
           drawerStyle: { backgroundColor: "#f6f6f6" },
-          headerStyle: { backgroundColor: "#1e5099" },
+          headerStyle: { backgroundColor: "#2cbdbf" },
           headerTintColor: "#FFFFFF",
         }}
         drawerContent={(props) => <CustomDrawerContent {...props} />}
