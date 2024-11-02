@@ -18,16 +18,16 @@ import * as ImagePicker from "expo-image-picker";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Icon2 from "react-native-vector-icons/SimpleLineIcons";
 import stylesMain from "../styles/stylesMain";
-import { TextInput } from "react-native-paper";
+import { Divider, TextInput, TouchableRipple } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BACKEND_URL } from "@env";
 import { useFocusEffect } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
 
-const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
+const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
   const [userID, setUserID] = useState<string | null>(null);
   const [userRol, setUserRol] = useState<string | null>(null);
   const [image, setImage] = useState<string | null>(null);
-  //declaracion de modales
   const [modalContraseña, setModalContraseña] = useState(false);
   const [modalPago, setModalPago] = useState(false);
   const [email, setEmail] = useState("");
@@ -76,40 +76,26 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
     }
   };
 
-  {
-    /* Función para verificar el código de autenticación */
-  }
   const verifyAuthCode = async () => {
     const enteredCode = authCode.join("");
-    const response = await axios.post(
-      BACKEND_URL + "/verificar-codigo-recuperacion",
-      {
-        codigo: enteredCode,
-        destinatario: email,
-      },
-    );
+    const response = await axios.post(`${BACKEND_URL}/verificar-codigo-recuperacion`, {
+      codigo: enteredCode,
+      destinatario: email,
+    });
 
-    console.log(response.data);
-
-    if (response.data.code == 404) {
-      Alert.alert(
-        "Error",
-        "Error al verificar el código de autenticación, reenvíe el correo de verificación"
-      );
+    if (response.data.code === 404) {
+      Alert.alert("Error", "Error al verificar el código de autenticación, reenvíe el correo de verificación");
       return false;
     }
-    if (response.data.code == 403) {
-      Alert.alert(
-        "Error",
-        "El código de autenticación ha expirado, reenvíe el correo de verificación"
-      );
+    if (response.data.code === 403) {
+      Alert.alert("Error", "El código de autenticación ha expirado, reenvíe el correo de verificación");
       return false;
     }
-    if (response.data.code == 401) {
-      Alert.alert("Error", "Codigo de autenticación incorrecto");
+    if (response.data.code === 401) {
+      Alert.alert("Error", "Código de autenticación incorrecto");
       return false;
     }
-    if (response.data.code == 200) {
+    if (response.data.code === 200) {
       setModalAuth(false);
       openModalContraseña();
     }
@@ -123,20 +109,12 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
     };
   }, []);
 
-  {
-    /* Reenviar correo de verificación */
-  }
   const reSendEmail = async () => {
-    const response = await axios.post(
-      BACKEND_URL + "/enviar-correo-recuperacion",
-      {
-        destinatario: email,
-      }
-    );
+    const response = await axios.post(`${BACKEND_URL}/enviar-correo-recuperacion`, {
+      destinatario: email,
+    });
 
-    console.log("enviado");
-
-    if (response.data.code == 500) {
+    if (response.data.code === 500) {
       Alert.alert("Error", "No se pudo enviar el correo de verificación");
       return false;
     }
@@ -144,7 +122,6 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
     setIsButtonDisabled(true);
     setTimeLeft(60);
 
-    // Iniciar el temporizador
     intervalRef.current = setInterval(() => {
       setTimeLeft((prevTime) => {
         if (prevTime <= 1) {
@@ -158,20 +135,15 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
   };
 
   const sendEmail = async () => {
-    const response = await axios.post(
-      BACKEND_URL + "/enviar-correo-recuperacion",
-      {
-        destinatario: email,
-      }
-    );
+    const response = await axios.post(`${BACKEND_URL}/enviar-correo-recuperacion`, {
+      destinatario: email,
+    });
 
-    console.log("enviado");
-
-    if (response.data.code == 500) {
+    if (response.data.code === 500) {
       Alert.alert("Error", "No se pudo enviar el correo de verificación");
       return false;
     }
-    if (response.data.code == 404) {
+    if (response.data.code === 404) {
       Alert.alert("Error", "Correo no registrado");
       return false;
     }
@@ -182,148 +154,124 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
   const getUserID = async () => {
     const id = await AsyncStorage.getItem("idSesion");
     const rol = await AsyncStorage.getItem("tipoUsuario");
-    console.log("Fetched UserID:", id);
-    console.log("Fetched rol:", rol);
     setUserID(id);
     setUserRol(rol);
   };
 
   const takeInfo = async () => {
     if (userID) {
-      const response = await axios.get(
-        BACKEND_URL + `/obtener-info-usuario/${userID}/${userRol}`
-      );
+      const response = await axios.get(`${BACKEND_URL}/obtener-info-usuario/${userID}/${userRol}`);
 
-      if (response.data.code == 500) {
-        console.log("Error en la peticion");
+      if (response.data.code === 500) {
+        console.log("Error en la petición");
         return;
       }
 
-      console.log("Response data:", response.data);
       return response.data;
     }
   };
 
   const fetchData = async () => {
     const datosDelServidor = await takeInfo();
-    setName(datosDelServidor.fisioterapeuta.nombre);
-    setEmail(datosDelServidor.fisioterapeuta.correo);
-    setTel(datosDelServidor.fisioterapeuta.telefono);
-    setConsultorio(datosDelServidor.fisioterapeuta.consultorio);
-
-    console.log("Datos del servidor: ", datosDelServidor);
+    if (datosDelServidor) {
+      setName(datosDelServidor.fisioterapeuta.nombre);
+      setEmail(datosDelServidor.fisioterapeuta.correo);
+      setTel(datosDelServidor.fisioterapeuta.telefono);
+      setConsultorio(datosDelServidor.fisioterapeuta.consultorio);
+    }
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      getUserID();
-    }, [])
-  );
+  useFocusEffect(useCallback(() => {
+    getUserID();
+  }, []));
 
-  useFocusEffect(
-    useCallback(() => {
-      if (userID && userRol) {
-        fetchData();
-      }
-    }, [userID, userRol])
-  );
+  useFocusEffect(useCallback(() => {
+    if (userID && userRol) {
+      fetchData();
+    }
+  }, [userID, userRol]));
 
   const toggleLogout = () => {
     setModalLogout(!ModalLogout);
   };
+
   const logout = async () => {
     await AsyncStorage.multiRemove(["idSesion", "expiracion", "tipoUsuario"]);
     navigation.navigate("login");
   };
 
   const changeName = () => {
-    const response = axios.post(BACKEND_URL + "/editar-nombre", {
+    axios.post(`${BACKEND_URL}/editar-nombre`, {
       idFisio: Number(userID),
       nombre: Name,
     });
-    console.log("nombre: ", Name);
   };
 
   const changeTel = () => {
-    const response = axios.post(BACKEND_URL + "/editar-nombre", {
+    axios.post(`${BACKEND_URL}/editar-nombre`, {
       idFisio: Number(userID),
       telefono: tel,
     });
-    console.log("Telefono: ", tel);
   };
 
   const changeConsultorio = () => {
-    const response = axios.post(BACKEND_URL + "/editar-consultorio", {
+    axios.post(`${BACKEND_URL}/editar-consultorio`, {
       idFisio: Number(userID),
       consultorio: consultorio,
     });
-    console.log("consultorio: ", consultorio);
   };
 
-  //declaracion de modal Pago
-  const openModalPago = () => {
-    setModalPago(true);
-  };
-  const closeModalPago = () => {
-    setModalPago(false);
-  };
+  const openModalPago = () => setModalPago(true);
+  const closeModalPago = () => setModalPago(false);
+
   const changePago = () => {
     console.log("Datos de pago: ", numCard, expCard, CVC);
     closeModalPago();
   };
 
-  // declaracion de modal Contraseña
-  const openModalContraseña = () => {
-    setModalContraseña(true);
-  };
-  const closeModalContraseña = () => {
-    setModalContraseña(false);
-  };
+  const openModalContraseña = () => setModalContraseña(true);
+  const closeModalContraseña = () => setModalContraseña(false);
+
   const changeContraseña = async () => {
-    const response = await axios.post(BACKEND_URL + "/recuperar-password", {
+    const response = await axios.post(`${BACKEND_URL}/recuperar-password`, {
       email: email,
       password: password,
       tipoUsuario: userRol,
     });
 
-    if (response.data.code == 404) {
-      Alert.alert("Error", "no se encontro el usuario");
+    if (response.data.code === 404) {
+      Alert.alert("Error", "No se encontró el usuario");
       return false;
     }
-    if (response.data.code == 500) {
+    if (response.data.code === 500) {
       Alert.alert("Error", "Error al cambiar la contraseña");
       return false;
     }
-    if (response.data.code == 201) {
-      Alert.alert("Exito", "Contraseña cambiada con exito");
+    if (response.data.code === 201) {
+      Alert.alert("Éxito", "Contraseña cambiada con éxito");
       closeModalContraseña();
       return false;
     }
   };
+
   const validatePassword = () => {
-    if (
-      password.length <= 8 ||
-      password.length >= 16 ||
-      !/[a-z]/.test(password) ||
-      !/[A-Z]/.test(password) ||
-      !/[0-9]/.test(password) ||
-      password !== confirmPassword
-    ) {
-      return false;
-    }
-    return true;
+    return (
+      password.length >= 8 &&
+      password.length <= 16 &&
+      /[a-z]/.test(password) &&
+      /[A-Z]/.test(password) &&
+      /\d/.test(password) &&
+      password === confirmPassword
+    );
   };
 
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
-
-    console.log(result);
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
@@ -331,7 +279,11 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
   };
 
   return (
-    <SafeAreaView style={stylesHistorial.container}>
+    <SafeAreaView style={styles.container}>
+      <LinearGradient
+        colors={['rgba(44,189,191,0.8)', 'transparent']}
+        style={styles.gradient}
+      />
       <View
         style={[
           stylesHistorial.containerRegistro,
@@ -339,18 +291,25 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
         ]}
       >
         <ScrollView style={stylesHistorial.scrollViewRegistro}>
-          <View
-            style={{
-              marginVertical: 20,
-              alignItems: "center",
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                height: 150,
-                width: 150,
-              }}
+
+          <View style={{
+            flex: 1,
+            display: 'flex',
+            alignItems: "center",           
+          }}>
+            <Text style={{
+              color: '#000',
+              height: 50,
+              fontSize: 25,
+              fontWeight: 'bold'
+              }}>{'Editar perfil'}</Text>
+          </View>
+
+          <View style={{ marginTop: 5, marginBottom: 20,  alignItems: "center" }}>
+            <TouchableRipple
+              style={{ height: 150, width: 150, borderRadius: 200, overflow: 'hidden' }}
               onPress={pickImage}
+              borderless
             >
               {image ? (
                 <Image
@@ -358,6 +317,7 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
                   style={{
                     flex: 1,
                     width: 150,
+                    height: 150,
                     borderRadius: 200,
                     alignSelf: "center",
                   }}
@@ -365,49 +325,98 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
               ) : (
                 <Icon
                   name="user-circle"
-                  size={120}
+                  size={150}
                   color="#000000"
-                  style={{ alignSelf: "center" }}
+                  style={{
+                    width: 150,
+                    height: 150
+                  }}
                 />
               )}
-            </TouchableOpacity>
+            </TouchableRipple>
           </View>
-
-          <View style={{ paddingVertical: 10 }}>
+  
+          <View style={styles.infoContainer}>
             <TextInput
-              mode="flat"
-              label="Correo Electronico"
-              style={stylesMain.TextInputPerfil}
+              mode="outlined"
+              label="Nombre completo"
+              style={styles.input}
+              value={Name}
+              onChangeText={setName}
+              outlineColor="#002245"
+              activeOutlineColor="#002245"
+              textColor="#002245"
+              left={<TextInput.Icon
+                style={{ marginTop: 10 }} 
+                icon="account" />}
+            />
+
+            <TextInput
+              mode="outlined"
+              label="Correo Electrónico"
+              style={styles.input}
               value={email}
-              onChangeText={(value) => setEmail(value)}
-              outlineColor="#c5cae9"
-              activeOutlineColor="#c5cae9"
+              onChangeText={setEmail}
+              outlineColor="#002245"
+              activeOutlineColor="#002245"
               disabled={true}
+              left={<TextInput.Icon
+                style={{ marginTop: 10 }} 
+                icon="email" />}
+            />
+
+            <TextInput
+              mode="outlined"
+              label="Teléfono"
+              style={styles.input}
+              value={tel}
+              onChangeText={setTel}
+              outlineColor="#002245"
+              activeOutlineColor="#002245"
+              keyboardType="numeric"
+              maxLength={10}
+              left={<TextInput.Icon
+                style={{ marginTop: 10 }} 
+                icon="phone" />}
             />
           </View>
-          <TextInput
-            mode="flat"
-            label="Nombre"
-            style={stylesMain.TextInputPerfil}
-            value={Name}
-            onChangeText={(value) => setName(value)}
-            outlineColor="#c5cae9"
-            activeOutlineColor="#c5cae9"
-          />
+            
+          <View style={styles.buttonsContainer}>
+            <TouchableOpacity
+              style={{...styles.btn, ...styles.btnSave}}
+            >
+              <View>
+                <Text style={{...styles.buttonOptionText, ...styles.textColorSave}}>Guardar cambios</Text>
+              </View>
+            </TouchableOpacity>
 
-          <TextInput
-            mode="flat"
-            label="Telefono"
-            style={stylesMain.TextInputPerfil}
-            value={tel}
-            onChangeText={(value) => setTel(value)}
-            outlineColor="#c5cae9"
-            activeOutlineColor="#c5cae9"
-            keyboardType="numeric"
-            maxLength={10}
-          />
+            <TouchableOpacity
+              style={{...styles.btn, ...styles.btnChangePass}}
+              onPress={sendEmail}
+            >
+              <View>
+                <Text style={{...styles.buttonOptionText, ...styles.textColorChangePass}}>Cambiar contraseña</Text>
+              </View>
+            </TouchableOpacity>
+                
+            <TouchableOpacity
+              style={{...styles.btn, ...styles.btnChangePayment}}
+              onPress={openModalPago}
+            >
+              <Text style={{...styles.buttonOptionText, ...styles.textColorChangePayment}}>Cambiar método de pago</Text>
+            </TouchableOpacity>
+    
+            <Divider style={{ marginTop: 20, marginBottom: 15 }}  bold/>
 
-          {/*modal de autenticacion */}
+            <TouchableOpacity
+              style={{...styles.btn, ...styles.btnLogout}}
+              onPress={toggleLogout}
+            >
+              <Text style={{...styles.buttonOptionText, ...styles.textColorLogout}}>Cerrar Sesión</Text>
+            </TouchableOpacity>
+          </View>
+  
+          {/* Modal de autenticación */}
           <Modal
             visible={modalAuth}
             transparent={true}
@@ -416,9 +425,7 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
           >
             <View style={styles.modalContainer}>
               <View style={styles.modalContent}>
-                <Text style={styles.modalText}>
-                  Introduzca el código de autenticación
-                </Text>
+                <Text style={styles.modalText}>Introduzca el código de autenticación</Text>
                 <Text style={{ marginBottom: 20 }}>
                   Revisa tu correo, te hemos enviado un código de verificación
                 </Text>
@@ -428,45 +435,31 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
                       mode="outlined"
                       key={index}
                       value={code}
-                      onChangeText={(value: string) =>
-                        handleAuthCodeChange(index, value)
-                      }
+                      onChangeText={(value: string) => handleAuthCodeChange(index, value)}
                       outlineColor="#c5cae9"
                       activeOutlineColor="#c5cae9"
                       style={styles.codeInput}
                       maxLength={1}
                       keyboardType="numeric"
-                      // Asigna la referencia a cada TextInput
                       ref={(ref: any) => (inputRefs.current[index] = ref)}
                     />
                   ))}
                 </View>
-                <TouchableOpacity
-                  onPress={reSendEmail}
-                  disabled={isButtonDisabled}
-                >
-                  <Text
-                    style={
-                      isButtonDisabled ? styles.disabledtext : styles.resendtext
-                    }
-                  >
-                    {isButtonDisabled
-                      ? `Reenviar código (${timeLeft}s)`
-                      : "Reenviar código"}
+                <TouchableOpacity onPress={reSendEmail} disabled={isButtonDisabled}>
+                  <Text style={isButtonDisabled ? styles.disabledText : styles.resendText}>
+                    {isButtonDisabled ? `Reenviar código (${timeLeft}s)` : "Reenviar código"}
                   </Text>
                 </TouchableOpacity>
                 <View style={{ flexDirection: "row" }}>
                   <TouchableOpacity
-                    style={styles.Cancelbutton}
+                    style={styles.btnCancelar}
                     onPress={() => setModalAuth(false)}
                   >
                     <Text style={styles.buttonText}>Cancelar</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.button}
-                    onPress={() => {
-                      verifyAuthCode();
-                    }}
+                    onPress={verifyAuthCode}
                   >
                     <Text style={styles.buttonText}>Ingresar</Text>
                   </TouchableOpacity>
@@ -474,7 +467,8 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
               </View>
             </View>
           </Modal>
-
+  
+          {/* Modal para cambiar contraseña */}
           <Modal
             animationType="slide"
             transparent={true}
@@ -491,34 +485,30 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
                   value={confirmPassword}
                   onFocus={() => setShowRequirements(true)}
                   onBlur={() => setShowRequirements(false)}
-                  onChangeText={(value) => setConfirmPassword(value)}
+                  onChangeText={setConfirmPassword}
                   outlineColor="#c5cae9"
                   activeOutlineColor="#c5cae9"
                 />
                 {ShowRequirements && (
-            <View style={{ marginVertical: 1 }}>
-              {requirements.map(
-                (req, index) =>
-                  !req.isValid && (
-                    <View style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                    }}>
-                      <View style={styles.dot} />
-                      <Text key={index} style={{
-                        color: "#FF0000", 
-                        fontSize: 12,
-                        fontWeight: 'bold',
-                        textShadowColor: '#000',
-                        textShadowRadius: 10,   
-                      }}>
-                        {req.label}
-                      </Text>
-                    </View>
-                  )
-              )}
-            </View>
-          )}
+                  <View style={{ marginVertical: 1 }}>
+                    {requirements.map((req, index) =>
+                      !req.isValid && (
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }} key={index}>
+                          <View style={styles.dot} />
+                          <Text style={{
+                            color: "#FF0000",
+                            fontSize: 12,
+                            fontWeight: 'bold',
+                            textShadowColor: '#000',
+                            textShadowRadius: 10,
+                          }}>
+                            {req.label}
+                          </Text>
+                        </View>
+                      )
+                    )}
+                  </View>
+                )}
                 <TextInput
                   mode="outlined"
                   label="Confirmar contraseña"
@@ -526,44 +516,43 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
                   value={password}
                   onFocus={() => setShowConfirmRequirements(true)}
                   onBlur={() => setShowConfirmRequirements(false)}
-                  onChangeText={(value) => setPassword(value)}
+                  onChangeText={setPassword}
                   outlineColor="#c5cae9"
                   activeOutlineColor="#c5cae9"
                 />
                 {showConfirmRequirements && (
-            <View style={{ marginVertical: 1 }}>
-              {confirmRequirements.map(
-                (req, index) =>
-                  !req.isValid && (
-                    <Text key={index} style={{ 
-                      color: "#CC0000", 
-                      fontSize: 12,
-                      fontWeight: 'bold',
-                      textShadowColor: '#000',
-                      textShadowRadius: 10,   
-                    }}>
-                      {req.label}
-                    </Text>
-                  )
-              )}
-            </View>
-          )}
-                <View style={styles.buttonContainer}>
+                  <View style={{ marginVertical: 1 }}>
+                    {confirmRequirements.map((req, index) =>
+                      !req.isValid && (
+                        <Text key={index} style={{
+                          color: "#CC0000",
+                          fontSize: 12,
+                          fontWeight: 'bold',
+                          textShadowColor: '#000',
+                          textShadowRadius: 10,
+                        }}>
+                          {req.label}
+                        </Text>
+                      )
+                    )}
+                  </View>
+                )}
+                <View style={styles.btnContainer}>
                   <TouchableOpacity
-                    style={[styles.button, styles.buttonClose]}
+                    style={[styles.button, styles.btnClose]}
                     onPress={closeModalContraseña}
                   >
                     <Text style={styles.textStyle}>Cancelar</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={[styles.button, styles.buttonSearch]}
+                    style={[styles.button, styles.btnSearch]}
                     onPress={() => {
                       if (validatePassword()) {
                         changeContraseña();
                       } else {
                         Alert.alert(
                           "Error",
-                          "La contraseña no cumple con los requisitos minimos o no coinciden"
+                          "La contraseña no cumple con los requisitos mínimos o no coinciden"
                         );
                       }
                     }}
@@ -574,28 +563,8 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
               </View>
             </View>
           </Modal>
-          <TouchableOpacity
-            style={{
-              paddingVertical: 10,
-              borderTopWidth: 2,
-              borderColor: "#BDBDBD",
-              paddingHorizontal: 10,
-            }}
-            onPress={sendEmail}
-          >
-            <Text style={stylesHistorial.buttonText}>Cambiar contraseña</Text>
-          </TouchableOpacity>
-          <TextInput
-            mode="flat"
-            label="Consultorio"
-            style={stylesMain.TextInputPerfil}
-            value={consultorio}
-            onChangeText={(value) => setConsultorio(value)}
-            outlineColor="#c5cae9"
-            activeOutlineColor="#c5cae9"
-          />
-
-          {/* Boton de Datos Bancarios */}
+  
+          {/* Botón de Datos Bancarios */}
           <Modal
             animationType="slide"
             transparent={true}
@@ -604,13 +573,13 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
           >
             <View style={styles.modalContainer}>
               <View style={styles.modalView}>
-                <Text style={styles.modalText}>Cambiar Metodo de pago</Text>
+                <Text style={styles.modalText}>Cambiar método de pago</Text>
                 <TextInput
                   mode="outlined"
-                  label="Numero de tarjeta"
+                  label="Número de tarjeta"
                   style={stylesMain.TextInputPerfil}
-                  value={tel}
-                  onChangeText={(value) => setNumCard(value)}
+                  value={numCard}
+                  onChangeText={setNumCard}
                   outlineColor="#c5cae9"
                   activeOutlineColor="#c5cae9"
                   keyboardType="numeric"
@@ -619,10 +588,10 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 <View style={{ flexDirection: "row" }}>
                   <TextInput
                     mode="outlined"
-                    label="Expiracion"
+                    label="Expiración"
                     style={[stylesMain.TextInputPerfil, { width: "65%" }]}
-                    value={tel}
-                    onChangeText={(value) => setExpCard(value)}
+                    value={expCard}
+                    onChangeText={setExpCard}
                     outlineColor="#c5cae9"
                     activeOutlineColor="#c5cae9"
                     keyboardType="numeric"
@@ -631,27 +600,24 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
                   <TextInput
                     mode="outlined"
                     label="CVC"
-                    style={[
-                      stylesMain.TextInputPerfil,
-                      { marginLeft: 15, width: "25%" },
-                    ]}
-                    value={tel}
-                    onChangeText={(value) => setCVC(value)}
+                    style={[stylesMain.TextInputPerfil, { marginLeft: 15, width: "25%" }]}
+                    value={CVC}
+                    onChangeText={setCVC}
                     outlineColor="#c5cae9"
                     activeOutlineColor="#c5cae9"
                     keyboardType="numeric"
                     maxLength={3}
                   />
                 </View>
-                <View style={styles.buttonContainer}>
+                <View style={styles.btnContainer}>
                   <TouchableOpacity
-                    style={[styles.button, styles.buttonClose]}
+                    style={[styles.button, styles.btnClose]}
                     onPress={closeModalPago}
                   >
                     <Text style={styles.textStyle}>Cancelar</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={[styles.button, styles.buttonSearch]}
+                    style={[styles.button, styles.btnSearch]}
                     onPress={changePago}
                   >
                     <Text style={styles.textStyle}>Guardar</Text>
@@ -660,39 +626,10 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
               </View>
             </View>
           </Modal>
-          <TouchableOpacity
-            style={{
-              paddingVertical: 10,
-              borderBottomWidth: 2,
-              borderTopWidth: 2,
-              borderColor: "#BDBDBD",
-              paddingHorizontal: 10,
-            }}
-            onPress={openModalPago}
-          >
-            <Text style={stylesHistorial.buttonText}>
-              Cambiar metodo de pago
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{
-              paddingVertical: 10,
-              borderBottomWidth: 2,
-              borderColor: "#BDBDBD",
-              paddingHorizontal: 10,
-              flexDirection: "row",
-              justifyContent: "flex-start",
-              alignItems: "center",
-            }}
-            onPress={toggleLogout}
-          >
-            <Icon2 name="logout" size={20} color={"#000"} />
-            <Text style={[stylesHistorial.buttonText, { paddingLeft: 10 }]}>
-              Cerrar Sesion
-            </Text>
-          </TouchableOpacity>
         </ScrollView>
       </View>
+  
+      {/* Modal de Confirmación de Cierre de Sesión */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -701,31 +638,36 @@ const PerfilPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>
-              ¿Seguro que quieres salir de tu sesion?
-            </Text>
-            <View style={styles.buttonContainer}>
+            <Text style={styles.modalText}>¿Seguro que quieres salir de tu sesión?</Text>
+            <View style={styles.btnContainer}>
               <TouchableOpacity
-                style={[styles.button, styles.buttonClose]}
+                style={[styles.button, styles.btnClose]}
                 onPress={toggleLogout}
               >
                 <Text style={styles.textStyle}>Cancelar</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.button, styles.buttonSearch]}
+                style={[styles.button, styles.btnSearch]}
                 onPress={logout}
               >
-                <Text style={styles.textStyle}>Cerrar sesion</Text>
+                <Text style={styles.textStyle}>Cerrar sesión</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
     </SafeAreaView>
-  );
+  );  
 };
 
 const styles = StyleSheet.create({
+  container: {
+    display: "flex",
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "flex-start",
+    backgroundColor: "#002245",
+  },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
@@ -754,15 +696,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   input: {
-    width: 200,
     height: 40,
-    borderColor: "#ccc",
+    borderColor: "#fff",
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 15,
     paddingHorizontal: 10,
   },
-  buttonContainer: {
+  btnContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
@@ -772,10 +713,10 @@ const styles = StyleSheet.create({
     padding: 10,
     elevation: 2,
   },
-  buttonClose: {
+  btnClose: {
     backgroundColor: "#f44336",
   },
-  buttonSearch: {
+  btnSearch: {
     backgroundColor: "#2196F3",
   },
   textStyle: {
@@ -801,11 +742,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     backgroundColor: "white",
   },
-  disabledtext: {
+  disabledText: {
     color: "#B0BEC5",
     marginBottom: 20,
   },
-  resendtext: {
+  resendText: {
     color: "#3F51B5",
     marginBottom: 20,
   },
@@ -813,7 +754,7 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
   },
-  Cancelbutton: {
+  btnCancelar: {
     backgroundColor: "#f44336",
     padding: 10,
     margin: 10,
@@ -824,10 +765,84 @@ const styles = StyleSheet.create({
     width: 5,
     height: 5,
     borderRadius: 3,
-    backgroundColor: '#c5cae9', 
+    backgroundColor: '#c5cae9',
     marginRight: 5,
     marginTop: 3,
   },
+
+  infoContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+  },
+
+  btn: {
+    borderRadius: 30,
+    padding:10,
+    marginTop: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 1, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+
+  buttonsContainer: {
+    padding: 10
+  },
+
+  buttonOptionText: {
+    fontSize: 15,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  
+  btnSave: {
+    backgroundColor: "#002245",
+    borderColor: "#000",
+    borderWidth: 1,
+  },
+  
+  btnChangePass: {
+    backgroundColor: "#165DA5",
+    borderColor: "#000",
+    borderWidth: 1,
+  },
+
+  btnChangePayment: {
+    backgroundColor: "#ECECEC",
+    borderColor: "#000",
+    borderWidth: 1,
+  },
+
+  btnLogout: {
+    backgroundColor: "#FF3333",
+    borderColor: "#000",
+    borderWidth: 1,
+  },
+
+  textColorSave: {
+    color: '#FFF'
+  },
+
+  textColorChangePass: {
+    color: '#FFF'
+  },
+  
+  textColorChangePayment: {
+    color: '#000'
+  },
+  
+  textColorLogout: {
+    color: '#FFF'
+  },
+
+  gradient: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    height: 300
+  },
 });
 
-export default PerfilPhisio;
+export default PerfilFisio;

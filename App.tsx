@@ -317,7 +317,7 @@ export default function App() {
         <Stack.Screen
           name="perfil"
           component={PerfilPhisio}
-          options={{ headerShown: true, title: "" }}
+          options={{ headerShown: false, title: ""  }}
         />
         <Stack.Screen
           name="perfilPaciente"

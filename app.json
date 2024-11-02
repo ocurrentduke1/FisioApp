@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/logoFisioApp.png",
       "resizeMode": "contain",
-      "backgroundColor": "#1e5099"
+      "backgroundColor": "#002245"
     },
     "ios": {
       "supportsTablet": true
