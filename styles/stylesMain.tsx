@@ -106,13 +106,7 @@ export default StyleSheet.create({
     borderColor: "#000",
     // borderWidth: 1,
   },
-  datosMetricas: {
-    alignItems: "center",
-    justifyContent: "flex-start", // Alinea los elementos verticalmente al principio
-    width: windowWidth * 0.8,
-    borderRadius: 25,
-    flexShrink: 1,
-  },
+  
   metricsEnabler: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -120,68 +114,12 @@ export default StyleSheet.create({
     marginTop: 10,
   },
 
-  metricText: {
-    marginTop: 5,
-    color: "#FFFFFF",
-  },
-  metricTitle: {
-    fontWeight: "bold",
-    marginTop: 5,
-    color: "#FFFFFF",
-    paddingTop: 10,
-  },
-  exersiceTitle: {
-    justifyContent: "center",
-    alignSelf: "center",
-    fontSize: 24
-  },
-  ContainerInput: {
-    backgroundColor: "#00bcd4",
-    justifyContent: "flex-start",
-    width: windowWidth * 0.9,
-    borderRadius: 25,
-    marginVertical: 10,
-    paddingHorizontal: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 2, height: 6 },
-    shadowOpacity: 0.8,
-    shadowRadius: 6,
-    elevation: 8,
-  },
-
   InputMetrics: {
     width: "96%",
-    borderBottomWidth: 2,
-    borderColor: "#BDBDBD",
     paddingTop: 10,
     paddingHorizontal: 10,
-    color: "#FFFFFF",
     fontSize: 20,
-  },
-
-  scrollMetrics: {
-    display: "flex",
-    width: windowWidth * 0.9,
-    height: windowHeight * 1,
-  },
-
-  resultsMetrics: {
-    backgroundColor: "#00bcd4",
-    width: windowWidth * 0.9,
-    borderRadius: 25,
-    marginVertical: 10,
-    paddingHorizontal: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 2, height: 6 },
-    shadowOpacity: 0.8,
-    shadowRadius: 6,
-    elevation: 8,
-  },
-  radioButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-    paddingRight: 30
+    backgroundColor: "#FFF",
   },
 
   /*
@@ -204,5 +142,78 @@ export default StyleSheet.create({
     paddingTop: 10,
     backgroundColor: "white",
     
+  },
+
+  /*
+
+
+
+
+
+  estilos escalas
+
+
+
+
+
+   */
+  datosMetricas: {
+    alignItems: "center",
+    justifyContent: "flex-start", // Alinea los elementos verticalmente al principio
+    width: windowWidth * 0.8,
+    borderRadius: 25,
+    flexShrink: 1,
+  },
+  scrollMetrics: {
+    display: "flex",
+    width: windowWidth * 0.9,
+    height: windowHeight * 1,
+  },
+  ContainerInput: {
+    backgroundColor: "#FFF",
+    justifyContent: "flex-start",
+    width: windowWidth * 0.9,
+    borderRadius: 25,
+    marginVertical: 10,
+    paddingHorizontal: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 2, height: 6 },
+    shadowOpacity: 0.8,
+    shadowRadius: 6,
+    elevation: 8,
+  },
+  metricTitle: {
+    fontWeight: "bold",
+    marginTop: 5,
+    color: "#000",
+    paddingTop: 10,
+  },
+  radioButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    paddingRight: 30
+  },
+  metricText: {
+    marginTop: 5,
+    color: "#000",
+  },
+  resultsMetrics: {
+    backgroundColor: "#FFF",
+    width: windowWidth * 0.9,
+    borderRadius: 25,
+    marginVertical: 10,
+    paddingHorizontal: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 2, height: 6 },
+    shadowOpacity: 0.8,
+    shadowRadius: 6,
+    elevation: 8,
+  },
+  exersiceTitle: {
+    justifyContent: "center",
+    alignSelf: "center",
+    fontSize: 24,
+    color: "#FFF",
   },
 });

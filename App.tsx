@@ -9,7 +9,7 @@ import {
 } from "@react-navigation/drawer";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import "react-native-gesture-handler";
-import { Image } from "react-native";
+import { Image, StyleSheet } from "react-native";
 import { Login } from "./Login";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { enableScreens } from "react-native-screens";
@@ -151,17 +151,28 @@ export default function App() {
   }
 
   function CustomDrawerContent(props: any) {
+
+    const userImage = useRef("https://imgs.search.brave.com/8ExXYVb8oTB9fWM1IvIH-QRrnpIM5ifHCiXrTuchK-I/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93d3cu/aXN0b2NrcGhvdG8u/Y29tL3Jlc291cmNl/cy9pbWFnZXMvSG9t/ZVBhZ2UvRm91clBh/Y2svQzItUGhvdG9z/LWlTdG9jay0xMzU2/MTk3Njk1LmpwZw");
+
     return (
       <DrawerContentScrollView {...props}>
         <DrawerItem
           label=""
           icon={() => (
-            <Icon
-              name="user-circle"
-              size={120}
-              color="#000"
-              style={{ alignSelf: "center" }}
-            />
+            userImage ? (
+              <Image
+                source={{ uri: userImage.current }}
+                style={styles.userImage}
+                resizeMode="cover"
+              />
+            ) : (
+              <Icon
+                name="user-circle"
+                size={120}
+                color="#000"
+                style={{ alignSelf: "center" }}
+              />
+            )
           )}
           onPress={() => {
             props.navigation.navigate("perfil");
@@ -215,6 +226,7 @@ export default function App() {
   }
   function FisioDrawerNavigator() {
     return (
+      
       <FisioDrawer.Navigator
         initialRouteName="mainFisio"
         screenOptions={{
@@ -401,3 +413,13 @@ export default function App() {
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  userImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 60, // Hacer la imagen circular
+    alignSelf: "center",
+  },
+  // Otros estilos...
+});

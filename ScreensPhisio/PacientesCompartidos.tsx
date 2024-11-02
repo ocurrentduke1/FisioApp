@@ -91,7 +91,7 @@ const PacientesCompartidos = ({ navigation }: { navigation: NavigationProp<any> 
                   style={stylesMain.imagenpaciente}
                 />
               ) : (
-                <Icon name="user-circle" size={70} color="#FFFFFF" style={stylesMain.imagenpaciente} />
+                <Icon name="user-circle" size={70} color="#000" style={stylesMain.imagenpaciente} />
               )}
               <View>
                 <Text style={stylesMain.datosPacienteMenuFisio}>

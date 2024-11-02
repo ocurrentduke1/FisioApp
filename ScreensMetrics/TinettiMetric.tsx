@@ -6,10 +6,10 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Dimensions,
-  TextInput,
 } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import stylesMain from "../styles/stylesMain";
+import { TextInput } from "react-native-paper";
 
 export default function TinettiMetric({
   navigation,
@@ -85,15 +85,18 @@ export default function TinettiMetric({
       <SafeAreaView style={stylesMain.datosMetricas}>
         <ScrollView style={stylesMain.scrollMetrics}>
           <Text style={stylesMain.exersiceTitle}>Evaluacion de equilibrio</Text>
-          <View style={[stylesMain.ContainerInput, { height: 1430 }]}>
+          <View style={[stylesMain.ContainerInput, { height: 1650 }]}>
             <Text style={stylesMain.metricTitle}>1.Equilibrio sentado</Text>
             <Text style={stylesMain.metricText}>
               0-Se recuesta o resbala de la silla
             </Text>
             <Text style={stylesMain.metricText}>1-estable y seguro</Text>
             <TextInput
+              mode="outlined"
+              label="De 0 a 1"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 1"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
               value={inputValues.input1}
@@ -108,8 +111,11 @@ export default function TinettiMetric({
               2-capaz sin usar los brazos
             </Text>
             <TextInput
+              mode="outlined"
+              label="De 0 a 2"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 2"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
               value={inputValues.input2}
@@ -124,8 +130,11 @@ export default function TinettiMetric({
               2-capaz en un solo intento
             </Text>
             <TextInput
+              mode="outlined"
+              label="De 0 a 2"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 2"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
               value={inputValues.input3}
@@ -142,8 +151,11 @@ export default function TinettiMetric({
             </Text>
             <Text style={stylesMain.metricText}>2- estable sin apoyo</Text>
             <TextInput
+              mode="outlined"
+              label="De 0 a 2"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 2"
               keyboardType="numeric"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               value={inputValues.input4}
@@ -158,8 +170,11 @@ export default function TinettiMetric({
               2-estable sin apoyo y los talones cerrados
             </Text>
             <TextInput
+              mode="outlined"
+              label="De 0 a 2"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 2"
               keyboardType="numeric"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               value={inputValues.input5}
@@ -172,8 +187,11 @@ export default function TinettiMetric({
             <Text style={stylesMain.metricText}>1-Vacila o se agarra</Text>
             <Text style={stylesMain.metricText}>2-Estable</Text>
             <TextInput
+              mode="outlined"
+              label="De 0 a 2"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 2"
               keyboardType="numeric"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               value={inputValues.input6}
@@ -183,8 +201,11 @@ export default function TinettiMetric({
             <Text style={stylesMain.metricText}>0-Inestable</Text>
             <Text style={stylesMain.metricText}>1-Estable</Text>
             <TextInput
+              mode="outlined"
+              label="De 0 a 1"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 1"
               keyboardType="numeric"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               value={inputValues.input7}
@@ -194,8 +215,11 @@ export default function TinettiMetric({
             <Text style={stylesMain.metricText}>0-Pasos discontinuos</Text>
             <Text style={stylesMain.metricText}>1-Pasos continuos</Text>
             <TextInput
+              mode="outlined"
+              label="De 0 a 1"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 1"
               keyboardType="numeric"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               value={inputValues.input8}
@@ -204,8 +228,11 @@ export default function TinettiMetric({
             <Text style={stylesMain.metricText}>0-InEstable</Text>
             <Text style={stylesMain.metricText}>1-Estable</Text>
             <TextInput
+              mode="outlined"
+              label="De 0 a 1"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 1"
               keyboardType="numeric"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               value={inputValues.input9}
@@ -218,8 +245,11 @@ export default function TinettiMetric({
             <Text style={stylesMain.metricText}>1-Usa las manos</Text>
             <Text style={stylesMain.metricText}>2-Seguro</Text>
             <TextInput
+              mode="outlined"
+              label="De 0 a 2"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 2"
               keyboardType="numeric"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               value={inputValues.input10}
@@ -228,24 +258,23 @@ export default function TinettiMetric({
           </View>
 
           <Text
-            style={{
-              justifyContent: "center",
-              alignSelf: "center",
-              fontSize: 24,
-            }}
+            style={stylesMain.exersiceTitle}
           >
             Evaluacion de marcha
           </Text>
 
-          <View style={[stylesMain.ContainerInput, { height: 1370 }]}>
+          <View style={[stylesMain.ContainerInput, { height: 1630 }]}>
             <Text style={stylesMain.metricTitle}>1.Inicio de marcha</Text>
             <Text style={stylesMain.metricText}>
               0-Vacila o varios intentos para empezar
             </Text>
             <Text style={stylesMain.metricText}>1-sin vacilacion</Text>
             <TextInput
+              mode="outlined"
+              label="De 0 a 1"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 1"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
               value={inputValues.input11}
@@ -265,8 +294,11 @@ export default function TinettiMetric({
               1-sobrepasa el pie izquierdo
             </Text>
             <TextInput
+              mode="outlined"
+              label="De 0 a 1"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 1"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
               value={inputValues.input12}
@@ -279,8 +311,11 @@ export default function TinettiMetric({
               1-se levanta completamente del piso
             </Text>
             <TextInput
+              mode="outlined"
+              label="De 0 a 1"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 1"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
               value={inputValues.input13}
@@ -297,8 +332,11 @@ export default function TinettiMetric({
               1-sobrepasa el pie derecho
             </Text>
             <TextInput
+              mode="outlined"
+              label="De 0 a 1"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 1"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
               value={inputValues.input14}
@@ -311,8 +349,11 @@ export default function TinettiMetric({
               1-se levanta completamente del piso
             </Text>
             <TextInput
+              mode="outlined"
+              label="De 0 a 1"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 1"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
               value={inputValues.input15}
@@ -326,8 +367,11 @@ export default function TinettiMetric({
               1-Pasos derechos e izquierdos iguales
             </Text>
             <TextInput
+              mode="outlined"
+              label="De 0 a 1"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 1"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
               value={inputValues.input16}
@@ -343,8 +387,11 @@ export default function TinettiMetric({
               1-Continuidad de los pasos
             </Text>
             <TextInput
+              mode="outlined"
+              label="De 0 a 1"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 1"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
               value={inputValues.input17}
@@ -359,8 +406,11 @@ export default function TinettiMetric({
               2-En linea recta sin ayuda
             </Text>
             <TextInput
+              mode="outlined"
+              label="De 0 a 2"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 2"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
               value={inputValues.input18}
@@ -377,8 +427,11 @@ export default function TinettiMetric({
               2-sin balanceo, sin flexion y sin ayuda
             </Text>
             <TextInput
+              mode="outlined"
+              label="De 0 a 2"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 2"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
               value={inputValues.input19}
@@ -390,8 +443,11 @@ export default function TinettiMetric({
               1-Talones casi se tocan al caminar
             </Text>
             <TextInput
+              mode="outlined"
+              label="De 0 a 1"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 1"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
               value={inputValues.input20}
@@ -417,19 +473,19 @@ export default function TinettiMetric({
           <View
             style={[stylesMain.resultsMetrics, { height: windowHeight * 0.3 }]}
           >
-            <Text style={{ marginBottom: 1, fontSize: 24, color: "white" }}>
+            <Text style={{ marginBottom: 1, fontSize: 24, color: "#000" }}>
               Resultado
             </Text>
-            <Text style={{ marginBottom: 1, fontSize: 20, color: "white" }}>
+            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
               {result == null ? "" : `${result}`}
             </Text>
-            <Text style={{ marginBottom: 1, fontSize: 20, color: "white" }}>
+            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
               {getSeverityMessage(result)}
             </Text>
-            <Text style={{ marginBottom: 1, fontSize: 24, color: "white" }}>
+            <Text style={{ marginBottom: 1, fontSize: 24, color: "#000" }}>
               Ejercicios Recomendados
             </Text>
-            <Text style={{ marginBottom: 1, fontSize: 20, color: "white" }}>
+            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
               Ejercicio 1
             </Text>
             <TouchableOpacity

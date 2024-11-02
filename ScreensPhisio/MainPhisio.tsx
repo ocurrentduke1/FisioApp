@@ -31,7 +31,6 @@ Notifications.setNotificationHandler({
 });
 
 const windowWidth = Dimensions.get("window").width;
-const windowHeight = Dimensions.get("window").height;
 
 // Suponiendo que este es tu componente
 export default function MainPhisio({
@@ -112,19 +111,19 @@ export default function MainPhisio({
     };
     getUserID();
 
-    const datosDelServidor = [
-      {
-        id: "1",
-        nombre: "Juan",
-        apellidos: "Pérez",
-        proximaCita: "2023-04-15",
-        ubicacion: "Ciudad Central",
-        imagenPerfil:
-          "https://imgs.search.brave.com/8ExXYVb8oTB9fWM1IvIH-QRrnpIM5ifHCiXrTuchK-I/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93d3cu/aXN0b2NrcGhvdG8u/Y29tL3Jlc291cmNl/cy9pbWFnZXMvSG9t/ZVBhZ2UvRm91clBh/Y2svQzItUGhvdG9z/LWlTdG9jay0xMzU2/MTk3Njk1LmpwZw",
-        numeroContacto: "1234567890",
-        },
-    ];
-    setPacientes(datosDelServidor);
+    // const datosDelServidor = [
+    //   {
+    //     id: "1",
+    //     nombre: "Juan",
+    //     apellidos: "Pérez",
+    //     proximaCita: "2023-04-15",
+    //     ubicacion: "Ciudad Central",
+    //     imagenPerfil:
+    //       "https://imgs.search.brave.com/8ExXYVb8oTB9fWM1IvIH-QRrnpIM5ifHCiXrTuchK-I/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93d3cu/aXN0b2NrcGhvdG8u/Y29tL3Jlc291cmNl/cy9pbWFnZXMvSG9t/ZVBhZ2UvRm91clBh/Y2svQzItUGhvdG9z/LWlTdG9jay0xMzU2/MTk3Njk1LmpwZw",
+    //     numeroContacto: "1234567890",
+    //     },
+    // ];
+    // setPacientes(datosDelServidor);
   }, []);
 
   return (

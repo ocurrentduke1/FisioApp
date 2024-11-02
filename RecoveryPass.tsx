@@ -116,9 +116,6 @@ export function RecoveryPass({
         codigo: enteredCode,
         destinatario: email,
       },
-      {
-        headers: { "User-Agent": Platform.OS + "/" + Platform.Version },
-      }
     );
 
     console.log(response.data);
@@ -161,10 +158,6 @@ export function RecoveryPass({
 
     console.log("enviado");
 
-    if (response.data.code == 409) {
-      Alert.alert("Error", "Correo ya registrado");
-      return false;
-    }
     if (response.data.code == 500) {
       Alert.alert("Error", "No se pudo enviar el correo de verificación");
       return false;

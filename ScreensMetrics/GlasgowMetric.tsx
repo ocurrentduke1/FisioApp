@@ -6,10 +6,10 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Dimensions,
-  TextInput,
 } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import stylesMain from "../styles/stylesMain";
+import { TextInput } from "react-native-paper";
 
 export default function GlasgowMetric({
   navigation,
@@ -66,9 +66,12 @@ export default function GlasgowMetric({
             <Text style={stylesMain.metricText}>3-Respuesta por orden verbal</Text>
             <Text style={stylesMain.metricText}>4-Respuesta Espontanea</Text>
             <TextInput
+              mode="outlined"
+              label="De 1 a 4"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               value={valueOcular}
               style={stylesMain.InputMetrics}
-              placeholder="De 1 a 4"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
               onChangeText={(value) => setValueOcular(value)}
@@ -80,9 +83,12 @@ export default function GlasgowMetric({
             <Text style={stylesMain.metricText}>4-Desorientado y Hablando</Text>
             <Text style={stylesMain.metricText}>5-Orientado y conversando</Text>
             <TextInput
+              mode="outlined"
+              label="De 1 a 5"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               value={valueVerbal}
               style={stylesMain.InputMetrics}
-              placeholder="De 1 a 5"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
               onChangeText={(value) => setValueVerbal(value)}
@@ -95,9 +101,12 @@ export default function GlasgowMetric({
             <Text style={stylesMain.metricText}>5-Localiza el Dolor</Text>
             <Text style={stylesMain.metricText}>6-Obedece a orden Verban</Text>
             <TextInput
+              mode="outlined"
+              label="De 1 a 6"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               value={valueMotriz}
               style={stylesMain.InputMetrics}
-              placeholder="De 1 a 6"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
               onChangeText={(value) => setValueMotriz(value)}
@@ -110,17 +119,17 @@ export default function GlasgowMetric({
           <View
             style={[stylesMain.resultsMetrics,{height: windowHeight * 0.3,}]}
           >
-            <Text style={{ marginBottom: 1, fontSize: 24, color: "white"}}>Resultado</Text>
-            <Text style={{ marginBottom: 1, fontSize: 20, color: "white"}}>
+            <Text style={{ marginBottom: 1, fontSize: 24, color: "#000"}}>Resultado</Text>
+            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000"}}>
             {result == null ? "" :  `${result}`}
             </Text>
-            <Text style={{ marginBottom: 1, fontSize: 20, color: "white"}}>
+            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000"}}>
               {getSeverityMessage(result)}
             </Text>
-            <Text style={{ marginBottom: 1, fontSize: 24, color: "white"}}>
+            <Text style={{ marginBottom: 1, fontSize: 24, color: "#000"}}>
               Ejercicios Recomendados
             </Text>
-            <Text style={{ marginBottom: 1, fontSize: 20, color: "white"}}>Ejercicio 1</Text>
+            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000"}}>Ejercicio 1</Text>
             <TouchableOpacity style={{paddingTop: 10, alignSelf: 'center'}} onPress={saveResult} disabled={!canSaveResult}>
               <Text style={[stylesMain.metricTitle, { fontSize: 20}]}>Guardar Resultado</Text>
             </TouchableOpacity>

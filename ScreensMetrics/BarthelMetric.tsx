@@ -6,10 +6,10 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Dimensions,
-  TextInput,
 } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import stylesMain from "../styles/stylesMain";
+import { TextInput } from "react-native-paper";
 
 export default function BarthelMetric({
   navigation,
@@ -38,7 +38,7 @@ export default function BarthelMetric({
     const sum =
       parseFloat(fields.comer) +
       parseFloat(fields.traslado) +
-      parseFloat(fields.aseo)+
+      parseFloat(fields.aseo) +
       parseFloat(fields.retrete) +
       parseFloat(fields.banarse) +
       parseFloat(fields.desplazarse) +
@@ -51,7 +51,7 @@ export default function BarthelMetric({
   }
 
   const allFieldsFilled = () => {
-    return Object.values(fields).every(field => field.trim() !== '');
+    return Object.values(fields).every((field) => field.trim() !== "");
   };
 
   const canSaveResult = () => {
@@ -69,7 +69,7 @@ export default function BarthelMetric({
     console.log("Save result");
   }
   return (
-    <View style={[stylesMain.container, {alignItems: "center"}]}>
+    <View style={[stylesMain.container, { alignItems: "center" }]}>
       <SafeAreaView style={stylesMain.datosMetricas}>
         <ScrollView style={stylesMain.scrollMetrics}>
           <View style={[stylesMain.ContainerInput, { height: 1730 }]}>
@@ -83,9 +83,12 @@ export default function BarthelMetric({
               2-Independiente(la comida al alcance de la mano)
             </Text>
             <TextInput
+              mode="outlined"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
+              label="De 0 a 2"
               value={fields.comer}
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 2"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
               onChangeText={(text) => setFields({ ...fields, comer: text })}
@@ -105,9 +108,12 @@ export default function BarthelMetric({
             </Text>
             <Text style={stylesMain.metricText}>3-Independiente</Text>
             <TextInput
+              mode="outlined"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
+              label="De 0 a 3"
               value={fields.traslado}
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 3"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
               onChangeText={(text) => setFields({ ...fields, traslado: text })}
@@ -119,9 +125,12 @@ export default function BarthelMetric({
               afeitarse
             </Text>
             <TextInput
+              mode="outlined"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
+              label="De 0 a 1"
               value={fields.aseo}
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 1"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
               onChangeText={(text) => setFields({ ...fields, aseo: text })}
@@ -137,9 +146,12 @@ export default function BarthelMetric({
               2-Independiente (entrar, salir, limpiarse, vestirse)
             </Text>
             <TextInput
+              mode="outlined"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
+              label="De 0 a 2"
               value={fields.retrete}
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 2"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
               onChangeText={(text) => setFields({ ...fields, retrete: text })}
@@ -152,9 +164,12 @@ export default function BarthelMetric({
               1-Independiente para bañarse o ducharse
             </Text>
             <TextInput
+              mode="outlined"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
+              label="De 0 a 1"
               value={fields.banarse}
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 1"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
               onChangeText={(text) => setFields({ ...fields, banarse: text })}
@@ -172,12 +187,17 @@ export default function BarthelMetric({
               excepto andador
             </Text>
             <TextInput
+              mode="outlined"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
+              label="De 0 a 3"
               value={fields.desplazarse}
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 3"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
-              onChangeText={(text) => setFields({ ...fields, desplazarse: text })}
+              onChangeText={(text) =>
+                setFields({ ...fields, desplazarse: text })
+              }
             />
             <Text style={stylesMain.metricTitle}>
               Actividad: Subir y bajar escaleras
@@ -191,9 +211,12 @@ export default function BarthelMetric({
               2-Independiente para subir y bajar
             </Text>
             <TextInput
+              mode="outlined"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
+              label="De 0 a 2"
               value={fields.escaleras}
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 2"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
               onChangeText={(text) => setFields({ ...fields, escaleras: text })}
@@ -209,9 +232,12 @@ export default function BarthelMetric({
               2-Independiente, incluyendo botones, cremalleras, cordones, etc.
             </Text>
             <TextInput
+              mode="outlined"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
+              label="De 0 a 2"
               value={fields.vestirse}
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 2"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
               onChangeText={(text) => setFields({ ...fields, vestirse: text })}
@@ -227,12 +253,17 @@ export default function BarthelMetric({
             </Text>
             <Text style={stylesMain.metricText}>2-Continente</Text>
             <TextInput
+              mode="outlined"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
+              label="De 0 a 2"
               value={fields.controlHeces}
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 2"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
-              onChangeText={(text) => setFields({ ...fields, controlHeces: text })}
+              onChangeText={(text) =>
+                setFields({ ...fields, controlHeces: text })
+              }
             />
             <Text style={stylesMain.metricTitle}>
               Actividad: Control de orina
@@ -247,12 +278,17 @@ export default function BarthelMetric({
               2-continente, durante al menos 7 dias
             </Text>
             <TextInput
+              mode="outlined"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
+              label="De 0 a 2"
               value={fields.controlOrina}
               style={stylesMain.InputMetrics}
-              placeholder="De 0 a 2"
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
               keyboardType="numeric"
-              onChangeText={(text) => setFields({ ...fields, controlOrina: text })}
+              onChangeText={(text) =>
+                setFields({ ...fields, controlOrina: text })
+              }
             />
             <TouchableOpacity
               style={{
@@ -271,19 +307,19 @@ export default function BarthelMetric({
           <View
             style={[stylesMain.resultsMetrics, { height: windowHeight * 0.3 }]}
           >
-            <Text style={{ marginBottom: 1, fontSize: 24, color: "white" }}>
+            <Text style={{ marginBottom: 1, fontSize: 24, color: "#000" }}>
               Resultado
             </Text>
-            <Text style={{ marginBottom: 1, fontSize: 20, color: "white" }}>
+            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
               {result == null ? "" : `${result}`}
             </Text>
-            <Text style={{ marginBottom: 1, fontSize: 20, color: "white" }}>
+            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
               {getSeverityMessage(result)}
             </Text>
-            <Text style={{ marginBottom: 1, fontSize: 24, color: "white" }}>
+            <Text style={{ marginBottom: 1, fontSize: 24, color: "#000" }}>
               Ejercicios Recomendados
             </Text>
-            <Text style={{ marginBottom: 1, fontSize: 20, color: "white" }}>
+            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
               Ejercicio 1
             </Text>
             <TouchableOpacity

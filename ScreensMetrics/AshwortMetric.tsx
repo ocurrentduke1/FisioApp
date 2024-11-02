@@ -5,12 +5,11 @@ import {
   ScrollView,
   SafeAreaView,
   TouchableOpacity,
-  TextInput,
   Dimensions,
 } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import stylesMain from "../styles/stylesMain";
-import { RadioButton } from "react-native-paper";
+import { RadioButton, TextInput } from "react-native-paper";
 
 export default function AshwortMetric({
   navigation,
@@ -80,6 +79,10 @@ export default function AshwortMetric({
         <ScrollView style={stylesMain.scrollMetrics}>
           <View style={[stylesMain.ContainerInput, { height: 630 }]}>
             <TextInput
+              mode="outlined"
+              label="Zona a evaluar"
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
               value={muscle}
               style={[stylesMain.InputMetrics, { marginTop: 20 }]}
               placeholder="Zona a evaluar"
@@ -98,7 +101,6 @@ export default function AshwortMetric({
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton
                     value="izquierdo"
-                    color="white"
                     uncheckedColor="#BDBDBD"
                   />
                   <Text style={stylesMain.metricText}>Izquierdo</Text>
@@ -106,7 +108,6 @@ export default function AshwortMetric({
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton
                     value="derecho"
-                    color="white"
                     uncheckedColor="#BDBDBD"
                   />
                   <Text style={stylesMain.metricText}>Derecho</Text>
@@ -125,7 +126,6 @@ export default function AshwortMetric({
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton
                     value="0"
-                    color="white"
                     uncheckedColor="#BDBDBD"
                   />
                   <Text style={stylesMain.metricText}>
@@ -135,7 +135,6 @@ export default function AshwortMetric({
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton
                     value="1"
-                    color="white"
                     uncheckedColor="#BDBDBD"
                   />
                   <Text style={stylesMain.metricText}>
@@ -145,7 +144,6 @@ export default function AshwortMetric({
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton
                     value="1+"
-                    color="white"
                     uncheckedColor="#BDBDBD"
                   />
                   <Text style={stylesMain.metricText}>
@@ -156,7 +154,6 @@ export default function AshwortMetric({
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton
                     value="2"
-                    color="white"
                     uncheckedColor="#BDBDBD"
                   />
                   <Text style={stylesMain.metricText}>
@@ -167,7 +164,6 @@ export default function AshwortMetric({
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton
                     value="3"
-                    color="white"
                     uncheckedColor="#BDBDBD"
                   />
                   <Text style={stylesMain.metricText}>
@@ -177,7 +173,6 @@ export default function AshwortMetric({
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton
                     value="4"
-                    color="white"
                     uncheckedColor="#BDBDBD"
                   />
                   <Text style={stylesMain.metricText}>
@@ -204,16 +199,16 @@ export default function AshwortMetric({
           <View
             style={[stylesMain.resultsMetrics, { height: windowHeight * 0.35 }]}
           >
-            <Text style={{ marginBottom: 1, fontSize: 24, color: "white" }}>
+            <Text style={{ marginBottom: 1, fontSize: 24, color: "#000" }}>
               Resultado
             </Text>
-            <Text style={{ marginBottom: 1, fontSize: 18, color: "white" }}>
+            <Text style={{ marginBottom: 1, fontSize: 18, color: "#000" }}>
               {result == null ? "" : `${result}`}
             </Text>
-            <Text style={{ marginBottom: 1, fontSize: 24, color: "white" }}>
+            <Text style={{ marginBottom: 1, fontSize: 24, color: "#000" }}>
               Ejercicios Recomendados
             </Text>
-            <Text style={{ marginBottom: 1, fontSize: 20, color: "white" }}>
+            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
               Ejercicio 1
             </Text>
             <TouchableOpacity

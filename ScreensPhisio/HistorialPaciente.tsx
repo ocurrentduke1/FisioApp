@@ -22,6 +22,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { LineChart } from "react-native-chart-kit";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { FAB, Portal, PaperProvider } from 'react-native-paper';
+import { MultipleSelectList } from 'react-native-dropdown-select-list'
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -101,6 +102,17 @@ export default function HistorialPaciente({
   const [date, setDate] = useState(new Date());
   const [Fecha1, setFecha1] = useState("");
   const [Fecha2, setFecha2] = useState("");
+  const [selected, setSelected] = React.useState<string[]>([]);
+
+  const SearchData = [
+    {key:'1', value:'Mobiles', disabled:true},
+    {key:'2', value:'Appliances'},
+    {key:'3', value:'Cameras'},
+    {key:'4', value:'Computers', disabled:true},
+    {key:'5', value:'Vegetables'},
+    {key:'6', value:'Diary Products'},
+    {key:'7', value:'Drinks'},
+]
 
   const [state, setState] = React.useState({ open: false });
   const onStateChange = ({ open }: { open: boolean }) => setState({ open });
@@ -414,28 +426,47 @@ export default function HistorialPaciente({
           ))}
         </ScrollView>
 
-        {/* Modal para eliminar paciente */}
+        {/* Modal para compartir paciente */}
         <Modal
           animationType="slide"
           transparent={true}
           visible={modalShare}
-          onRequestClose={() => {
-            setModalShare(!modalShare);
-          }}
+          onRequestClose={closeShare}
         >
           <View style={styles.modalContainer}>
             <View style={styles.modalView}>
-              <Text>Compartir perfil del paciente</Text>
-              <Button
-                title="Cerrar"
-                onPress={() => {
-                  // Aquí puedes manejar la acción de compartir el perfil
-                  setModalShare(false);
-                }}
-              />
+                <Text style={styles.modalText}>
+                Compartir perfil del paciente
+                </Text>
+                <MultipleSelectList 
+                setSelected={(val: string[]) => setSelected(val)} 
+                boxStyles={{ borderRadius: 5, width: 250}}
+                dropdownStyles={{borderWidth: 1, borderColor: 'black', borderRadius: 5, width: 250}}
+                placeholder="Contactos"
+                searchPlaceholder="Buscar"
+                data={SearchData} 
+                save="value"
+                label="Compartir con:" 
+                />
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                  style={[styles.button, styles.buttonClose]}
+                  onPress={closeShare}
+                >
+                  <Text style={styles.textStyle}>Cancelar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.buttonSearch]}
+                  onPress={handleShareProfile}
+                >
+                  <Text style={styles.textStyle}>Compartir</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </Modal>
+
+        {/* Modal para eliminar paciente */}
         <Modal
           animationType="slide"
           transparent={true}
@@ -464,7 +495,6 @@ export default function HistorialPaciente({
             </View>
           </View>
         </Modal>
-        {/* Modal para eliminar paciente */}
       </View>
       <Portal>
         <FAB.Group

@@ -172,4 +172,21 @@ export default StyleSheet.create({
     backgroundColor: "white",
     
   },
+
+  /*
+
+
+
+
+
+  estilos de escalas
+
+
+
+
+
+   */
+
+  
+
 });
