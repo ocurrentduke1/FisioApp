@@ -8,7 +8,6 @@ import {
   Image,
   Modal,
   StyleSheet,
-  Platform,
   Alert,
 } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
@@ -16,7 +15,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import stylesHistorial from "../styles/stylesHistorial";
 import * as ImagePicker from "expo-image-picker";
 import Icon from "react-native-vector-icons/FontAwesome";
-import Icon2 from "react-native-vector-icons/SimpleLineIcons";
 import stylesMain from "../styles/stylesMain";
 import { Divider, TextInput, TouchableRipple } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";

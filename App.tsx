@@ -322,7 +322,7 @@ export default function App() {
         <Stack.Screen
           name="perfilPaciente"
           component={PerfilPaciente}
-          options={{ headerShown: true, title: "" }}
+          options={{ headerShown: false, title: "" }}
         />
         <Stack.Screen
           name="CamaraVideo"
