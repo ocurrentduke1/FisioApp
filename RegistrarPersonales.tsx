@@ -46,7 +46,7 @@ export default function RegistrarPersonales({
     apellido: apellido,
     domicilio: address,
     edad: age,
-    sexo: sex
+    genero: sex
   };
 
   const registerUser = async () => {
@@ -264,7 +264,7 @@ export default function RegistrarPersonales({
                 alignItems: "center",
                 marginTop: 30,
               }}
-              placeholder="Selecciona tu sexo"
+              placeholder="Selecciona tu Genero"
             />
             <TouchableOpacity //boton de registrar cuenta
               style={{

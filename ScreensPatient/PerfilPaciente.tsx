@@ -34,6 +34,7 @@ const PerfilPaciente = ({
   const [ModalLogout, setModalLogout] = useState(false);
   const [modalContraseña, setModalContraseña] = useState(false);
   const [Name, setName] = useState("");
+  const [apellido, setApellido] = useState("");
   const [email, setEmail] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [password, setPassword] = useState("");
@@ -86,6 +87,20 @@ const PerfilPaciente = ({
       Alert.alert("Error", "Correo no registrado");
       return false;
     }
+
+    setIsButtonDisabled(true);
+    setTimeLeft(60);
+
+    intervalRef.current = setInterval(() => {
+      setTimeLeft((prevTime) => {
+        if (prevTime <= 1) {
+          clearInterval(intervalRef.current!);
+          setIsButtonDisabled(false);
+          return 60;
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
 
     setModalAuth(true);
   };
@@ -212,9 +227,13 @@ const PerfilPaciente = ({
   const fetchData = async () => {
     const datosDelServidor = await takeInfo();
     if (datosDelServidor) {
-      setName(datosDelServidor.fisioterapeuta.nombre);
-      setEmail(datosDelServidor.fisioterapeuta.correo);
-      setTel(datosDelServidor.fisioterapeuta.telefono);
+      setName(datosDelServidor.paciente.nombre);
+      setApellido(datosDelServidor.paciente.apellido);
+      setEmail(datosDelServidor.paciente.correo);
+      setTel(datosDelServidor.paciente.telefono);
+      setEdad(datosDelServidor.paciente.edad);
+      setSexo(datosDelServidor.paciente.genero);
+      setImage(await AsyncStorage.getItem("photoPerfil"));
     }
   };
 
@@ -236,7 +255,7 @@ const PerfilPaciente = ({
     setModalLogout(!ModalLogout);
   };
   const logout = async () => {
-    await AsyncStorage.multiRemove(["idSesion", "expiracion", "tipoUsuario"]);
+    await AsyncStorage.clear();
     navigation.navigate("login");
   };
 
@@ -268,6 +287,7 @@ const PerfilPaciente = ({
       if (response.status === 201) {
         console.log('Éxito Datos actualizados correctamente');
         console.log('Respuesta del servidor:', response.data);
+        await AsyncStorage.setItem('photoPerfil', photo);
       } else {
         console.log('Error No se pudieron actualizar los datos');
       }
@@ -294,12 +314,12 @@ const PerfilPaciente = ({
   };
 
   const SaveChanges = async () => {
-    const response = await axios.post(BACKEND_URL + "/editar-perfil", {
+    const response = await axios.post(BACKEND_URL + "/actualizar-usuario", {
       id: userID,
-
+      userType: userRol,
       nombre: Name,
-      telefono: tel,
-      imagen: image,
+      apellido: apellido,
+      phone: tel,
       edad: edad,
     });
 
@@ -313,6 +333,7 @@ const PerfilPaciente = ({
     }
     if (response.data.code === 201) {
       Alert.alert("Éxito", "Cambios guardados con éxito");
+      navigation.goBack();
       return true;
     }
   };
@@ -385,7 +406,7 @@ const PerfilPaciente = ({
           <View style={styles.infoContainer}>
             <TextInput
               mode="outlined"
-              label="Nombre completo"
+              label="Nombre(s)"
               style={styles.input}
               value={Name}
               onChangeText={setName}
@@ -393,6 +414,20 @@ const PerfilPaciente = ({
               activeOutlineColor="#002245"
               textColor="#002245"
               left={<TextInput.Icon style={{ marginTop: 10 }} icon="account" />}
+            />
+
+            <TextInput
+              mode="outlined"
+              label="Apellidos"
+              style={styles.input}
+              value={apellido}
+              onChangeText={setApellido}
+              outlineColor="#002245"
+              activeOutlineColor="#002245"
+              textColor="#002245"
+              left={<TextInput.Icon
+                style={{ marginTop: 10 }} 
+                icon="account" />}
             />
 
             <TextInput
@@ -435,14 +470,14 @@ const PerfilPaciente = ({
 
             <TextInput
               mode="outlined"
-              label="Sexo"
+              label="Genero"
               style={styles.input}
               value={sexo}
               onChangeText={setSexo}
               outlineColor="#002245"
               activeOutlineColor="#002245"
               disabled={true}
-              left={<TextInput.Icon style={{ marginTop: 10 }} icon="account" />}
+              left={<TextInput.Icon style={{ marginTop: 10 }} icon="gender-male-female" />}
             />
           </View>
 

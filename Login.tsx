@@ -156,7 +156,7 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
         }
       );
 
-      console.log(response.data);
+      // console.log(response.data);
 
       if (response.data.code == 404 || response.data.code == 500) {
         Alert.alert("Correo o contraseña incorrectos");
@@ -175,7 +175,7 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
       const imageBuffer = jwtDecode.base64Image;
       const uri = `data:image/${jwtDecode.extension};base64,${imageBuffer}`;
       await AsyncStorage.setItem("photoPerfil", uri);
-      console.log("uri", uri);
+      // console.log("uri", uri);
       if (jwtDecode?.exp) {
         await AsyncStorage.setItem("expiracion", jwtDecode.exp.toString());
       }
@@ -375,10 +375,10 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
         style={stylesLogin.button}
         onPress={() => {
           if (validateData()) {
-            // if(!validateEmail(email)){
-            //   Alert.alert("Error", "Correo electrónico no válido");
-            //   return false;
-            // }
+            if(!validateEmail(email)){
+              Alert.alert("Error", "Correo electrónico no válido");
+              return false;
+            }
             loggin();
 
           } else {

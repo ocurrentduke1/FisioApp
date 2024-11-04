@@ -193,17 +193,37 @@ export default function App() {
   }
 
   function PatientCustomDrawerContent(props: any) {
+
+    const [image, setImage] = useState<string | null>(null);
+
+    useEffect(() => {
+      const fetchImage = async () => {
+        const storedImage = await AsyncStorage.getItem("photoPerfil");
+        setImage(storedImage);
+      };
+
+      fetchImage();
+    }, []);
+    
     return (
       <DrawerContentScrollView {...props}>
         <DrawerItem
           label=""
           icon={() => (
-            <Icon
-              name="user-circle"
-              size={120}
-              color="#000"
-              style={{ alignSelf: "center" }}
-            />
+            image ? (
+              <Image
+                source={{ uri: image, }}
+                style={styles.userImage}
+                resizeMode="cover"
+              />
+            ) : (
+              <Icon
+                name="user-circle"
+                size={120}
+                color="#000"
+                style={{ alignSelf: "center" }}
+              />
+            )
           )}
           onPress={() => {
             props.navigation.navigate("perfilPaciente");

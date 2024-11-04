@@ -30,6 +30,7 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
   const [modalPago, setModalPago] = useState(false);
   const [email, setEmail] = useState("");
   const [Name, setName] = useState("");
+  const [apellido, setApellido] = useState("");
   const [tel, setTel] = useState("");
   const [consultorio, setConsultorio] = useState("");
   const [numCard, setNumCard] = useState("");
@@ -146,6 +147,20 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
       return false;
     }
 
+    setIsButtonDisabled(true);
+    setTimeLeft(60);
+
+    intervalRef.current = setInterval(() => {
+      setTimeLeft((prevTime) => {
+        if (prevTime <= 1) {
+          clearInterval(intervalRef.current!);
+          setIsButtonDisabled(false);
+          return 60;
+        }
+        return prevTime - 1;
+      });
+    }, 1000);
+
     setModalAuth(true);
   };
 
@@ -173,6 +188,7 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
     const datosDelServidor = await takeInfo();
     if (datosDelServidor) {
       setName(datosDelServidor.fisioterapeuta.nombre);
+      setApellido(datosDelServidor.fisioterapeuta.apellido);
       setEmail(datosDelServidor.fisioterapeuta.correo);
       setTel(datosDelServidor.fisioterapeuta.telefono);
       setConsultorio(datosDelServidor.fisioterapeuta.consultorio);
@@ -298,12 +314,12 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
   };
 
   const SaveChanges = async () => {
-    const response = await axios.post(BACKEND_URL + "/editar-perfil", {
+    const response = await axios.post(BACKEND_URL + "/actualizar-usuario", {
       id: userID,
-      usertype: userRol,
+      userType: userRol,
       nombre: Name,
-      telefono: tel,
-
+      apellido: apellido,
+      phone: tel,
     });
 
     if (response.data.code === 500) {
@@ -316,6 +332,7 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
     }
     if (response.data.code === 201) {
       Alert.alert("Éxito", "Cambios guardados con éxito");
+      navigation.goBack();
       return true;
     }
   };
@@ -381,10 +398,24 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
           <View style={styles.infoContainer}>
             <TextInput
               mode="outlined"
-              label="Nombre completo"
+              label="Nombre(s)"
               style={styles.input}
               value={Name}
               onChangeText={setName}
+              outlineColor="#002245"
+              activeOutlineColor="#002245"
+              textColor="#002245"
+              left={<TextInput.Icon
+                style={{ marginTop: 10 }} 
+                icon="account" />}
+            />
+
+            <TextInput
+              mode="outlined"
+              label="Apellidos"
+              style={styles.input}
+              value={apellido}
+              onChangeText={setApellido}
               outlineColor="#002245"
               activeOutlineColor="#002245"
               textColor="#002245"
