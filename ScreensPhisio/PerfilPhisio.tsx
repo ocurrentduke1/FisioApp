@@ -283,14 +283,10 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
           'Content-Type': 'multipart/form-data',
         },
       });
-
-      if (response.status === 201) {
         console.log('Éxito Datos actualizados correctamente');
         console.log('Respuesta del servidor:', response.data);
         await AsyncStorage.setItem('photoPerfil', photo);
-      } else {
-        console.log('Error No se pudieron actualizar los datos');
-      }
+
     } catch (error) {
       console.error(error);
       console.log(' Ocurrió un error al actualizar los datos');

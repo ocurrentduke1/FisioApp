@@ -73,7 +73,7 @@ export default function MainPhisio({
         }
       );
       console.log("UserID:", userID);
-      console.log("Response data:", response.data);
+      // console.log("Response data:", response.data);
       return response.data || [];
     }
   };

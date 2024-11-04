@@ -158,10 +158,11 @@ export default function App() {
       const fetchImage = async () => {
         const storedImage = await AsyncStorage.getItem("photoPerfil");
         setImage(storedImage);
+        console.log("cambio drawer");
       };
 
       fetchImage();
-    }, []);
+    }, [image]);
 
     return (
       <DrawerContentScrollView {...props}>

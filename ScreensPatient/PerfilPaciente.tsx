@@ -15,7 +15,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import stylesHistorial from "../styles/stylesHistorial";
 import * as ImagePicker from "expo-image-picker";
 import Icon from "react-native-vector-icons/FontAwesome";
-import Icon2 from "react-native-vector-icons/SimpleLineIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BACKEND_URL } from "@env";
 import { LinearGradient } from "expo-linear-gradient";
@@ -284,13 +283,11 @@ const PerfilPaciente = ({
         },
       });
 
-      if (response.status === 201) {
         console.log('Éxito Datos actualizados correctamente');
         console.log('Respuesta del servidor:', response.data);
         await AsyncStorage.setItem('photoPerfil', photo);
-      } else {
         console.log('Error No se pudieron actualizar los datos');
-      }
+      
     } catch (error) {
       console.error(error);
       console.log(' Ocurrió un error al actualizar los datos');
@@ -315,13 +312,15 @@ const PerfilPaciente = ({
 
   const SaveChanges = async () => {
     const response = await axios.post(BACKEND_URL + "/actualizar-usuario", {
-      id: userID,
+      id: Number(userID),
       userType: userRol,
       nombre: Name,
       apellido: apellido,
       phone: tel,
       edad: edad,
     });
+
+    console.log("Response:", response.data);
 
     if (response.data.code === 500) {
       Alert.alert("Error", "Error al guardar los cambios");
@@ -331,11 +330,7 @@ const PerfilPaciente = ({
       Alert.alert("Error", "No se encontró el usuario");
       return false;
     }
-    if (response.data.code === 201) {
-      Alert.alert("Éxito", "Cambios guardados con éxito");
-      navigation.goBack();
-      return true;
-    }
+    Alert.alert("Éxito", "Cambios guardados con éxito");
   };
 
   return (
