@@ -239,7 +239,7 @@ export default function HistorialPaciente({
             <Icon
               name="user-circle"
               size={70}
-              color="#FFFFFF"
+              color="#000"
               style={{
                 alignItems: "flex-end",
                 width: windowWidth * 0.19,
@@ -277,7 +277,7 @@ export default function HistorialPaciente({
             proxima cita: {paciente.proximaCita}
           </Text>
           <Text style={{ marginLeft: 10, color: "black" }}>
-            localidad: {paciente.ubicacion}
+            Domicilio: {paciente.ubicacion}
           </Text>
           <View>
             <Text style={{ marginLeft: 10, color: "black" }}>
@@ -285,7 +285,7 @@ export default function HistorialPaciente({
             </Text>
           </View>
           <Text style={{ marginLeft: 10, color: "black" }}>
-            correo@direccion.com
+            correo@correo.com
           </Text>
         </View>
       </View>
@@ -502,6 +502,7 @@ export default function HistorialPaciente({
           visible
           icon={open ? 'menu-down' : 'plus'}
           backdropColor="rgba(0, 0, 0, 0.5)"
+          color="#000"
           fabStyle={{ backgroundColor: "#FFF" }}
           actions={[
             { icon: 'plus',

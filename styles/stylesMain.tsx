@@ -48,7 +48,7 @@ export default StyleSheet.create({
     alignSelf: "center",
     justifyContent: "flex-start",
     width: windowWidth * 0.8,
-    height: windowHeight * 0.2,
+    height: windowHeight * 0.16,
     borderRadius: 25,
     marginVertical: 15,
     shadowColor: "#000",

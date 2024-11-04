@@ -158,7 +158,7 @@ export default function MainPhisio({
                 proxima cita: {paciente.proximaCita}
               </Text>
               <Text style={stylesMain.datosPacienteMenuFisio}>
-                localidad: {paciente.ubicacion}
+                Domicilio: {paciente.ubicacion}
               </Text>
             </View>
           </View>

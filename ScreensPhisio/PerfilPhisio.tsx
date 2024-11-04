@@ -24,7 +24,7 @@ import { LinearGradient } from "expo-linear-gradient";
 
 const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
   const [userID, setUserID] = useState<string | null>(null);
-  const [userRol, setUserRol] = useState<string | null>(null);
+  const [userRol, setUserRol] = useState<string>("");
   const [image, setImage] = useState<string | null>(null);
   const [modalContraseña, setModalContraseña] = useState(false);
   const [modalPago, setModalPago] = useState(false);
@@ -151,7 +151,7 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
   const getUserID = async () => {
     const id = await AsyncStorage.getItem("idSesion");
-    const rol = await AsyncStorage.getItem("tipoUsuario");
+    const rol = await AsyncStorage.getItem("tipoUsuario") || "";
     setUserID(id);
     setUserRol(rol);
   };
@@ -176,6 +176,7 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
       setEmail(datosDelServidor.fisioterapeuta.correo);
       setTel(datosDelServidor.fisioterapeuta.telefono);
       setConsultorio(datosDelServidor.fisioterapeuta.consultorio);
+      setImage(await AsyncStorage.getItem('photoPerfil'));
     }
   };
 
@@ -194,29 +195,8 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
   };
 
   const logout = async () => {
-    await AsyncStorage.multiRemove(["idSesion", "expiracion", "tipoUsuario"]);
+    await AsyncStorage.clear();
     navigation.navigate("login");
-  };
-
-  const changeName = () => {
-    axios.post(`${BACKEND_URL}/editar-nombre`, {
-      idFisio: Number(userID),
-      nombre: Name,
-    });
-  };
-
-  const changeTel = () => {
-    axios.post(`${BACKEND_URL}/editar-nombre`, {
-      idFisio: Number(userID),
-      telefono: tel,
-    });
-  };
-
-  const changeConsultorio = () => {
-    axios.post(`${BACKEND_URL}/editar-consultorio`, {
-      idFisio: Number(userID),
-      consultorio: consultorio,
-    });
   };
 
   const openModalPago = () => setModalPago(true);
@@ -263,6 +243,44 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
     );
   };
 
+  const saveImage = async (photo: any) => {
+    if(!photo) return;
+    try {
+      const formData = new FormData();
+      const imageBlob = {
+        uri: photo,
+        type: 'image/jpg', // o el tipo de imagen que sea
+        name: 'photo.jpg',
+      } as any;
+
+      formData.append('image', await imageBlob);
+      formData.append('id', userID!);
+      formData.append('userType', userRol);
+
+      // Imprime el contenido de FormData para verificar
+      console.log('FormData content:');
+      console.log('image:', imageBlob);
+      console.log('formData:', formData);
+
+      const response = await axios.post(BACKEND_URL + '/actualizar-imagen-perfil', formData,  {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.status === 201) {
+        console.log('Éxito Datos actualizados correctamente');
+        console.log('Respuesta del servidor:', response.data);
+        await AsyncStorage.setItem('photoPerfil', photo);
+      } else {
+        console.log('Error No se pudieron actualizar los datos');
+      }
+    } catch (error) {
+      console.error(error);
+      console.log(' Ocurrió un error al actualizar los datos');
+    }
+  };
+
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -271,8 +289,34 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
       quality: 1,
     });
 
+    console.log( "result:", result);
+    
     if (!result.canceled) {
       setImage(result.assets[0].uri);
+      saveImage(result.assets[0].uri);
+    }
+  };
+
+  const SaveChanges = async () => {
+    const response = await axios.post(BACKEND_URL + "/editar-perfil", {
+      id: userID,
+      usertype: userRol,
+      nombre: Name,
+      telefono: tel,
+
+    });
+
+    if (response.data.code === 500) {
+      Alert.alert("Error", "Error al guardar los cambios");
+      return false;
+    }
+    if (response.data.code === 404) {
+      Alert.alert("Error", "No se encontró el usuario");
+      return false;
+    }
+    if (response.data.code === 201) {
+      Alert.alert("Éxito", "Cambios guardados con éxito");
+      return true;
     }
   };
 
@@ -382,6 +426,7 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
           <View style={styles.buttonsContainer}>
             <TouchableOpacity
               style={{...styles.btn, ...styles.btnSave}}
+              onPress={SaveChanges}
             >
               <View>
                 <Text style={{...styles.buttonOptionText, ...styles.textColorSave}}>Guardar cambios</Text>
@@ -405,6 +450,13 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
             </TouchableOpacity>
     
             <Divider style={{ marginTop: 20, marginBottom: 15 }}  bold/>
+
+            <TouchableOpacity
+              style={{...styles.btn, ...styles.btnChangePayment}}
+              onPress={() => navigation.goBack()}
+            > 
+              <Text style={{...styles.buttonOptionText, ...styles.textColorChangePayment}}>Volver</Text>
+            </TouchableOpacity>
 
             <TouchableOpacity
               style={{...styles.btn, ...styles.btnLogout}}

@@ -29,7 +29,7 @@ const PerfilPaciente = ({
   navigation: NavigationProp<any>;
 }) => {
   const [userID, setUserID] = useState<string | null>(null);
-  const [userRol, setUserRol] = useState<string | null>(null);
+  const [userRol, setUserRol] = useState<string>("");
   const [image, setImage] = useState<string | null>(null);
   const [ModalLogout, setModalLogout] = useState(false);
   const [modalContraseña, setModalContraseña] = useState(false);
@@ -68,7 +68,7 @@ const PerfilPaciente = ({
 
   const getUserID = async () => {
     const id = await AsyncStorage.getItem("idSesion");
-    const rol = await AsyncStorage.getItem("tipoUsuario");
+    const rol = await AsyncStorage.getItem("tipoUsuario") || "";
     setUserID(id);
     setUserRol(rol);
   };
@@ -240,19 +240,80 @@ const PerfilPaciente = ({
     navigation.navigate("login");
   };
 
+  const saveImage = async (photo: any) => {
+    if(!photo) return;
+    try {
+      const formData = new FormData();
+      const imageBlob = {
+        uri: photo,
+        type: 'image/jpg', // o el tipo de imagen que sea
+        name: 'photo.jpg',
+      } as any;
+
+      formData.append('image', await imageBlob);
+      formData.append('id', userID!);
+      formData.append('userType', userRol);
+
+      // Imprime el contenido de FormData para verificar
+      console.log('FormData content:');
+      console.log('image:', imageBlob);
+      console.log('formData:', formData);
+
+      const response = await axios.post(BACKEND_URL + '/actualizar-imagen-perfil', formData,  {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.status === 201) {
+        console.log('Éxito Datos actualizados correctamente');
+        console.log('Respuesta del servidor:', response.data);
+      } else {
+        console.log('Error No se pudieron actualizar los datos');
+      }
+    } catch (error) {
+      console.error(error);
+      console.log(' Ocurrió un error al actualizar los datos');
+    }
+  };
+
   const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
 
-    console.log(result);
-
+    console.log( "result:", result);
+    
     if (!result.canceled) {
       setImage(result.assets[0].uri);
+      saveImage(result.assets[0].uri);
+    }
+  };
+
+  const SaveChanges = async () => {
+    const response = await axios.post(BACKEND_URL + "/editar-perfil", {
+      id: userID,
+
+      nombre: Name,
+      telefono: tel,
+      imagen: image,
+      edad: edad,
+    });
+
+    if (response.data.code === 500) {
+      Alert.alert("Error", "Error al guardar los cambios");
+      return false;
+    }
+    if (response.data.code === 404) {
+      Alert.alert("Error", "No se encontró el usuario");
+      return false;
+    }
+    if (response.data.code === 201) {
+      Alert.alert("Éxito", "Cambios guardados con éxito");
+      return true;
     }
   };
 
@@ -388,6 +449,7 @@ const PerfilPaciente = ({
           <View style={styles.buttonsContainer}>
           <TouchableOpacity
               style={{...styles.btn, ...styles.btnSave}}
+              onPress={SaveChanges}
             >
               <View>
                 <Text style={{...styles.buttonOptionText, ...styles.textColorSave}}>Guardar cambios</Text>
@@ -409,6 +471,13 @@ const PerfilPaciente = ({
             </TouchableOpacity>
 
             <Divider style={{ marginTop: 20, marginBottom: 15 }}  bold/>
+
+            <TouchableOpacity
+              style={{...styles.btn, ...styles.btnChangePayment}}
+              onPress={() => navigation.goBack()}
+            > 
+              <Text style={{...styles.buttonOptionText, ...styles.textColorChangePayment}}>Volver</Text>
+            </TouchableOpacity>
 
             <TouchableOpacity
               style={{...styles.btn, ...styles.btnLogout}}

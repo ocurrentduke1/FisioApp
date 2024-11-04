@@ -143,69 +143,73 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
     password: password,
   };
 
-  // const loggin = async () => {
-  //   try {
-  //     const response = await axios.post(
-  //       BACKEND_URL + "/login",
-  //       {
-  //         email,
-  //         password,
-  //       },
-  //       {
-  //         headers: { "User-Agent": Platform.OS + "/" + Platform.Version },
-  //       }
-  //     );
+  const loggin = async () => {
+    try {
+      const response = await axios.post(
+        BACKEND_URL + "/login",
+        {
+          email,
+          password,
+        },
+        {
+          headers: { "User-Agent": Platform.OS + "/" + Platform.Version },
+        }
+      );
 
-  //     console.log(response.data);
+      console.log(response.data);
 
-  //     if (response.data.code == 404 || response.data.code == 500) {
-  //       Alert.alert("Correo o contraseña incorrectos");
-  //       return;
-  //     }
+      if (response.data.code == 404 || response.data.code == 500) {
+        Alert.alert("Correo o contraseña incorrectos");
+        return;
+      }
 
-  //     if (response.data.code == 401) {
-  //       setModalAuth(true);
-  //     }
+      if (response.data.code == 401) {
+        setModalAuth(true);
+      }
 
-  //     if (response.data.code == 200) {
-  //       const { key, token } = response.data;
-  //     const jwtDecode = JWT.decode(token, key);
-  //     await AsyncStorage.setItem("idSesion", jwtDecode.id.toString());
-  //     await AsyncStorage.setItem("tipoUsuario", jwtDecode.tipoUsuario);
-  //     if (jwtDecode?.exp) {
-  //       await AsyncStorage.setItem("expiracion", jwtDecode.exp.toString());
-  //     }
+      if (response.data.code == 200) {
+        const { key, token } = response.data;
+      const jwtDecode = JWT.decode(token, key);
+      await AsyncStorage.setItem("idSesion", jwtDecode.id.toString());
+      await AsyncStorage.setItem("tipoUsuario", jwtDecode.tipoUsuario);
+      const imageBuffer = jwtDecode.base64Image;
+      const uri = `data:image/${jwtDecode.extension};base64,${imageBuffer}`;
+      await AsyncStorage.setItem("photoPerfil", uri);
+      console.log("uri", uri);
+      if (jwtDecode?.exp) {
+        await AsyncStorage.setItem("expiracion", jwtDecode.exp.toString());
+      }
 
-  //     // console.log("jwt local: ", JSON.stringify(jwtDecode));
-  //     // console.log("jwt servidor", response.data);
+      // console.log("jwt local: ", JSON.stringify(jwtDecode));
+      // console.log("jwt servidor", response.data);
 
-  //     navigation.navigate(
-  //       jwtDecode.tipoUsuario === "fisioterapeuta"
-  //         ? "mainFisio"
-  //         : "mainPaciente"
-  //     );
-  //     }
+      navigation.navigate(
+        jwtDecode.tipoUsuario === "fisioterapeuta"
+          ? "mainFisio"
+          : "mainPaciente"
+      );
+      }
       
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
-  const loggin = () => {
-    if (
-      (email === "Fisio" && password === "123") ||
-      (email === "fisio" && password === "123")
-    ) {
-        navigation.navigate("mainFisio");
-
-    } else if (email === "p" && password === "123") {
-      
-        navigation.navigate("mainPaciente");
-
-    } else {
-      Alert.alert("Correo o contraseña incorrectos");
+    } catch (error) {
+      console.error(error);
     }
   };
+
+  // const loggin = () => {
+  //   if (
+  //     (email === "Fisio" && password === "123") ||
+  //     (email === "fisio" && password === "123")
+  //   ) {
+  //       navigation.navigate("mainFisio");
+
+  //   } else if (email === "p" && password === "123") {
+      
+  //       navigation.navigate("mainPaciente");
+
+  //   } else {
+  //     Alert.alert("Correo o contraseña incorrectos");
+  //   }
+  // };
 
   //console.log(BACKEND_URL + '/login');
 
