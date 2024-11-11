@@ -1,54 +1,62 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component, useEffect, useState } from "react";
 import { View, Text, ScrollView, SafeAreaView, Switch, Touchable, TouchableOpacity, Dimensions } from 'react-native';
-import { NavigationProp } from '@react-navigation/native';
+import { NavigationProp, useFocusEffect } from '@react-navigation/native';
 import stylesMain from '../styles/stylesMain';
 import stylesHistorial from '../styles/stylesHistorial';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import AshwortMetric from '../ScreensMetrics/AshwortMetric';
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
 export default function SelectorMetricas({ navigation }: { navigation: NavigationProp<any> }){
 
+  const [visible, setVisible] = useState<string | null>(null);
+  const [metricas, setMetricas] = useState({
+    ashwort: false,
+    barthel: false,
+    braden: false,
+    daniels: false,
+    glasgow: false,
+    godet: false,
+    seidel: false,
+    tinetti: false,
+  });
+
   useEffect(() => {
-    const obtenerMetricasVisibles = async () => {
-      try {
-        const jsonValue = await AsyncStorage.getItem('@metricas');
-        if (jsonValue != null) {
-          setMetricas(JSON.parse(jsonValue));
-        }
-      } catch (e) {
-        console.error('Error obteniendo las métricas de AsyncStorage', e);
+    const fetchVisible = async () => {
+      const visible = await AsyncStorage.getItem('metricas');
+      if (visible == null) {
+        setMetricas({
+          ashwort: true,
+          barthel: true,
+          braden: true,
+          daniels: true,
+          glasgow: true,
+          godet: true,
+          seidel: true,
+          tinetti: true,
+        });
+      } else {
+        setMetricas(JSON.parse(visible));
       }
+      setVisible(visible);
+      console.log("visible", visible);
     };
-
-    obtenerMetricasVisibles();
+    fetchVisible();
   }, []);
-// Paso 1 y 2: Definir e inicializar el estado
-const [metricas, setMetricas] = useState({
-  daniels: true,
-  glasgow: true,
-  eva: true,
-  seidel: true,
-  ashwort: true,
-  tinetti: true,
-  borg: true,
-  barthel: true,
-  braden: true,
-  godet: true,
-});
 
-
-const guardarEnAsyncStorage = async (metricas: any) => {
-  try {
-    const jsonValue = JSON.stringify(metricas);
-    await AsyncStorage.setItem('@metricas', jsonValue);
-    console.log('Datos guardados en AsyncStorage');
-  } catch (e) {
-    console.error('Error guardando en AsyncStorage', e);
-  }
-};
+  const guardarEnAsyncStorage = async (metricas: any) => {
+    try {
+      const jsonValue = JSON.stringify(metricas);
+      await AsyncStorage.setItem('metricas', jsonValue);
+      console.log('Datos guardados en AsyncStorage');
+      console.log(jsonValue);
+    } catch (e) {
+      console.error('Error guardando en AsyncStorage', e);
+    }
+  };
 
 // Paso 3: Crear un método para cambiar el estado
 const toggleMetrica = (metrica: keyof typeof metricas) => {
@@ -71,47 +79,11 @@ const enviarAlServidor = () => {
       <View style={stylesMain.datosMetricas}>
     <SafeAreaView>
       <ScrollView style={stylesMain.formatMetrics}>
-        <View style={ stylesMain.metricsEnabler}>
-       <Text style={{color: "#fff"}}>
-       Escala Daniels modificada
-       </Text>
-       <Switch value={metricas.daniels} onValueChange={() => toggleMetrica('daniels')} />
-        </View>
-        <View style={ stylesMain.metricsEnabler}>
-        <Text style={{color: "#fff"}}>
-        Escala de Glasgow
-       </Text>
-       <Switch value={metricas.glasgow} onValueChange={() => toggleMetrica('glasgow')}/>
-        </View>
-        <View style={ stylesMain.metricsEnabler}>
-        <Text style={{color: "#fff"}}>
-        EVA (Escala Visual Analógica)
-       </Text>
-       <Switch value={metricas.eva} onValueChange={() => toggleMetrica('eva')}/>
-        </View>
-        <View style={ stylesMain.metricsEnabler}>
-       <Text style={{color: "#fff"}}>
-       Escala de Seidel o ROTS
-       </Text>
-       <Switch value={metricas.seidel} onValueChange={() => toggleMetrica('seidel')}/>
-        </View>
-        <View style={ stylesMain.metricsEnabler}>
+      <View style={ stylesMain.metricsEnabler}>
         <Text style={{color: "#fff"}}>
         Escala de Ashwort
        </Text>
        <Switch value={metricas.ashwort} onValueChange={() => toggleMetrica('ashwort')}/>
-        </View>
-        <View style={ stylesMain.metricsEnabler}>
-        <Text style={{color: "#fff"}}>
-        Escala Tinetti
-       </Text>
-       <Switch value={metricas.tinetti} onValueChange={() => toggleMetrica('tinetti')}/>
-        </View>
-        <View style={ stylesMain.metricsEnabler}>
-       <Text style={{color: "#fff"}}>
-       Escala de Borg
-       </Text>
-       <Switch value={metricas.borg} onValueChange={() => toggleMetrica('borg')}/>
         </View>
         <View style={ stylesMain.metricsEnabler}>
         <Text style={{color: "#fff"}}>
@@ -127,9 +99,33 @@ const enviarAlServidor = () => {
         </View>
         <View style={ stylesMain.metricsEnabler}>
        <Text style={{color: "#fff"}}>
+       Escala Daniels modificada
+       </Text>
+       <Switch value={metricas.daniels} onValueChange={() => toggleMetrica('daniels')} />
+        </View>
+        <View style={ stylesMain.metricsEnabler}>
+        <Text style={{color: "#fff"}}>
+        Escala de Glasgow
+       </Text>
+       <Switch value={metricas.glasgow} onValueChange={() => toggleMetrica('glasgow')}/>
+        </View>
+        <View style={ stylesMain.metricsEnabler}>
+       <Text style={{color: "#fff"}}>
        Escala o signo de Godet
        </Text>
        <Switch value={metricas.godet} onValueChange={() => toggleMetrica('godet')}/>
+        </View>
+        <View style={ stylesMain.metricsEnabler}>
+       <Text style={{color: "#fff"}}>
+       Escala de Seidel o ROTS
+       </Text>
+       <Switch value={metricas.seidel} onValueChange={() => toggleMetrica('seidel')}/>
+        </View>
+        <View style={ stylesMain.metricsEnabler}>
+        <Text style={{color: "#fff"}}>
+        Escala Tinetti
+       </Text>
+       <Switch value={metricas.tinetti} onValueChange={() => toggleMetrica('tinetti')}/>
         </View>
         <TouchableOpacity style={{
           backgroundColor: "#00BCD4",

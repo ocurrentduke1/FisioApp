@@ -479,14 +479,14 @@ export default function Registrar({
               } else {
                 // if(auth){
                 //   console.log(registerData);
-                //   navigation.navigate('registrarPersonales', { registerData: registerData });
+                  navigation.navigate('registrarPersonales', { registerData: registerData });
                 //   //console.log(registerData);
                 //   }else{
                 //     setModalAuth(true);
                 //     // sendEmail();
                 //   }
 
-                sendEmail();
+                // sendEmail();
                 // setModalAuth(true);
               }
             } else {

@@ -8,33 +8,63 @@ import {
   Image,
   Alert,
   Modal,
-  Button,
   StyleSheet,
+  Platform,
 } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import { RouteProp } from "@react-navigation/native";
 import { SelectList } from "react-native-dropdown-select-list";
 import { BACKEND_URL } from "@env";
 import stylesLogin from "./styles/stylesLogin";
-import { TextInput } from "react-native-paper";
+import { Searchbar, TextInput } from "react-native-paper";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import MapView from "react-native-maps";
 
 export default function RegistrarPersonales({
-  route,navigation,
+  route,
+  navigation,
 }: {
   navigation: NavigationProp<any>;
   route: RouteProp<any, any>;
 }) {
-
-  const [nombre, setNombre] = useState('');
-  const [apellido, setApellido] = useState('');
+  const [nombre, setNombre] = useState("");
+  const [apellido, setApellido] = useState("");
   const [selected, setSelected] = useState("");
   const [isModalVisible, setModalVisible] = useState(false);
-  const [age, setAge] = useState<string>('');
-  const [address, setAddress] = useState<string>('');
+  const [age, setAge] = useState<string>("");
+  const [address, setAddress] = useState<string>("");
   const [sex, setSex] = useState<string | null>(null);
+  const [showPicker, setShowPicker] = useState(false);
+  const [date, setDate] = useState(new Date());
+  const [ModalMaps, setModalMaps] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const togglePicker = () => {
+    setShowPicker(!showPicker);
+  };
+
+  const onChange = ({ type }: { type: string }, selectedDate: any) => {
+    if (type === "set") {
+      const currentDate = selectedDate;
+      setDate(currentDate);
+
+      if (Platform.OS === "android") {
+        togglePicker();
+        setAge(
+          currentDate.toLocaleDateString("es-ES", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })
+        );
+      }
+    } else {
+      togglePicker();
+    }
+  };
 
   const { registerData } = route.params as { registerData: any };
-  
+
   const registerDataPhisio = {
     ...registerData,
     nombre: nombre,
@@ -46,7 +76,7 @@ export default function RegistrarPersonales({
     apellido: apellido,
     domicilio: address,
     edad: age,
-    genero: sex
+    genero: sex,
   };
 
   const registerUser = async () => {
@@ -55,11 +85,14 @@ export default function RegistrarPersonales({
         ? "/registrar-fisioterapeuta"
         : "/registrar-paciente";
     if (selected === "fisioterapeuta") {
-      const response = await axios.post(BACKEND_URL + route, registerDataPhisio, 
+      const response = await axios.post(
+        BACKEND_URL + route,
+        registerDataPhisio,
         {
-        headers: { "Access-Control-Allow-Origin": "*" },
-      });
-      
+          headers: { "Access-Control-Allow-Origin": "*" },
+        }
+      );
+
       navigation.navigate("login", {
         registerDataPhisio: registerDataPhisio,
       });
@@ -108,7 +141,7 @@ export default function RegistrarPersonales({
     { key: "2", value: "Femenino" },
     { key: "3", value: "Otro" },
   ];
-  
+
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
@@ -143,6 +176,13 @@ export default function RegistrarPersonales({
     return true;
   };
 
+  {
+    /* Modal para ubicacion */
+  }
+  const toggleMaps = () => {
+    setModalMaps(!ModalMaps);
+  };
+
   return (
     <View style={stylesLogin.container}>
       <Text style={{ fontSize: 30, color: "#FFFFFF" }}> Registrar cuenta</Text>
@@ -151,18 +191,18 @@ export default function RegistrarPersonales({
         source={require("./assets/logoFisioApp.png")}
       />
 
-      <View style={[stylesLogin.datos, {height: 350}]}>
+      <View style={[stylesLogin.datos, { height: 350 }]}>
         <TextInput //textbox ingresar correo
-          mode= "outlined"
-          label = "Nombre(s)"
+          mode="outlined"
+          label="Nombre(s)"
           style={stylesLogin.TextInput}
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
           onChangeText={setNombre}
         />
         <TextInput //textbox ingresar correo
-          mode= "outlined"
-          label = "Apellidos"
+          mode="outlined"
+          label="Apellidos"
           style={stylesLogin.TextInput}
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
@@ -201,102 +241,120 @@ export default function RegistrarPersonales({
         />
 
         <Modal visible={isModalVisible} transparent={true}>
-          <View style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-          }}>
           <View
             style={{
-              backgroundColor: "white",
-              width: "80%",
-              height: "70%",
-              padding: 20,
-              borderRadius: 10,
+              flex: 1,
+              justifyContent: "center",
               alignItems: "center",
             }}
           >
-            <Text style={{ fontSize: 20 }}>Datos de Paciente</Text>
-            <TextInput
-              mode= "outlined"
-              label = "Edad"
-              value={age}
-              onChangeText={setAge}
-              outlineColor="#c5cae9"
-              activeOutlineColor="#c5cae9"
-              keyboardType="numeric"
-              style={stylesLogin.TextInput}
-            />
-            <TextInput
-            mode= "outlined"
-              label="Domicilio"
-              outlineColor="#c5cae9"
-              activeOutlineColor="#c5cae9"
-              value={address}
-              onChangeText={setAddress}
-              style={stylesLogin.TextInput}
-            />
-            <SelectList
-              setSelected={(val: string) => {
-                setSex(val);
-              }}
-              data={dataSex}
-              save="value"
-              dropdownItemStyles={{
-                backgroundColor: "#FFFFFF",
-                width: 300,
-                height: 50,
-                borderBottomWidth: 1,
-                borderBottomColor: "#000000",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              dropdownStyles={{
-                backgroundColor: "#FFFFFF",
-                width: 300,
-                height: 110,
-              }}
-              boxStyles={{
-                backgroundColor: "#FFFFFF",
-                width: 300,
-                height: 50,
-                justifyContent: "center",
-                alignItems: "center",
-                marginTop: 30,
-              }}
-              placeholder="Selecciona tu Genero"
-            />
-            <TouchableOpacity //boton de registrar cuenta
+            <View
               style={{
-                width: "100%",
-                padding: 15,
-                backgroundColor: "#00bcd4",
-                borderRadius: 20,
+                backgroundColor: "white",
+                width: "80%",
+                height: "70%",
+                padding: 20,
+                borderRadius: 10,
                 alignItems: "center",
-                marginVertical: 10,
               }}
-              onPress={handlePatientRegister} // Función que se ejecuta cuando se presiona el botón
             >
-              <Text style={{ color: "#FFFFFF", fontSize: 16 }}>
-                Registrar Datos
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity //boton de registrar cuenta
-              style={{
-                width: "100%",
-                padding: 15,
-                backgroundColor: "#3F51B5",
-                borderRadius: 20,
-                alignItems: "center",
-                marginVertical: 10,
-              }}
-              onPress={toggleModal} // Función que se ejecuta cuando se presiona el botón
-            >
-              <Text style={{ color: "#FFFFFF", fontSize: 16 }}>
-                Cerrar
-              </Text>
-            </TouchableOpacity>
-          </View>
+              <Text style={{ fontSize: 20 }}>Datos de Paciente</Text>
+
+              {showPicker && (
+                <DateTimePicker
+                  mode="date"
+                  display="spinner"
+                  value={date} // Provide a value prop with the current date or a specific date
+                  onChange={onChange}
+                />
+              )}
+              <TouchableOpacity
+                style={{ paddingTop: 5 }}
+                onPress={togglePicker}
+              >
+                <TextInput
+                  mode="outlined"
+                  label="Edad"
+                  value={age}
+                  onChangeText={setAge}
+                  outlineColor="#c5cae9"
+                  activeOutlineColor="#c5cae9"
+                  keyboardType="numeric"
+                  style={stylesLogin.TextInput}
+                  disabled={true}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={toggleMaps}>
+                <TextInput
+                  mode="outlined"
+                  label="Domicilio"
+                  outlineColor="#c5cae9"
+                  activeOutlineColor="#c5cae9"
+                  value={address}
+                  onChangeText={setAddress}
+                  style={stylesLogin.TextInput}
+                  disabled={true}
+                />
+              </TouchableOpacity>
+              <SelectList
+                setSelected={(val: string) => {
+                  setSex(val);
+                }}
+                data={dataSex}
+                save="value"
+                dropdownItemStyles={{
+                  backgroundColor: "#FFFFFF",
+                  width: 300,
+                  height: 50,
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#000000",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                dropdownStyles={{
+                  backgroundColor: "#FFFFFF",
+                  width: 300,
+                  height: 110,
+                }}
+                boxStyles={{
+                  backgroundColor: "#FFFFFF",
+                  width: 300,
+                  height: 50,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: 30,
+                }}
+                placeholder="Selecciona tu Genero"
+              />
+              <TouchableOpacity //boton de registrar cuenta
+                style={{
+                  width: "100%",
+                  padding: 15,
+                  backgroundColor: "#00bcd4",
+                  borderRadius: 20,
+                  alignItems: "center",
+                  marginVertical: 10,
+                }}
+                onPress={handlePatientRegister} // Función que se ejecuta cuando se presiona el botón
+              >
+                <Text style={{ color: "#FFFFFF", fontSize: 16 }}>
+                  Registrar Datos
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity //boton de registrar cuenta
+                style={{
+                  width: "100%",
+                  padding: 15,
+                  backgroundColor: "#3F51B5",
+                  borderRadius: 20,
+                  alignItems: "center",
+                  marginVertical: 10,
+                }}
+                onPress={toggleModal} // Función que se ejecuta cuando se presiona el botón
+              >
+                <Text style={{ color: "#FFFFFF", fontSize: 16 }}>Cerrar</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </Modal>
       </View>
@@ -319,6 +377,50 @@ export default function RegistrarPersonales({
       </TouchableOpacity>
 
       <StatusBar style="auto" />
+
+      {/* Modal para ubicacion */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={ModalMaps}
+        onRequestClose={toggleMaps}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalViewMaps}>
+            <MapView style={styles.map} />
+            <Searchbar
+              placeholder="Buscar Direccion"
+              onChangeText={(query) => {
+                setSearchQuery(query);
+              }}
+              value={searchQuery}
+              style={{
+                position: "absolute",
+                top: 20,
+                margin: 10,
+                width: 350,
+                backgroundColor: "#FFF",
+                borderColor: "black",
+                borderWidth: 1,
+                alignSelf: "center",
+                maxWidth: "90%",
+              }}
+            />
+            <TouchableOpacity
+              style={[styles.button, styles.btnCloseMaps]}
+              onPress={toggleMaps}
+            >
+              <Text style={styles.textStyle}>Cancelar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, styles.btnSaveMaps]}
+              onPress={toggleMaps}
+            >
+              <Text style={styles.textStyle}>Guardar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -326,30 +428,30 @@ export default function RegistrarPersonales({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     padding: 16,
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
     width: 300,
     padding: 20,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   modalText: {
     marginBottom: 20,
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   codeContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 20,
   },
   codeInput: {
@@ -359,14 +461,14 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   button: {
-    backgroundColor: '#3F51B5',
+    backgroundColor: "#3F51B5",
     padding: 10,
     borderRadius: 5,
-    alignItems: 'center',
+    alignItems: "center",
     margin: 10,
   },
   buttonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
   },
   Cancelbutton: {
@@ -376,7 +478,41 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
   },
+  map: {
+    width: "100%",
+    height: "100%",
+  },
+  btnCloseMaps: {
+    position: "absolute",
+    bottom: 20,
+    left: 20,
+    backgroundColor: "#f44336",
+  },
+  btnSaveMaps: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    backgroundColor: "#2196F3",
+  },
+  modalViewMaps: {
+    width: "95%",
+    height: "95%",
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 20,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
 });
-
-
-

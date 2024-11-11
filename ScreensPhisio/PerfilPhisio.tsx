@@ -16,11 +16,12 @@ import stylesHistorial from "../styles/stylesHistorial";
 import * as ImagePicker from "expo-image-picker";
 import Icon from "react-native-vector-icons/FontAwesome";
 import stylesMain from "../styles/stylesMain";
-import { Divider, TextInput, TouchableRipple } from "react-native-paper";
+import { Divider, TextInput, TouchableRipple, Searchbar } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BACKEND_URL } from "@env";
 import { useFocusEffect } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
+import MapView from "react-native-maps";
 
 const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
   const [userID, setUserID] = useState<string | null>(null);
@@ -28,6 +29,7 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
   const [image, setImage] = useState<string | null>(null);
   const [modalContraseña, setModalContraseña] = useState(false);
   const [modalPago, setModalPago] = useState(false);
+  const [ModalMaps, setModalMaps] = useState(false);
   const [email, setEmail] = useState("");
   const [Name, setName] = useState("");
   const [apellido, setApellido] = useState("");
@@ -47,6 +49,7 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [showConfirmRequirements, setShowConfirmRequirements] = useState(false);
   const [ShowRequirements, setShowRequirements] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const requirements = [
     {
@@ -333,6 +336,11 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
     }
   };
 
+  {/* Modal para ubicacion */ }
+  const toggleMaps = () => {
+    setModalMaps(!ModalMaps);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient
@@ -474,6 +482,13 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
               onPress={openModalPago}
             >
               <Text style={{...styles.buttonOptionText, ...styles.textColorChangePayment}}>Cambiar método de pago</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={{...styles.btn, ...styles.btnChangePayment}}
+              onPress={toggleMaps}
+            >
+              <Text style={{...styles.buttonOptionText, ...styles.textColorChangePayment}}>Consultorio</Text>
             </TouchableOpacity>
     
             <Divider style={{ marginTop: 20, marginBottom: 15 }}  bold/>
@@ -733,6 +748,50 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
           </View>
         </View>
       </Modal>
+
+      {/* Modal para ubicacion */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={ModalMaps}
+        onRequestClose={toggleMaps}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalViewMaps}>
+            <MapView style={styles.map} />
+            <Searchbar
+              placeholder="Buscar Direccion"
+              onChangeText={(query) => {
+                setSearchQuery(query);
+              }}
+              value={searchQuery}
+              style={{
+                position: "absolute",
+                top: 20,
+                margin: 10,
+                width: 350,
+                backgroundColor: "#FFF",
+                borderColor: "black",
+                borderWidth: 1,
+                alignSelf: "center",
+                maxWidth: "90%",
+              }}
+            />
+            <TouchableOpacity
+              style={[styles.button, styles.btnCloseMaps]}
+              onPress={toggleMaps}
+            >
+              <Text style={styles.textStyle}>Cancelar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, styles.btnSaveMaps]}
+              onPress={toggleMaps}
+            >
+              <Text style={styles.textStyle}>Guardar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );  
 };
@@ -919,6 +978,38 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
     height: 300
+  },
+  map: {
+    width: "100%",
+    height: "100%",
+  },
+  btnCloseMaps: {
+    position: "absolute",
+    bottom: 20,
+    left: 20,
+    backgroundColor: "#f44336",
+  },
+  btnSaveMaps: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    backgroundColor: "#2196F3",
+  },
+  modalViewMaps: {
+    width: "90%",
+    height: "95%",
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 20,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
 });
 

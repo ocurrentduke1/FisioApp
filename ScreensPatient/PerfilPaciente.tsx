@@ -18,9 +18,10 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BACKEND_URL } from "@env";
 import { LinearGradient } from "expo-linear-gradient";
-import { Divider, TextInput } from "react-native-paper";
+import { Divider, TextInput, Searchbar } from "react-native-paper";
 import { useFocusEffect } from "@react-navigation/native";
 import stylesMain from "../styles/stylesMain";
+import MapView from "react-native-maps";
 
 const PerfilPaciente = ({
   navigation,
@@ -32,6 +33,8 @@ const PerfilPaciente = ({
   const [image, setImage] = useState<string | null>(null);
   const [ModalLogout, setModalLogout] = useState(false);
   const [modalContraseña, setModalContraseña] = useState(false);
+  const [ModalMaps, setModalMaps] = useState(false);
+  const [ubicacion, setUbicacion] = useState("");
   const [Name, setName] = useState("");
   const [apellido, setApellido] = useState("");
   const [email, setEmail] = useState("");
@@ -48,14 +51,21 @@ const PerfilPaciente = ({
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [showConfirmRequirements, setShowConfirmRequirements] = useState(false);
   const [ShowRequirements, setShowRequirements] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const requirements = [
     {
       label: "Debe contener entre 8 a 16 caracteres.",
       isValid: password.length >= 8 && password.length <= 16,
     },
-    { label: "Debe contener mínimo 1 minúscula.", isValid: /[a-z]/.test(password) },
-    { label: "Debe contener mínimo 1 mayúscula.", isValid: /[A-Z]/.test(password) },
+    {
+      label: "Debe contener mínimo 1 minúscula.",
+      isValid: /[a-z]/.test(password),
+    },
+    {
+      label: "Debe contener mínimo 1 mayúscula.",
+      isValid: /[A-Z]/.test(password),
+    },
     { label: "Debe contener mínimo 1 número.", isValid: /\d/.test(password) },
   ];
 
@@ -68,15 +78,18 @@ const PerfilPaciente = ({
 
   const getUserID = async () => {
     const id = await AsyncStorage.getItem("idSesion");
-    const rol = await AsyncStorage.getItem("tipoUsuario") || "";
+    const rol = (await AsyncStorage.getItem("tipoUsuario")) || "";
     setUserID(id);
     setUserRol(rol);
   };
 
   const sendEmail = async () => {
-    const response = await axios.post(`${BACKEND_URL}/enviar-correo-recuperacion`, {
-      destinatario: email,
-    });
+    const response = await axios.post(
+      `${BACKEND_URL}/enviar-correo-recuperacion`,
+      {
+        destinatario: email,
+      }
+    );
 
     if (response.data.code === 500) {
       Alert.alert("Error", "No se pudo enviar el correo de verificación");
@@ -116,17 +129,26 @@ const PerfilPaciente = ({
 
   const verifyAuthCode = async () => {
     const enteredCode = authCode.join("");
-    const response = await axios.post(`${BACKEND_URL}/verificar-codigo-recuperacion`, {
-      codigo: enteredCode,
-      destinatario: email,
-    });
+    const response = await axios.post(
+      `${BACKEND_URL}/verificar-codigo-recuperacion`,
+      {
+        codigo: enteredCode,
+        destinatario: email,
+      }
+    );
 
     if (response.data.code === 404) {
-      Alert.alert("Error", "Error al verificar el código de autenticación, reenvíe el correo de verificación");
+      Alert.alert(
+        "Error",
+        "Error al verificar el código de autenticación, reenvíe el correo de verificación"
+      );
       return false;
     }
     if (response.data.code === 403) {
-      Alert.alert("Error", "El código de autenticación ha expirado, reenvíe el correo de verificación");
+      Alert.alert(
+        "Error",
+        "El código de autenticación ha expirado, reenvíe el correo de verificación"
+      );
       return false;
     }
     if (response.data.code === 401) {
@@ -173,9 +195,12 @@ const PerfilPaciente = ({
   }, []);
 
   const reSendEmail = async () => {
-    const response = await axios.post(`${BACKEND_URL}/enviar-correo-recuperacion`, {
-      destinatario: email,
-    });
+    const response = await axios.post(
+      `${BACKEND_URL}/enviar-correo-recuperacion`,
+      {
+        destinatario: email,
+      }
+    );
 
     if (response.data.code === 500) {
       Alert.alert("Error", "No se pudo enviar el correo de verificación");
@@ -259,38 +284,41 @@ const PerfilPaciente = ({
   };
 
   const saveImage = async (photo: any) => {
-    if(!photo) return;
+    if (!photo) return;
     try {
       const formData = new FormData();
       const imageBlob = {
         uri: photo,
-        type: 'image/jpg', // o el tipo de imagen que sea
-        name: 'photo.jpg',
+        type: "image/jpg", // o el tipo de imagen que sea
+        name: "photo.jpg",
       } as any;
 
-      formData.append('image', await imageBlob);
-      formData.append('id', userID!);
-      formData.append('userType', userRol);
+      formData.append("image", await imageBlob);
+      formData.append("id", userID!);
+      formData.append("userType", userRol);
 
       // Imprime el contenido de FormData para verificar
-      console.log('FormData content:');
-      console.log('image:', imageBlob);
-      console.log('formData:', formData);
+      console.log("FormData content:");
+      console.log("image:", imageBlob);
+      console.log("formData:", formData);
 
-      const response = await axios.post(BACKEND_URL + '/actualizar-imagen-perfil', formData,  {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await axios.post(
+        BACKEND_URL + "/actualizar-imagen-perfil",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
-        console.log('Éxito Datos actualizados correctamente');
-        console.log('Respuesta del servidor:', response.data);
-        await AsyncStorage.setItem('photoPerfil', photo);
-        console.log('Error No se pudieron actualizar los datos');
-      
+      console.log("Éxito Datos actualizados correctamente");
+      console.log("Respuesta del servidor:", response.data);
+      await AsyncStorage.setItem("photoPerfil", photo);
+      console.log("Error No se pudieron actualizar los datos");
     } catch (error) {
       console.error(error);
-      console.log(' Ocurrió un error al actualizar los datos');
+      console.log(" Ocurrió un error al actualizar los datos");
     }
   };
 
@@ -302,8 +330,8 @@ const PerfilPaciente = ({
       quality: 1,
     });
 
-    console.log( "result:", result);
-    
+    console.log("result:", result);
+
     if (!result.canceled) {
       setImage(result.assets[0].uri);
       saveImage(result.assets[0].uri);
@@ -331,6 +359,11 @@ const PerfilPaciente = ({
       return false;
     }
     Alert.alert("Éxito", "Cambios guardados con éxito");
+  };
+
+  {/* Modal para ubicacion */ }
+  const toggleMaps = () => {
+    setModalMaps(!ModalMaps);
   };
 
   return (
@@ -420,9 +453,7 @@ const PerfilPaciente = ({
               outlineColor="#002245"
               activeOutlineColor="#002245"
               textColor="#002245"
-              left={<TextInput.Icon
-                style={{ marginTop: 10 }} 
-                icon="account" />}
+              left={<TextInput.Icon style={{ marginTop: 10 }} icon="account" />}
             />
 
             <TextInput
@@ -460,7 +491,10 @@ const PerfilPaciente = ({
               activeOutlineColor="#002245"
               keyboardType="numeric"
               maxLength={10}
-              left={<TextInput.Icon style={{ marginTop: 10 }} icon="calendar" />}
+              left={
+                <TextInput.Icon style={{ marginTop: 10 }} icon="calendar" />
+              }
+              disabled={true}
             />
 
             <TextInput
@@ -472,50 +506,89 @@ const PerfilPaciente = ({
               outlineColor="#002245"
               activeOutlineColor="#002245"
               disabled={true}
-              left={<TextInput.Icon style={{ marginTop: 10 }} icon="gender-male-female" />}
+              left={
+                <TextInput.Icon
+                  style={{ marginTop: 10 }}
+                  icon="gender-male-female"
+                />
+              }
             />
           </View>
 
           <View style={styles.buttonsContainer}>
-          <TouchableOpacity
-              style={{...styles.btn, ...styles.btnSave}}
+            <TouchableOpacity
+              style={{ ...styles.btn, ...styles.btnSave }}
               onPress={SaveChanges}
             >
               <View>
-                <Text style={{...styles.buttonOptionText, ...styles.textColorSave}}>Guardar cambios</Text>
+                <Text
+                  style={{
+                    ...styles.buttonOptionText,
+                    ...styles.textColorSave,
+                  }}
+                >
+                  Guardar cambios
+                </Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity
-              style={{...styles.btn, ...styles.btnChangePass}}
+              style={{ ...styles.btn, ...styles.btnChangePass }}
               onPress={sendEmail}
             >
               <View>
-                <Text style={{...styles.buttonOptionText, ...styles.textColorChangePass}}>Cambiar contraseña</Text>
+                <Text
+                  style={{
+                    ...styles.buttonOptionText,
+                    ...styles.textColorChangePass,
+                  }}
+                >
+                  Cambiar contraseña
+                </Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity
-              style={{...styles.btn, ...styles.btnChangePayment}}
-              onPress={() => console.log("Cambiar domicilio")}
+              style={{ ...styles.btn, ...styles.btnChangePayment }}
+              onPress={toggleMaps}
             >
-              <Text style={{...styles.buttonOptionText, ...styles.textColorChangePayment}}>Cambiar Domicilio</Text>
+              <Text
+                style={{
+                  ...styles.buttonOptionText,
+                  ...styles.textColorChangePayment,
+                }}
+              >
+                Cambiar Domicilio
+              </Text>
             </TouchableOpacity>
 
-            <Divider style={{ marginTop: 20, marginBottom: 15 }}  bold/>
+            <Divider style={{ marginTop: 20, marginBottom: 15 }} bold />
 
             <TouchableOpacity
-              style={{...styles.btn, ...styles.btnChangePayment}}
+              style={{ ...styles.btn, ...styles.btnChangePayment }}
               onPress={() => navigation.goBack()}
-            > 
-              <Text style={{...styles.buttonOptionText, ...styles.textColorChangePayment}}>Volver</Text>
+            >
+              <Text
+                style={{
+                  ...styles.buttonOptionText,
+                  ...styles.textColorChangePayment,
+                }}
+              >
+                Volver
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={{...styles.btn, ...styles.btnLogout}}
+              style={{ ...styles.btn, ...styles.btnLogout }}
               onPress={toggleLogout}
             >
-              <Text style={{...styles.buttonOptionText, ...styles.textColorLogout}}>Cerrar Sesión</Text>
+              <Text
+                style={{
+                  ...styles.buttonOptionText,
+                  ...styles.textColorLogout,
+                }}
+              >
+                Cerrar Sesión
+              </Text>
             </TouchableOpacity>
-
           </View>
         </ScrollView>
       </View>
@@ -552,151 +625,212 @@ const PerfilPaciente = ({
 
       {/* Modal de autenticación */}
       <Modal
-            visible={modalAuth}
-            transparent={true}
-            animationType="slide"
-            onRequestClose={() => setModalAuth(false)}
-          >
-            <View style={styles.modalContainer}>
-              <View style={styles.modalContent}>
-                <Text style={styles.modalText}>Introduzca el código de autenticación</Text>
-                <Text style={{ marginBottom: 20 }}>
-                  Revisa tu correo, te hemos enviado un código de verificación
-                </Text>
-                <View style={styles.codeContainer}>
-                  {authCode.map((code: string, index: number) => (
-                    <TextInput
-                      mode="outlined"
-                      key={index}
-                      value={code}
-                      onChangeText={(value: string) => handleAuthCodeChange(index, value)}
-                      outlineColor="#c5cae9"
-                      activeOutlineColor="#c5cae9"
-                      style={styles.codeInput}
-                      maxLength={1}
-                      keyboardType="numeric"
-                      ref={(ref: any) => (inputRefs.current[index] = ref)}
-                    />
-                  ))}
-                </View>
-                <TouchableOpacity onPress={reSendEmail} disabled={isButtonDisabled}>
-                  <Text style={isButtonDisabled ? styles.disabledText : styles.resendText}>
-                    {isButtonDisabled ? `Reenviar código (${timeLeft}s)` : "Reenviar código"}
-                  </Text>
-                </TouchableOpacity>
-                <View style={{ flexDirection: "row" }}>
-                  <TouchableOpacity
-                    style={styles.btnCancelar}
-                    onPress={() => setModalAuth(false)}
-                  >
-                    <Text style={styles.buttonText}>Cancelar</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={verifyAuthCode}
-                  >
-                    <Text style={styles.buttonText}>Ingresar</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </Modal>
-
-          {/* Modal para cambiar contraseña */}
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalContraseña}
-            onRequestClose={closeModalContraseña}
-          >
-            <View style={styles.modalContainer}>
-              <View style={styles.modalView}>
-                <Text style={styles.modalText}>Cambiar contraseña</Text>
+        visible={modalAuth}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setModalAuth(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>
+              Introduzca el código de autenticación
+            </Text>
+            <Text style={{ marginBottom: 20 }}>
+              Revisa tu correo, te hemos enviado un código de verificación
+            </Text>
+            <View style={styles.codeContainer}>
+              {authCode.map((code: string, index: number) => (
                 <TextInput
                   mode="outlined"
-                  label="Contraseña nueva"
-                  style={stylesMain.TextInputPerfil}
-                  value={confirmPassword}
-                  onFocus={() => setShowRequirements(true)}
-                  onBlur={() => setShowRequirements(false)}
-                  onChangeText={setConfirmPassword}
+                  key={index}
+                  value={code}
+                  onChangeText={(value: string) =>
+                    handleAuthCodeChange(index, value)
+                  }
                   outlineColor="#c5cae9"
                   activeOutlineColor="#c5cae9"
+                  style={styles.codeInput}
+                  maxLength={1}
+                  keyboardType="numeric"
+                  ref={(ref: any) => (inputRefs.current[index] = ref)}
                 />
-                {ShowRequirements && (
-                  <View style={{ marginVertical: 1 }}>
-                    {requirements.map((req, index) =>
-                      !req.isValid && (
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }} key={index}>
-                          <View style={styles.dot} />
-                          <Text style={{
+              ))}
+            </View>
+            <TouchableOpacity onPress={reSendEmail} disabled={isButtonDisabled}>
+              <Text
+                style={
+                  isButtonDisabled ? styles.disabledText : styles.resendText
+                }
+              >
+                {isButtonDisabled
+                  ? `Reenviar código (${timeLeft}s)`
+                  : "Reenviar código"}
+              </Text>
+            </TouchableOpacity>
+            <View style={{ flexDirection: "row" }}>
+              <TouchableOpacity
+                style={styles.btnCancelar}
+                onPress={() => setModalAuth(false)}
+              >
+                <Text style={styles.buttonText}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button} onPress={verifyAuthCode}>
+                <Text style={styles.buttonText}>Ingresar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal para cambiar contraseña */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalContraseña}
+        onRequestClose={closeModalContraseña}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Cambiar contraseña</Text>
+            <TextInput
+              mode="outlined"
+              label="Contraseña nueva"
+              style={stylesMain.TextInputPerfil}
+              value={confirmPassword}
+              onFocus={() => setShowRequirements(true)}
+              onBlur={() => setShowRequirements(false)}
+              onChangeText={setConfirmPassword}
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
+            />
+            {ShowRequirements && (
+              <View style={{ marginVertical: 1 }}>
+                {requirements.map(
+                  (req, index) =>
+                    !req.isValid && (
+                      <View
+                        style={{ flexDirection: "row", alignItems: "center" }}
+                        key={index}
+                      >
+                        <View style={styles.dot} />
+                        <Text
+                          style={{
                             color: "#FF0000",
                             fontSize: 12,
-                            fontWeight: 'bold',
-                            textShadowColor: '#000',
+                            fontWeight: "bold",
+                            textShadowColor: "#000",
                             textShadowRadius: 10,
-                          }}>
-                            {req.label}
-                          </Text>
-                        </View>
-                      )
-                    )}
-                  </View>
-                )}
-                <TextInput
-                  mode="outlined"
-                  label="Confirmar contraseña"
-                  style={stylesMain.TextInputPerfil}
-                  value={password}
-                  onFocus={() => setShowConfirmRequirements(true)}
-                  onBlur={() => setShowConfirmRequirements(false)}
-                  onChangeText={setPassword}
-                  outlineColor="#c5cae9"
-                  activeOutlineColor="#c5cae9"
-                />
-                {showConfirmRequirements && (
-                  <View style={{ marginVertical: 1 }}>
-                    {confirmRequirements.map((req, index) =>
-                      !req.isValid && (
-                        <Text key={index} style={{
-                          color: "#CC0000",
-                          fontSize: 12,
-                          fontWeight: 'bold',
-                          textShadowColor: '#000',
-                          textShadowRadius: 10,
-                        }}>
+                          }}
+                        >
                           {req.label}
                         </Text>
-                      )
-                    )}
-                  </View>
+                      </View>
+                    )
                 )}
-                <View style={styles.btnContainer}>
-                  <TouchableOpacity
-                    style={[styles.button, styles.btnClose]}
-                    onPress={closeModalContraseña}
-                  >
-                    <Text style={styles.textStyle}>Cancelar</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.button, styles.btnSearch]}
-                    onPress={() => {
-                      if (validatePassword()) {
-                        changeContraseña();
-                      } else {
-                        Alert.alert(
-                          "Error",
-                          "La contraseña no cumple con los requisitos mínimos o no coinciden"
-                        );
-                      }
-                    }}
-                  >
-                    <Text style={styles.textStyle}>Guardar</Text>
-                  </TouchableOpacity>
-                </View>
               </View>
+            )}
+            <TextInput
+              mode="outlined"
+              label="Confirmar contraseña"
+              style={stylesMain.TextInputPerfil}
+              value={password}
+              onFocus={() => setShowConfirmRequirements(true)}
+              onBlur={() => setShowConfirmRequirements(false)}
+              onChangeText={setPassword}
+              outlineColor="#c5cae9"
+              activeOutlineColor="#c5cae9"
+            />
+            {showConfirmRequirements && (
+              <View style={{ marginVertical: 1 }}>
+                {confirmRequirements.map(
+                  (req, index) =>
+                    !req.isValid && (
+                      <Text
+                        key={index}
+                        style={{
+                          color: "#CC0000",
+                          fontSize: 12,
+                          fontWeight: "bold",
+                          textShadowColor: "#000",
+                          textShadowRadius: 10,
+                        }}
+                      >
+                        {req.label}
+                      </Text>
+                    )
+                )}
+              </View>
+            )}
+            <View style={styles.btnContainer}>
+              <TouchableOpacity
+                style={[styles.button, styles.btnClose]}
+                onPress={closeModalContraseña}
+              >
+                <Text style={styles.textStyle}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.btnSearch]}
+                onPress={() => {
+                  if (validatePassword()) {
+                    changeContraseña();
+                  } else {
+                    Alert.alert(
+                      "Error",
+                      "La contraseña no cumple con los requisitos mínimos o no coinciden"
+                    );
+                  }
+                }}
+              >
+                <Text style={styles.textStyle}>Guardar</Text>
+              </TouchableOpacity>
             </View>
-          </Modal>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal para ubicacion */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={ModalMaps}
+        onRequestClose={toggleMaps}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalViewMaps}>
+            <MapView style={styles.map} />
+            <Searchbar
+              placeholder="Buscar Direccion"
+              onChangeText={(query) => {
+                setSearchQuery(query);
+              }}
+              value={searchQuery}
+              style={{
+                position: "absolute",
+                top: 20,
+                margin: 10,
+                width: 350,
+                backgroundColor: "#FFF",
+                borderColor: "black",
+                borderWidth: 1,
+                alignSelf: "center",
+                maxWidth: "90%",
+              }}
+            />
+            <TouchableOpacity
+              style={[styles.button, styles.btnCloseMaps]}
+              onPress={toggleMaps}
+            >
+              <Text style={styles.textStyle}>Cancelar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, styles.btnSaveMaps]}
+              onPress={toggleMaps}
+            >
+              <Text style={styles.textStyle}>Guardar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -770,11 +904,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   buttonsContainer: {
-    padding: 10
+    padding: 10,
   },
   btn: {
     borderRadius: 30,
-    padding:10,
+    padding: 10,
     marginTop: 10,
     shadowColor: "#000",
     shadowOffset: { width: 1, height: 4 },
@@ -793,7 +927,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   textColorSave: {
-    color: '#FFF'
+    color: "#FFF",
   },
   btnChangePass: {
     backgroundColor: "#165DA5",
@@ -801,7 +935,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   textColorChangePass: {
-    color: '#FFF'
+    color: "#FFF",
   },
   modalContent: {
     width: 300,
@@ -844,7 +978,7 @@ const styles = StyleSheet.create({
     width: 5,
     height: 5,
     borderRadius: 3,
-    backgroundColor: '#c5cae9',
+    backgroundColor: "#c5cae9",
     marginRight: 5,
     marginTop: 3,
   },
@@ -865,7 +999,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   textColorChangePayment: {
-    color: '#000'
+    color: "#000",
   },
   btnLogout: {
     backgroundColor: "#FF3333",
@@ -873,7 +1007,39 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   textColorLogout: {
-    color: '#FFF'
+    color: "#FFF",
+  },
+  map: {
+    width: "100%",
+    height: "100%",
+  },
+  btnCloseMaps: {
+    position: "absolute",
+    bottom: 20,
+    left: 20,
+    backgroundColor: "#f44336",
+  },
+  btnSaveMaps: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    backgroundColor: "#2196F3",
+  },
+  modalViewMaps: {
+    width: "90%",
+    height: "95%",
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 20,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
 });
 

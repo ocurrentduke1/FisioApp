@@ -59,93 +59,103 @@ export default function App() {
   const FisioDrawer = createDrawerNavigator();
   const MetricsTab = createMaterialTopTabNavigator();
 
-  const [metricasVisibles, setMetricasVisibles] = useState({
-    Ashwort: true,
-    Barthel: true,
-    Braden: true,
-    Daniels: true,
-    Glasgow: true,
-    Godet: true,
-    Seidel: true,
-    Tinetti: true,
-  });
 
   function MyTabs() {
-    useEffect(() => {
-      const obtenerMetricasVisibles = async () => {
-        try {
-          const jsonValue = await AsyncStorage.getItem("@metricas");
-          if (jsonValue != null) {
-            setMetricasVisibles(JSON.parse(jsonValue));
-          }
-        } catch (e) {
-          console.error("Error obteniendo las métricas de AsyncStorage", e);
-        }
-      };
+    
+    const [visible, setVisible] = useState<string | null>(null);
+    const [metricasVisibles, setMetricasVisibles] = useState({
+      ashwort: true,
+      barthel: true,
+      braden: true,
+      daniels: true,
+      glasgow: true,
+      godet: true,
+      seidel: true,
+      tinetti: true,
+    });
 
-      obtenerMetricasVisibles();
+    useEffect(() => {
+      const fetchVisible = async () => {
+        const visible = await AsyncStorage.getItem('metricas');
+        if (visible == null) {
+          setMetricasVisibles({
+            ashwort: true,
+            barthel: true,
+            braden: true,
+            daniels: true,
+            glasgow: true,
+            godet: true,
+            seidel: true,
+            tinetti: true,
+          });
+        } else {
+          setMetricasVisibles(JSON.parse(visible));
+        }
+        setVisible(visible);
+        console.log("visible", visible);
+      };
+      fetchVisible();
     }, []);
 
     const tabs = [
       {
         name: "Ashwort",
         component: AshwortMetric,
-        visible: metricasVisibles.Ashwort,
+        visible: metricasVisibles.ashwort,
       },
       {
         name: "Barthel",
         component: BarthelMetric,
-        visible: metricasVisibles.Barthel,
+        visible: metricasVisibles.barthel,
       },
       {
         name: "Braden",
         component: BradenMetric,
-        visible: metricasVisibles.Braden,
+        visible: metricasVisibles.braden,
       },
       {
         name: "Daniels",
         component: DanielsMetric,
-        visible: metricasVisibles.Daniels,
+        visible: metricasVisibles.daniels,
       },
       {
         name: "Glasgow",
         component: GlasgowMetric,
-        visible: metricasVisibles.Glasgow,
+        visible: metricasVisibles.glasgow,
       },
       {
         name: "Godet",
         component: GodetMetric,
-        visible: metricasVisibles.Godet,
+        visible: metricasVisibles.godet,
       },
       {
         name: "Seidel",
         component: SeidelMetric,
-        visible: metricasVisibles.Seidel,
+        visible: metricasVisibles.seidel,
       },
       {
         name: "Tinetti",
         component: TinettiMetric,
-        visible: metricasVisibles.Tinetti,
+        visible: metricasVisibles.tinetti,
       },
     ];
 
     return (
       <MetricsTab.Navigator
-        initialRouteName="CrearEscala"
         screenOptions={{
           tabBarItemStyle: { width: 100 },
           tabBarScrollEnabled: true,
         }}
       >
-        {tabs
-          .filter((tab) => tab.visible)
-          .map((tab) => (
+        {tabs.map((tab) => (
+          tab.visible && (
             <MetricsTab.Screen
               key={tab.name}
               name={tab.name}
               component={tab.component}
             />
-          ))}
+          )
+        ))}
       </MetricsTab.Navigator>
     );
   }
