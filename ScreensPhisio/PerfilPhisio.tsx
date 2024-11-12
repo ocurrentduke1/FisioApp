@@ -9,6 +9,8 @@ import {
   Modal,
   StyleSheet,
   Alert,
+  Dimensions,
+  Keyboard,
 } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -18,10 +20,13 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import stylesMain from "../styles/stylesMain";
 import { Divider, TextInput, TouchableRipple, Searchbar } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { BACKEND_URL } from "@env";
+import { BACKEND_URL, MAPS_API } from "@env";
 import { useFocusEffect } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
-import MapView from "react-native-maps";
+import MapView, { LatLng, Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import * as Location from 'expo-location';
+
+const { width, height } = Dimensions.get("window");
 
 const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
   const [userID, setUserID] = useState<string | null>(null);
@@ -50,6 +55,49 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
   const [showConfirmRequirements, setShowConfirmRequirements] = useState(false);
   const [ShowRequirements, setShowRequirements] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [results, setResults] = useState<any[]>([]);
+  const map = useRef<MapView | null>(null);
+  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [initialLat, setInitialLat] = useState<number | undefined>(undefined);
+  const [initialLng, setInitialLng] = useState<number | undefined>(undefined);
+  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+      setInitialLat(location.coords.latitude);
+      setInitialLng(location.coords.longitude);
+    })();
+  }, []);
+
+  let text = 'Waiting..';
+  if (errorMsg) {
+    text = errorMsg;
+  } else if (location) {
+    text = JSON.stringify(location);
+  }
+
+  // console.log("Latitud: ", initialLat);
+  // console.log("Longitud: ", initialLng);
+
+  const ASPECT_RATIO = width / height;
+  const LATITUDE_DELTA = 0.0922;
+  const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+  const INITIAL_POSITION = initialLat && initialLng ? {
+    latitude: initialLat,
+    longitude: initialLng,
+    latitudeDelta: LATITUDE_DELTA,
+    longitudeDelta: LONGITUDE_DELTA,
+  } : undefined;
 
   const requirements = [
     {
@@ -340,6 +388,48 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
   const toggleMaps = () => {
     setModalMaps(!ModalMaps);
   };
+
+  const searchPlaces = async () => {
+    if(!searchQuery.trim().length) return;
+
+    const googleApisUrl = "https://maps.googleapis.com/maps/api/place/textsearch/json";
+    const input = searchQuery.trim()
+    const location = `${initialLat}, ${initialLng} &radius=2`;
+    const url = `${googleApisUrl}?query=${input}&location=${location}&key=${MAPS_API}`;
+
+    try{
+      const response = await fetch(url);
+      const json = await response.json();
+      // console.log(json);
+      if(json && json.results){
+        const coords: LatLng[] = []
+        for(const item of json.results){
+          // console.log(item);
+          coords.push({
+            latitude: item.geometry.location.lat,
+            longitude: item.geometry.location.lng,
+          })
+        }
+        setResults(json.results);
+        console.log(results);
+        if (coords.length) {
+          map.current?.fitToCoordinates(coords, {
+            edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
+            animated: true,
+          });
+          Keyboard.dismiss();
+        }
+      }
+    } catch (error) {
+      console.error(error);
+  };
+};
+
+const saveLocation = async () => {
+  setConsultorio(selectedLocation ?? "");
+  console.log("Consultorio: ", selectedLocation);
+  toggleMaps();
+};
 
   return (
     <SafeAreaView style={styles.container}>
@@ -758,12 +848,23 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalViewMaps}>
-            <MapView style={styles.map} />
+            <MapView ref={map} style={styles.map} provider={PROVIDER_GOOGLE} initialRegion={INITIAL_POSITION}>
+              {results.length ? results.map((item, i) => {
+                const coord: LatLng = {
+                  latitude: item.geometry.location.lat,
+                  longitude: item.geometry.location.lng,
+                }
+                return ( <Marker key={`search-item-${i}`} coordinate={coord} title={item.name} description="" onSelect={() => setSelectedLocation(item.formatted_address)}/>
+                );
+              })
+            : null}
+            </MapView>
             <Searchbar
               placeholder="Buscar Direccion"
               onChangeText={(query) => {
                 setSearchQuery(query);
               }}
+              onEndEditing={searchPlaces}
               value={searchQuery}
               style={{
                 position: "absolute",
@@ -785,7 +886,7 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.button, styles.btnSaveMaps]}
-              onPress={toggleMaps}
+              onPress={saveLocation}
             >
               <Text style={styles.textStyle}>Guardar</Text>
             </TouchableOpacity>

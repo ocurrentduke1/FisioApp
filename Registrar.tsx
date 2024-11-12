@@ -477,17 +477,8 @@ export default function Registrar({
               if (!validateEmail(email)) {
                 Alert.alert("Error", "Correo electrónico no válido");
               } else {
-                // if(auth){
-                //   console.log(registerData);
-                  navigation.navigate('registrarPersonales', { registerData: registerData });
-                //   //console.log(registerData);
-                //   }else{
-                //     setModalAuth(true);
-                //     // sendEmail();
-                //   }
-
-                // sendEmail();
-                // setModalAuth(true);
+                sendEmail();
+                setModalAuth(true);
               }
             } else {
               Alert.alert(

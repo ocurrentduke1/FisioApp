@@ -9,6 +9,10 @@ import {
   StyleSheet,
   Modal,
   Alert,
+  Dimensions,
+  Platform,
+  PermissionsAndroid,
+  Keyboard,
 } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,12 +20,15 @@ import stylesHistorial from "../styles/stylesHistorial";
 import * as ImagePicker from "expo-image-picker";
 import Icon from "react-native-vector-icons/FontAwesome";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { BACKEND_URL } from "@env";
+import { BACKEND_URL, MAPS_API } from "@env";
 import { LinearGradient } from "expo-linear-gradient";
 import { Divider, TextInput, Searchbar } from "react-native-paper";
 import { useFocusEffect } from "@react-navigation/native";
 import stylesMain from "../styles/stylesMain";
-import MapView from "react-native-maps";
+import MapView, { LatLng, Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import * as Location from 'expo-location';
+
+const { width, height } = Dimensions.get("window");
 
 const PerfilPaciente = ({
   navigation,
@@ -34,7 +41,6 @@ const PerfilPaciente = ({
   const [ModalLogout, setModalLogout] = useState(false);
   const [modalContraseña, setModalContraseña] = useState(false);
   const [ModalMaps, setModalMaps] = useState(false);
-  const [ubicacion, setUbicacion] = useState("");
   const [Name, setName] = useState("");
   const [apellido, setApellido] = useState("");
   const [email, setEmail] = useState("");
@@ -52,6 +58,48 @@ const PerfilPaciente = ({
   const [showConfirmRequirements, setShowConfirmRequirements] = useState(false);
   const [ShowRequirements, setShowRequirements] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [results, setResults] = useState<any[]>([]);
+  const map = useRef<MapView | null>(null);
+  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [initialLat, setInitialLat] = useState<number | undefined>(undefined);
+  const [initialLng, setInitialLng] = useState<number | undefined>(undefined);
+
+  useEffect(() => {
+    (async () => {
+      
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+      setInitialLat(location.coords.latitude);
+      setInitialLng(location.coords.longitude);
+    })();
+  }, []);
+
+  let text = 'Waiting..';
+  if (errorMsg) {
+    text = errorMsg;
+  } else if (location) {
+    text = JSON.stringify(location);
+  }
+
+  // console.log("Latitud: ", initialLat);
+  // console.log("Longitud: ", initialLng);
+
+  const ASPECT_RATIO = width / height;
+  const LATITUDE_DELTA = 0.0922;
+  const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+  const INITIAL_POSITION = initialLat && initialLng ? {
+    latitude: initialLat,
+    longitude: initialLng,
+    latitudeDelta: LATITUDE_DELTA,
+    longitudeDelta: LONGITUDE_DELTA,
+  } : undefined;
 
   const requirements = [
     {
@@ -365,6 +413,41 @@ const PerfilPaciente = ({
   const toggleMaps = () => {
     setModalMaps(!ModalMaps);
   };
+
+  const searchPlaces = async () => {
+    if(!searchQuery.trim().length) return;
+
+    const googleApisUrl = "https://maps.googleapis.com/maps/api/place/textsearch/json";
+    const input = searchQuery.trim()
+    const location = `${initialLat}, ${initialLng} &radius=2000`;
+    const url = `${googleApisUrl}?query=${input}&location=${location}&key=${MAPS_API}`;
+
+    try{
+      const response = await fetch(url);
+      const json = await response.json();
+      // console.log(json);
+      if(json && json.results){
+        const coords: LatLng[] = []
+        for(const item of json.results){
+          // console.log("item: ", item);
+          coords.push({
+            latitude: item.geometry.location.lat,
+            longitude: item.geometry.location.lng,
+          })
+        }
+        setResults(json.results);
+        if (coords.length) {
+          map.current?.fitToCoordinates(coords, {
+            edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
+            animated: true,
+          });
+          Keyboard.dismiss();
+        }
+      }
+    } catch (error) {
+      console.error(error);
+  };
+};
 
   return (
     <SafeAreaView style={stylesHistorial.container}>
@@ -797,12 +880,23 @@ const PerfilPaciente = ({
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalViewMaps}>
-            <MapView style={styles.map} />
+            <MapView ref={map} style={styles.map} provider={PROVIDER_GOOGLE} initialRegion={INITIAL_POSITION}>
+              {results.length ? results.map((item, i) => {
+                const coord: LatLng = {
+                  latitude: item.geometry.location.lat,
+                  longitude: item.geometry.location.lng,
+                }
+                return ( <Marker key={`search-item-${i}`} coordinate={coord} title={item.name} description="" />
+                );
+              })
+            : null}
+            </MapView>
             <Searchbar
               placeholder="Buscar Direccion"
               onChangeText={(query) => {
                 setSearchQuery(query);
               }}
+              onEndEditing={searchPlaces}
               value={searchQuery}
               style={{
                 position: "absolute",
