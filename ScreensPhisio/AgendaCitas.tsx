@@ -13,25 +13,25 @@ import { FAB } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { TextInput } from "react-native-paper";
 import { GestureHandlerRootView, } from 'react-native-gesture-handler';
-import { ReanimatedSwipeable } from 'react-native-gesture-handler/ReanimatedSwipeable';
+import { Swipeable } from 'react-native-gesture-handler';
 import Reanimated, { SharedValue,useAnimatedStyle, } from 'react-native-reanimated';
 
-function RightAction(prog: SharedValue<number>, drag: SharedValue<number>) {
-  const styleAnimation = useAnimatedStyle(() => {
-    console.log('showRightProgress:', prog.value);
-    console.log('appliedTranslation:', drag.value);
+// function RightAction(prog: SharedValue<number>, drag: SharedValue<number>) {
+//   const styleAnimation = useAnimatedStyle(() => {
+//     console.log('showRightProgress:', prog.value);
+//     console.log('appliedTranslation:', drag.value);
 
-    return {
-      transform: [{ translateX: drag.value + 50 }],
-    };
-  });
+//     return {
+//       transform: [{ translateX: drag.value + 50 }],
+//     };
+//   });
 
-  return (
-    <Reanimated.View style={styleAnimation}>
-      <Text style={styles.rightAction}>Text</Text>
-    </Reanimated.View>
-  );
-}
+//   return (
+//     <Reanimated.View style={styleAnimation}>
+//       <Text style={styles.rightAction}>Text</Text>
+//     </Reanimated.View>
+//   );
+// }
 
 export default function AgendaCitas({
   navigation,
@@ -80,6 +80,14 @@ export default function AgendaCitas({
     console.log(`Lugar: ${location}`);
     console.log(`Hora: ${time}`);
     setModalAdd(false);
+  };
+
+  const renderRightActions = () => {
+    return (
+      <View style={styles.rightAction}>
+        <Text>Eliminar</Text>
+      </View>
+    );
   };
 
   {
@@ -214,14 +222,14 @@ export default function AgendaCitas({
           isFirst: any
         ) => (
           <GestureHandlerRootView style={styles.itemContainer}>
-            <ReanimatedSwipeable
+            <Swipeable
             containerStyle={styles.swipeable}
             friction={2}
             enableTrackpadTwoFingerGesture
             rightThreshold={40}
-            renderRightActions={RightAction} >
+            renderRightActions={ renderRightActions } >
 
-            </ReanimatedSwipeable>
+            </Swipeable>
             <TouchableOpacity
               style={{ flexDirection: "row" }}
               onPress={() => handleEditPress()}
