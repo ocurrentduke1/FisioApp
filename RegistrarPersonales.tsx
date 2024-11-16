@@ -49,6 +49,7 @@ export default function RegistrarPersonales({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [initialLat, setInitialLat] = useState<number | undefined>(undefined);
   const [initialLng, setInitialLng] = useState<number | undefined>(undefined);
+  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {

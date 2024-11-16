@@ -12,6 +12,26 @@ import { Agenda } from "react-native-calendars";
 import { FAB } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { TextInput } from "react-native-paper";
+import { GestureHandlerRootView, } from 'react-native-gesture-handler';
+import { ReanimatedSwipeable } from 'react-native-gesture-handler/ReanimatedSwipeable';
+import Reanimated, { SharedValue,useAnimatedStyle, } from 'react-native-reanimated';
+
+function RightAction(prog: SharedValue<number>, drag: SharedValue<number>) {
+  const styleAnimation = useAnimatedStyle(() => {
+    console.log('showRightProgress:', prog.value);
+    console.log('appliedTranslation:', drag.value);
+
+    return {
+      transform: [{ translateX: drag.value + 50 }],
+    };
+  });
+
+  return (
+    <Reanimated.View style={styleAnimation}>
+      <Text style={styles.rightAction}>Text</Text>
+    </Reanimated.View>
+  );
+}
 
 export default function AgendaCitas({
   navigation,
@@ -193,10 +213,19 @@ export default function AgendaCitas({
           },
           isFirst: any
         ) => (
-          <View style={styles.itemContainer}>
+          <GestureHandlerRootView style={styles.itemContainer}>
+            <ReanimatedSwipeable
+            containerStyle={styles.swipeable}
+            friction={2}
+            enableTrackpadTwoFingerGesture
+            rightThreshold={40}
+            renderRightActions={RightAction} >
+
+            </ReanimatedSwipeable>
             <TouchableOpacity
               style={{ flexDirection: "row" }}
               onPress={() => handleEditPress()}
+              
             >
               <View style={{ marginHorizontal: 10 }}>
                 {item.image ? (
@@ -214,7 +243,7 @@ export default function AgendaCitas({
                 <Text>Hora: {item.hora}</Text>
               </View>
             </TouchableOpacity>
-          </View>
+          </GestureHandlerRootView>
         )}
         onDayPress={handleDayPress}
         // Puedes añadir más propiedades específicas de Agenda aquí
@@ -446,5 +475,15 @@ const styles = StyleSheet.create({
   },
   buttonSearch: {
     backgroundColor: "#2196F3",
+  },
+  rightAction: { width: 50, height: 50, backgroundColor: 'purple' },
+  separator: {
+    width: '100%',
+    borderTopWidth: 1,
+  },
+  swipeable: {
+    height: 50,
+    backgroundColor: 'papayawhip',
+    alignItems: 'center',
   },
 });

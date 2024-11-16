@@ -18,13 +18,19 @@ import stylesHistorial from "../styles/stylesHistorial";
 import * as ImagePicker from "expo-image-picker";
 import Icon from "react-native-vector-icons/FontAwesome";
 import stylesMain from "../styles/stylesMain";
-import { Divider, TextInput, TouchableRipple, Searchbar } from "react-native-paper";
+import {
+  Divider,
+  TextInput,
+  TouchableRipple,
+  Searchbar,
+  Button,
+} from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BACKEND_URL, MAPS_API } from "@env";
 import { useFocusEffect } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import MapView, { LatLng, Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import * as Location from 'expo-location';
+import * as Location from "expo-location";
 
 const { width, height } = Dimensions.get("window");
 
@@ -57,7 +63,9 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
   const map = useRef<MapView | null>(null);
-  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [location, setLocation] = useState<Location.LocationObject | null>(
+    null
+  );
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [initialLat, setInitialLat] = useState<number | undefined>(undefined);
   const [initialLng, setInitialLng] = useState<number | undefined>(undefined);
@@ -65,10 +73,9 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
   useEffect(() => {
     (async () => {
-      
       let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
         return;
       }
 
@@ -79,33 +86,35 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
     })();
   }, []);
 
-  let text = 'Waiting..';
-  if (errorMsg) {
-    text = errorMsg;
-  } else if (location) {
-    text = JSON.stringify(location);
-  }
-
   // console.log("Latitud: ", initialLat);
   // console.log("Longitud: ", initialLng);
 
   const ASPECT_RATIO = width / height;
   const LATITUDE_DELTA = 0.0922;
   const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
-  const INITIAL_POSITION = initialLat && initialLng ? {
-    latitude: initialLat,
-    longitude: initialLng,
-    latitudeDelta: LATITUDE_DELTA,
-    longitudeDelta: LONGITUDE_DELTA,
-  } : undefined;
+  const INITIAL_POSITION =
+    initialLat && initialLng
+      ? {
+          latitude: initialLat,
+          longitude: initialLng,
+          latitudeDelta: LATITUDE_DELTA,
+          longitudeDelta: LONGITUDE_DELTA,
+        }
+      : undefined;
 
   const requirements = [
     {
       label: "Debe contener entre 8 a 16 caracteres.",
       isValid: password.length >= 8 && password.length <= 16,
     },
-    { label: "Debe contener mínimo 1 minúscula.", isValid: /[a-z]/.test(password) },
-    { label: "Debe contener mínimo 1 mayúscula.", isValid: /[A-Z]/.test(password) },
+    {
+      label: "Debe contener mínimo 1 minúscula.",
+      isValid: /[a-z]/.test(password),
+    },
+    {
+      label: "Debe contener mínimo 1 mayúscula.",
+      isValid: /[A-Z]/.test(password),
+    },
     { label: "Debe contener mínimo 1 número.", isValid: /\d/.test(password) },
   ];
 
@@ -128,17 +137,26 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
   const verifyAuthCode = async () => {
     const enteredCode = authCode.join("");
-    const response = await axios.post(`${BACKEND_URL}/verificar-codigo-recuperacion`, {
-      codigo: enteredCode,
-      destinatario: email,
-    });
+    const response = await axios.post(
+      `${BACKEND_URL}/verificar-codigo-recuperacion`,
+      {
+        codigo: enteredCode,
+        destinatario: email,
+      }
+    );
 
     if (response.data.code === 404) {
-      Alert.alert("Error", "Error al verificar el código de autenticación, reenvíe el correo de verificación");
+      Alert.alert(
+        "Error",
+        "Error al verificar el código de autenticación, reenvíe el correo de verificación"
+      );
       return false;
     }
     if (response.data.code === 403) {
-      Alert.alert("Error", "El código de autenticación ha expirado, reenvíe el correo de verificación");
+      Alert.alert(
+        "Error",
+        "El código de autenticación ha expirado, reenvíe el correo de verificación"
+      );
       return false;
     }
     if (response.data.code === 401) {
@@ -160,9 +178,12 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
   }, []);
 
   const reSendEmail = async () => {
-    const response = await axios.post(`${BACKEND_URL}/enviar-correo-recuperacion`, {
-      destinatario: email,
-    });
+    const response = await axios.post(
+      `${BACKEND_URL}/enviar-correo-recuperacion`,
+      {
+        destinatario: email,
+      }
+    );
 
     if (response.data.code === 500) {
       Alert.alert("Error", "No se pudo enviar el correo de verificación");
@@ -185,9 +206,12 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
   };
 
   const sendEmail = async () => {
-    const response = await axios.post(`${BACKEND_URL}/enviar-correo-recuperacion`, {
-      destinatario: email,
-    });
+    const response = await axios.post(
+      `${BACKEND_URL}/enviar-correo-recuperacion`,
+      {
+        destinatario: email,
+      }
+    );
 
     if (response.data.code === 500) {
       Alert.alert("Error", "No se pudo enviar el correo de verificación");
@@ -217,14 +241,16 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
   const getUserID = async () => {
     const id = await AsyncStorage.getItem("idSesion");
-    const rol = await AsyncStorage.getItem("tipoUsuario") || "";
+    const rol = (await AsyncStorage.getItem("tipoUsuario")) || "";
     setUserID(id);
     setUserRol(rol);
   };
 
   const takeInfo = async () => {
     if (userID) {
-      const response = await axios.get(`${BACKEND_URL}/obtener-info-usuario/${userID}/${userRol}`);
+      const response = await axios.get(
+        `${BACKEND_URL}/obtener-info-usuario/${userID}/${userRol}`
+      );
 
       if (response.data.code === 500) {
         console.log("Error en la petición");
@@ -242,20 +268,24 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
       setApellido(datosDelServidor.fisioterapeuta.apellido);
       setEmail(datosDelServidor.fisioterapeuta.correo);
       setTel(datosDelServidor.fisioterapeuta.telefono);
-      setConsultorio(datosDelServidor.fisioterapeuta.consultorio);
-      setImage(await AsyncStorage.getItem('photoPerfil'));
+      setConsultorio(datosDelServidor.fisioterapeuta.location);
+      setImage(await AsyncStorage.getItem("photoPerfil"));
     }
   };
 
-  useFocusEffect(useCallback(() => {
-    getUserID();
-  }, []));
+  useFocusEffect(
+    useCallback(() => {
+      getUserID();
+    }, [])
+  );
 
-  useFocusEffect(useCallback(() => {
-    if (userID && userRol) {
-      fetchData();
-    }
-  }, [userID, userRol]));
+  useFocusEffect(
+    useCallback(() => {
+      if (userID && userRol) {
+        fetchData();
+      }
+    }, [userID, userRol])
+  );
 
   const toggleLogout = () => {
     setModalLogout(!ModalLogout);
@@ -311,36 +341,39 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
   };
 
   const saveImage = async (photo: any) => {
-    if(!photo) return;
+    if (!photo) return;
     try {
       const formData = new FormData();
       const imageBlob = {
         uri: photo,
-        type: 'image/jpg', // o el tipo de imagen que sea
-        name: 'photo.jpg',
+        type: "image/jpg", // o el tipo de imagen que sea
+        name: "photo.jpg",
       } as any;
 
-      formData.append('image', await imageBlob);
-      formData.append('id', userID!);
-      formData.append('userType', userRol);
+      formData.append("image", await imageBlob);
+      formData.append("id", userID!);
+      formData.append("userType", userRol);
 
       // Imprime el contenido de FormData para verificar
-      console.log('FormData content:');
-      console.log('image:', imageBlob);
-      console.log('formData:', formData);
+      console.log("FormData content:");
+      console.log("image:", imageBlob);
+      console.log("formData:", formData);
 
-      const response = await axios.post(BACKEND_URL + '/actualizar-imagen-perfil', formData,  {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-        console.log('Éxito Datos actualizados correctamente');
-        console.log('Respuesta del servidor:', response.data);
-        await AsyncStorage.setItem('photoPerfil', photo);
-
+      const response = await axios.post(
+        BACKEND_URL + "/actualizar-imagen-perfil",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log("Éxito Datos actualizados correctamente");
+      console.log("Respuesta del servidor:", response.data);
+      await AsyncStorage.setItem("photoPerfil", photo);
     } catch (error) {
       console.error(error);
-      console.log(' Ocurrió un error al actualizar los datos');
+      console.log(" Ocurrió un error al actualizar los datos");
     }
   };
 
@@ -352,8 +385,8 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
       quality: 1,
     });
 
-    console.log( "result:", result);
-    
+    console.log("result:", result);
+
     if (!result.canceled) {
       setImage(result.assets[0].uri);
       saveImage(result.assets[0].uri);
@@ -367,6 +400,7 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
       nombre: Name,
       apellido: apellido,
       phone: tel,
+      location: consultorio,
     });
 
     if (response.data.code === 500) {
@@ -384,31 +418,34 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
     }
   };
 
-  {/* Modal para ubicacion */ }
+  {
+    /* Modal para ubicacion */
+  }
   const toggleMaps = () => {
     setModalMaps(!ModalMaps);
   };
 
   const searchPlaces = async () => {
-    if(!searchQuery.trim().length) return;
+    if (!searchQuery.trim().length) return;
 
-    const googleApisUrl = "https://maps.googleapis.com/maps/api/place/textsearch/json";
-    const input = searchQuery.trim()
+    const googleApisUrl =
+      "https://maps.googleapis.com/maps/api/place/textsearch/json";
+    const input = searchQuery.trim();
     const location = `${initialLat}, ${initialLng} &radius=2`;
     const url = `${googleApisUrl}?query=${input}&location=${location}&key=${MAPS_API}`;
 
-    try{
+    try {
       const response = await fetch(url);
       const json = await response.json();
       // console.log(json);
-      if(json && json.results){
-        const coords: LatLng[] = []
-        for(const item of json.results){
+      if (json && json.results) {
+        const coords: LatLng[] = [];
+        for (const item of json.results) {
           // console.log(item);
           coords.push({
             latitude: item.geometry.location.lat,
             longitude: item.geometry.location.lng,
-          })
+          });
         }
         setResults(json.results);
         console.log(results);
@@ -422,19 +459,20 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
       }
     } catch (error) {
       console.error(error);
+    }
   };
-};
 
-const saveLocation = async () => {
-  setConsultorio(selectedLocation ?? "");
-  console.log("Consultorio: ", selectedLocation);
-  toggleMaps();
-};
+  const saveLocation = async () => {
+    setConsultorio(selectedLocation ?? "");
+    setSearchQuery("");
+    console.log("Consultorio: ", selectedLocation);
+    toggleMaps();
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient
-        colors={['rgba(44,189,191,0.8)', 'transparent']}
+        colors={["rgba(44,189,191,0.8)", "transparent"]}
         style={styles.gradient}
       />
       <View
@@ -444,23 +482,35 @@ const saveLocation = async () => {
         ]}
       >
         <ScrollView style={stylesHistorial.scrollViewRegistro}>
-
-          <View style={{
-            flex: 1,
-            display: 'flex',
-            alignItems: "center",           
-          }}>
-            <Text style={{
-              color: '#000',
-              height: 50,
-              fontSize: 25,
-              fontWeight: 'bold'
-              }}>{'Editar perfil'}</Text>
+          <View
+            style={{
+              flex: 1,
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                color: "#000",
+                height: 50,
+                fontSize: 25,
+                fontWeight: "bold",
+              }}
+            >
+              {"Editar perfil"}
+            </Text>
           </View>
 
-          <View style={{ marginTop: 5, marginBottom: 20,  alignItems: "center" }}>
+          <View
+            style={{ marginTop: 5, marginBottom: 20, alignItems: "center" }}
+          >
             <TouchableRipple
-              style={{ height: 150, width: 150, borderRadius: 200, overflow: 'hidden' }}
+              style={{
+                height: 150,
+                width: 150,
+                borderRadius: 200,
+                overflow: "hidden",
+              }}
               onPress={pickImage}
               borderless
             >
@@ -482,26 +532,25 @@ const saveLocation = async () => {
                   color="#000000"
                   style={{
                     width: 150,
-                    height: 150
+                    height: 150,
                   }}
                 />
               )}
             </TouchableRipple>
           </View>
-  
+
           <View style={styles.infoContainer}>
             <TextInput
               mode="outlined"
               label="Nombre(s)"
               style={styles.input}
               value={Name}
+              
               onChangeText={setName}
               outlineColor="#002245"
               activeOutlineColor="#002245"
               textColor="#002245"
-              left={<TextInput.Icon
-                style={{ marginTop: 10 }} 
-                icon="account" />}
+              left={<TextInput.Icon style={{ marginTop: 10 }} icon="account" />}
             />
 
             <TextInput
@@ -513,9 +562,7 @@ const saveLocation = async () => {
               outlineColor="#002245"
               activeOutlineColor="#002245"
               textColor="#002245"
-              left={<TextInput.Icon
-                style={{ marginTop: 10 }} 
-                icon="account" />}
+              left={<TextInput.Icon style={{ marginTop: 10 }} icon="account" />}
             />
 
             <TextInput
@@ -527,9 +574,7 @@ const saveLocation = async () => {
               outlineColor="#002245"
               activeOutlineColor="#002245"
               disabled={true}
-              left={<TextInput.Icon
-                style={{ marginTop: 10 }} 
-                icon="email" />}
+              left={<TextInput.Icon style={{ marginTop: 10 }} icon="email" />}
             />
 
             <TextInput
@@ -542,62 +587,101 @@ const saveLocation = async () => {
               activeOutlineColor="#002245"
               keyboardType="numeric"
               maxLength={10}
-              left={<TextInput.Icon
-                style={{ marginTop: 10 }} 
-                icon="phone" />}
+              left={<TextInput.Icon style={{ marginTop: 10 }} icon="phone" />}
             />
+
+            <TextInput
+              mode="outlined"
+              label="Consultorio"
+              style={styles.input}
+              value={consultorio}
+              outlineColor="#002245"
+              activeOutlineColor="#002245"
+              readOnly={true}
+              left={<TextInput.Icon style={{ marginTop: 10 }} icon="map-marker" />}
+              right={ <TextInput.Icon style={{ marginTop: 14, }} icon="border-color" onPress={toggleMaps}/>}
+            />
+
           </View>
-            
+
           <View style={styles.buttonsContainer}>
             <TouchableOpacity
-              style={{...styles.btn, ...styles.btnSave}}
+              style={{ ...styles.btn, ...styles.btnSave }}
               onPress={SaveChanges}
             >
               <View>
-                <Text style={{...styles.buttonOptionText, ...styles.textColorSave}}>Guardar cambios</Text>
+                <Text
+                  style={{
+                    ...styles.buttonOptionText,
+                    ...styles.textColorSave,
+                  }}
+                >
+                  Guardar cambios
+                </Text>
               </View>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={{...styles.btn, ...styles.btnChangePass}}
+              style={{ ...styles.btn, ...styles.btnChangePass }}
               onPress={sendEmail}
             >
               <View>
-                <Text style={{...styles.buttonOptionText, ...styles.textColorChangePass}}>Cambiar contraseña</Text>
+                <Text
+                  style={{
+                    ...styles.buttonOptionText,
+                    ...styles.textColorChangePass,
+                  }}
+                >
+                  Cambiar contraseña
+                </Text>
               </View>
             </TouchableOpacity>
-                
+
             <TouchableOpacity
-              style={{...styles.btn, ...styles.btnChangePayment}}
+              style={{ ...styles.btn, ...styles.btnChangePayment }}
               onPress={openModalPago}
             >
-              <Text style={{...styles.buttonOptionText, ...styles.textColorChangePayment}}>Cambiar método de pago</Text>
+              <Text
+                style={{
+                  ...styles.buttonOptionText,
+                  ...styles.textColorChangePayment,
+                }}
+              >
+                Cambiar método de pago
+              </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={{...styles.btn, ...styles.btnChangePayment}}
-              onPress={toggleMaps}
-            >
-              <Text style={{...styles.buttonOptionText, ...styles.textColorChangePayment}}>Consultorio</Text>
-            </TouchableOpacity>
-    
-            <Divider style={{ marginTop: 20, marginBottom: 15 }}  bold/>
+            <Divider style={{ marginTop: 20, marginBottom: 15 }} bold />
 
             <TouchableOpacity
-              style={{...styles.btn, ...styles.btnChangePayment}}
+              style={{ ...styles.btn, ...styles.btnChangePayment }}
               onPress={() => navigation.goBack()}
-            > 
-              <Text style={{...styles.buttonOptionText, ...styles.textColorChangePayment}}>Volver</Text>
+            >
+              <Text
+                style={{
+                  ...styles.buttonOptionText,
+                  ...styles.textColorChangePayment,
+                }}
+              >
+                Volver
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={{...styles.btn, ...styles.btnLogout}}
+              style={{ ...styles.btn, ...styles.btnLogout }}
               onPress={toggleLogout}
             >
-              <Text style={{...styles.buttonOptionText, ...styles.textColorLogout}}>Cerrar Sesión</Text>
+              <Text
+                style={{
+                  ...styles.buttonOptionText,
+                  ...styles.textColorLogout,
+                }}
+              >
+                Cerrar Sesión
+              </Text>
             </TouchableOpacity>
           </View>
-  
+
           {/* Modal de autenticación */}
           <Modal
             visible={modalAuth}
@@ -607,7 +691,9 @@ const saveLocation = async () => {
           >
             <View style={styles.modalContainer}>
               <View style={styles.modalContent}>
-                <Text style={styles.modalText}>Introduzca el código de autenticación</Text>
+                <Text style={styles.modalText}>
+                  Introduzca el código de autenticación
+                </Text>
                 <Text style={{ marginBottom: 20 }}>
                   Revisa tu correo, te hemos enviado un código de verificación
                 </Text>
@@ -617,7 +703,9 @@ const saveLocation = async () => {
                       mode="outlined"
                       key={index}
                       value={code}
-                      onChangeText={(value: string) => handleAuthCodeChange(index, value)}
+                      onChangeText={(value: string) =>
+                        handleAuthCodeChange(index, value)
+                      }
                       outlineColor="#c5cae9"
                       activeOutlineColor="#c5cae9"
                       style={styles.codeInput}
@@ -627,9 +715,18 @@ const saveLocation = async () => {
                     />
                   ))}
                 </View>
-                <TouchableOpacity onPress={reSendEmail} disabled={isButtonDisabled}>
-                  <Text style={isButtonDisabled ? styles.disabledText : styles.resendText}>
-                    {isButtonDisabled ? `Reenviar código (${timeLeft}s)` : "Reenviar código"}
+                <TouchableOpacity
+                  onPress={reSendEmail}
+                  disabled={isButtonDisabled}
+                >
+                  <Text
+                    style={
+                      isButtonDisabled ? styles.disabledText : styles.resendText
+                    }
+                  >
+                    {isButtonDisabled
+                      ? `Reenviar código (${timeLeft}s)`
+                      : "Reenviar código"}
                   </Text>
                 </TouchableOpacity>
                 <View style={{ flexDirection: "row" }}>
@@ -649,7 +746,7 @@ const saveLocation = async () => {
               </View>
             </View>
           </Modal>
-  
+
           {/* Modal para cambiar contraseña */}
           <Modal
             animationType="slide"
@@ -673,21 +770,30 @@ const saveLocation = async () => {
                 />
                 {ShowRequirements && (
                   <View style={{ marginVertical: 1 }}>
-                    {requirements.map((req, index) =>
-                      !req.isValid && (
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }} key={index}>
-                          <View style={styles.dot} />
-                          <Text style={{
-                            color: "#FF0000",
-                            fontSize: 12,
-                            fontWeight: 'bold',
-                            textShadowColor: '#000',
-                            textShadowRadius: 10,
-                          }}>
-                            {req.label}
-                          </Text>
-                        </View>
-                      )
+                    {requirements.map(
+                      (req, index) =>
+                        !req.isValid && (
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              alignItems: "center",
+                            }}
+                            key={index}
+                          >
+                            <View style={styles.dot} />
+                            <Text
+                              style={{
+                                color: "#FF0000",
+                                fontSize: 12,
+                                fontWeight: "bold",
+                                textShadowColor: "#000",
+                                textShadowRadius: 10,
+                              }}
+                            >
+                              {req.label}
+                            </Text>
+                          </View>
+                        )
                     )}
                   </View>
                 )}
@@ -704,18 +810,22 @@ const saveLocation = async () => {
                 />
                 {showConfirmRequirements && (
                   <View style={{ marginVertical: 1 }}>
-                    {confirmRequirements.map((req, index) =>
-                      !req.isValid && (
-                        <Text key={index} style={{
-                          color: "#CC0000",
-                          fontSize: 12,
-                          fontWeight: 'bold',
-                          textShadowColor: '#000',
-                          textShadowRadius: 10,
-                        }}>
-                          {req.label}
-                        </Text>
-                      )
+                    {confirmRequirements.map(
+                      (req, index) =>
+                        !req.isValid && (
+                          <Text
+                            key={index}
+                            style={{
+                              color: "#CC0000",
+                              fontSize: 12,
+                              fontWeight: "bold",
+                              textShadowColor: "#000",
+                              textShadowRadius: 10,
+                            }}
+                          >
+                            {req.label}
+                          </Text>
+                        )
                     )}
                   </View>
                 )}
@@ -745,7 +855,7 @@ const saveLocation = async () => {
               </View>
             </View>
           </Modal>
-  
+
           {/* Botón de Datos Bancarios */}
           <Modal
             animationType="slide"
@@ -782,7 +892,10 @@ const saveLocation = async () => {
                   <TextInput
                     mode="outlined"
                     label="CVC"
-                    style={[stylesMain.TextInputPerfil, { marginLeft: 15, width: "25%" }]}
+                    style={[
+                      stylesMain.TextInputPerfil,
+                      { marginLeft: 15, width: "25%" },
+                    ]}
                     value={CVC}
                     onChangeText={setCVC}
                     outlineColor="#c5cae9"
@@ -810,7 +923,7 @@ const saveLocation = async () => {
           </Modal>
         </ScrollView>
       </View>
-  
+
       {/* Modal de Confirmación de Cierre de Sesión */}
       <Modal
         animationType="slide"
@@ -820,7 +933,9 @@ const saveLocation = async () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>¿Seguro que quieres salir de tu sesión?</Text>
+            <Text style={styles.modalText}>
+              ¿Seguro que quieres salir de tu sesión?
+            </Text>
             <View style={styles.btnContainer}>
               <TouchableOpacity
                 style={[styles.button, styles.btnClose]}
@@ -848,16 +963,31 @@ const saveLocation = async () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalViewMaps}>
-            <MapView ref={map} style={styles.map} provider={PROVIDER_GOOGLE} initialRegion={INITIAL_POSITION}>
-              {results.length ? results.map((item, i) => {
-                const coord: LatLng = {
-                  latitude: item.geometry.location.lat,
-                  longitude: item.geometry.location.lng,
-                }
-                return ( <Marker key={`search-item-${i}`} coordinate={coord} title={item.name} description="" onSelect={() => setSelectedLocation(item.formatted_address)}/>
-                );
-              })
-            : null}
+            <MapView
+              ref={map}
+              style={styles.map}
+              provider={PROVIDER_GOOGLE}
+              initialRegion={INITIAL_POSITION}
+            >
+              {results.length
+                ? results.map((item, i) => {
+                    const coord: LatLng = {
+                      latitude: item.geometry.location.lat,
+                      longitude: item.geometry.location.lng,
+                    };
+                    return (
+                      <Marker
+                        key={`search-item-${i}`}
+                        coordinate={coord}
+                        title={item.name}
+                        description=""
+                        onSelect={() =>
+                          setSelectedLocation(item.formatted_address)
+                        }
+                      />
+                    );
+                  })
+                : null}
             </MapView>
             <Searchbar
               placeholder="Buscar Direccion"
@@ -894,7 +1024,7 @@ const saveLocation = async () => {
         </View>
       </Modal>
     </SafeAreaView>
-  );  
+  );
 };
 
 const styles = StyleSheet.create({
@@ -1002,19 +1132,19 @@ const styles = StyleSheet.create({
     width: 5,
     height: 5,
     borderRadius: 3,
-    backgroundColor: '#c5cae9',
+    backgroundColor: "#c5cae9",
     marginRight: 5,
     marginTop: 3,
   },
 
   infoContainer: {
-    display: 'flex',
-    justifyContent: 'center',
+    display: "flex",
+    justifyContent: "center",
   },
 
   btn: {
     borderRadius: 30,
-    padding:10,
+    padding: 10,
     marginTop: 10,
     shadowColor: "#000",
     shadowOffset: { width: 1, height: 4 },
@@ -1024,7 +1154,7 @@ const styles = StyleSheet.create({
   },
 
   buttonsContainer: {
-    padding: 10
+    padding: 10,
   },
 
   buttonOptionText: {
@@ -1032,13 +1162,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
-  
+
   btnSave: {
     backgroundColor: "#002245",
     borderColor: "#000",
     borderWidth: 1,
   },
-  
+
   btnChangePass: {
     backgroundColor: "#165DA5",
     borderColor: "#000",
@@ -1058,27 +1188,27 @@ const styles = StyleSheet.create({
   },
 
   textColorSave: {
-    color: '#FFF'
+    color: "#FFF",
   },
 
   textColorChangePass: {
-    color: '#FFF'
+    color: "#FFF",
   },
-  
+
   textColorChangePayment: {
-    color: '#000'
+    color: "#000",
   },
-  
+
   textColorLogout: {
-    color: '#FFF'
+    color: "#FFF",
   },
 
   gradient: {
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     right: 0,
     top: 0,
-    height: 300
+    height: 300,
   },
   map: {
     width: "100%",

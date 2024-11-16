@@ -50,6 +50,7 @@ import SeidelMetric from "./ScreensMetrics/SeidelMetric";
 import TinettiMetric from "./ScreensMetrics/TinettiMetric";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import BuscarContactos from "./ScreensPhisio/BuscarContactos";
+import 'react-native-gesture-handler';
 
 enableScreens();
 

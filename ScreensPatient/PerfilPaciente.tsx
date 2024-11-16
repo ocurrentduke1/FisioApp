@@ -26,7 +26,7 @@ import { Divider, TextInput, Searchbar } from "react-native-paper";
 import { useFocusEffect } from "@react-navigation/native";
 import stylesMain from "../styles/stylesMain";
 import MapView, { LatLng, Marker, PROVIDER_GOOGLE } from "react-native-maps";
-import * as Location from 'expo-location';
+import * as Location from "expo-location";
 
 const { width, height } = Dimensions.get("window");
 
@@ -60,17 +60,20 @@ const PerfilPaciente = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
   const map = useRef<MapView | null>(null);
-  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [location, setLocation] = useState<Location.LocationObject | null>(
+    null
+  );
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [initialLat, setInitialLat] = useState<number | undefined>(undefined);
   const [initialLng, setInitialLng] = useState<number | undefined>(undefined);
+  const [domicilio, setDomicilio] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
-      
       let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
         return;
       }
 
@@ -81,7 +84,7 @@ const PerfilPaciente = ({
     })();
   }, []);
 
-  let text = 'Waiting..';
+  let text = "Waiting..";
   if (errorMsg) {
     text = errorMsg;
   } else if (location) {
@@ -94,12 +97,15 @@ const PerfilPaciente = ({
   const ASPECT_RATIO = width / height;
   const LATITUDE_DELTA = 0.0922;
   const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
-  const INITIAL_POSITION = initialLat && initialLng ? {
-    latitude: initialLat,
-    longitude: initialLng,
-    latitudeDelta: LATITUDE_DELTA,
-    longitudeDelta: LONGITUDE_DELTA,
-  } : undefined;
+  const INITIAL_POSITION =
+    initialLat && initialLng
+      ? {
+          latitude: initialLat,
+          longitude: initialLng,
+          latitudeDelta: LATITUDE_DELTA,
+          longitudeDelta: LONGITUDE_DELTA,
+        }
+      : undefined;
 
   const requirements = [
     {
@@ -305,6 +311,7 @@ const PerfilPaciente = ({
       setTel(datosDelServidor.paciente.telefono);
       setEdad(datosDelServidor.paciente.edad);
       setSexo(datosDelServidor.paciente.genero);
+      setDomicilio(datosDelServidor.paciente.location);
       setImage(await AsyncStorage.getItem("photoPerfil"));
     }
   };
@@ -394,6 +401,7 @@ const PerfilPaciente = ({
       apellido: apellido,
       phone: tel,
       edad: edad,
+      location: domicilio,
     });
 
     console.log("Response:", response.data);
@@ -409,31 +417,34 @@ const PerfilPaciente = ({
     Alert.alert("Éxito", "Cambios guardados con éxito");
   };
 
-  {/* Modal para ubicacion */ }
+  {
+    /* Modal para ubicacion */
+  }
   const toggleMaps = () => {
     setModalMaps(!ModalMaps);
   };
 
   const searchPlaces = async () => {
-    if(!searchQuery.trim().length) return;
+    if (!searchQuery.trim().length) return;
 
-    const googleApisUrl = "https://maps.googleapis.com/maps/api/place/textsearch/json";
-    const input = searchQuery.trim()
+    const googleApisUrl =
+      "https://maps.googleapis.com/maps/api/place/textsearch/json";
+    const input = searchQuery.trim();
     const location = `${initialLat}, ${initialLng} &radius=2000`;
     const url = `${googleApisUrl}?query=${input}&location=${location}&key=${MAPS_API}`;
 
-    try{
+    try {
       const response = await fetch(url);
       const json = await response.json();
       // console.log(json);
-      if(json && json.results){
-        const coords: LatLng[] = []
-        for(const item of json.results){
+      if (json && json.results) {
+        const coords: LatLng[] = [];
+        for (const item of json.results) {
           // console.log("item: ", item);
           coords.push({
             latitude: item.geometry.location.lat,
             longitude: item.geometry.location.lng,
-          })
+          });
         }
         setResults(json.results);
         if (coords.length) {
@@ -446,8 +457,8 @@ const PerfilPaciente = ({
       }
     } catch (error) {
       console.error(error);
+    }
   };
-};
 
   return (
     <SafeAreaView style={stylesHistorial.container}>
@@ -596,6 +607,26 @@ const PerfilPaciente = ({
                 />
               }
             />
+
+            <TextInput
+              mode="outlined"
+              label="Domicilio"
+              style={styles.input}
+              value={domicilio}
+              outlineColor="#002245"
+              activeOutlineColor="#002245"
+              readOnly={true}
+              left={
+                <TextInput.Icon style={{ marginTop: 10 }} icon="map-marker" />
+              }
+              right={
+                <TextInput.Icon
+                  style={{ marginTop: 14 }}
+                  icon="border-color"
+                  onPress={toggleMaps}
+                />
+              }
+            />
           </View>
 
           <View style={styles.buttonsContainer}>
@@ -628,19 +659,6 @@ const PerfilPaciente = ({
                   Cambiar contraseña
                 </Text>
               </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{ ...styles.btn, ...styles.btnChangePayment }}
-              onPress={toggleMaps}
-            >
-              <Text
-                style={{
-                  ...styles.buttonOptionText,
-                  ...styles.textColorChangePayment,
-                }}
-              >
-                Cambiar Domicilio
-              </Text>
             </TouchableOpacity>
 
             <Divider style={{ marginTop: 20, marginBottom: 15 }} bold />
@@ -880,16 +898,31 @@ const PerfilPaciente = ({
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalViewMaps}>
-            <MapView ref={map} style={styles.map} provider={PROVIDER_GOOGLE} initialRegion={INITIAL_POSITION}>
-              {results.length ? results.map((item, i) => {
-                const coord: LatLng = {
-                  latitude: item.geometry.location.lat,
-                  longitude: item.geometry.location.lng,
-                }
-                return ( <Marker key={`search-item-${i}`} coordinate={coord} title={item.name} description="" />
-                );
-              })
-            : null}
+            <MapView
+              ref={map}
+              style={styles.map}
+              provider={PROVIDER_GOOGLE}
+              initialRegion={INITIAL_POSITION}
+            >
+              {results.length
+                ? results.map((item, i) => {
+                    const coord: LatLng = {
+                      latitude: item.geometry.location.lat,
+                      longitude: item.geometry.location.lng,
+                    };
+                    return (
+                      <Marker
+                        key={`search-item-${i}`}
+                        coordinate={coord}
+                        title={item.name}
+                        description=""
+                        onSelect={() =>
+                          setSelectedLocation(item.formatted_address)
+                        }
+                      />
+                    );
+                  })
+                : null}
             </MapView>
             <Searchbar
               placeholder="Buscar Direccion"
