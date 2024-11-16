@@ -11,6 +11,8 @@ import { NavigationProp } from "@react-navigation/native";
 import { Agenda } from "react-native-calendars";
 import { FAB } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome";
+import Icon2 from "react-native-vector-icons/MaterialCommunityIcons";
+import Icon3 from "react-native-vector-icons/Foundation";
 import { TextInput } from "react-native-paper";
 import { GestureHandlerRootView, } from 'react-native-gesture-handler';
 import { Swipeable } from 'react-native-gesture-handler';
@@ -40,6 +42,7 @@ export default function AgendaCitas({
 }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalAdd, setModalAdd] = useState(false);
+  const [modalDelete, setModalDelete] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [patient, setPatient] = useState("");
@@ -73,6 +76,20 @@ export default function AgendaCitas({
     setModalAdd(false);
   };
 
+  //funciones para modal de eliminar
+  const openDelete = () => {
+    setModalDelete(true);
+  };
+
+  const closeDelete = () => {
+    setModalDelete(false);
+  };
+
+  const handleDeletePatient = () => {
+    console.log("Eliminar paciente");
+    closeDelete();
+  };
+
   const handleSaveAppointment = () => {
     console.log(`cita creada`);
     console.log(`Fecha: ${selectedDate}`);
@@ -83,10 +100,25 @@ export default function AgendaCitas({
   };
 
   const renderRightActions = () => {
+
+
+
     return (
       <View style={styles.rightAction}>
-        <Text>Eliminar</Text>
+        <TouchableOpacity style={styles.removeAction} 
+        onPress={openDelete}>
+        <Icon2 name="calendar-remove" size={30} color="#FFF" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.editAction} 
+        onPress={handleEditPress}>
+        <Icon2 name="calendar-edit" size={30} color="#FFF" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.expedientAction}
+        onPress={() => navigation.navigate("HistorialPaciente")}>
+        <Icon3 name="page-search" size={30} color="#FFF" />
+        </TouchableOpacity>
       </View>
+
     );
   };
 
@@ -221,20 +253,16 @@ export default function AgendaCitas({
           },
           isFirst: any
         ) => (
-          <GestureHandlerRootView style={styles.itemContainer}>
+          <GestureHandlerRootView>
             <Swipeable
-            containerStyle={styles.swipeable}
+            containerStyle={styles.itemContainer}
             friction={2}
             enableTrackpadTwoFingerGesture
             rightThreshold={40}
-            renderRightActions={ renderRightActions } >
+            renderRightActions={ renderRightActions } 
+            onSwipeableOpen={() => {
 
-            </Swipeable>
-            <TouchableOpacity
-              style={{ flexDirection: "row" }}
-              onPress={() => handleEditPress()}
-              
-            >
+            }}>
               <View style={{ marginHorizontal: 10 }}>
                 {item.image ? (
                   <Image
@@ -250,7 +278,8 @@ export default function AgendaCitas({
                 <Text>localidad: {item.location}</Text>
                 <Text>Hora: {item.hora}</Text>
               </View>
-            </TouchableOpacity>
+            </Swipeable>
+
           </GestureHandlerRootView>
         )}
         onDayPress={handleDayPress}
@@ -316,7 +345,7 @@ export default function AgendaCitas({
       {/* Modal para agregar una cita */}
       <FAB
         icon="calendar-plus"
-        color="#000"
+        color="#FFF"
         style={styles.fab}
         onPress={() => openAdd()}
       />
@@ -384,6 +413,35 @@ export default function AgendaCitas({
           </View>
         </View>
       </Modal>
+      {/* Modal para eliminar paciente */}
+      <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalDelete}
+          onRequestClose={closeDelete}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>
+                ¿Seguro que quieres eliminar esta fecha?
+              </Text>
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                  style={[styles.button, styles.buttonClose]}
+                  onPress={closeDelete}
+                >
+                  <Text style={styles.textStyle}>Cancelar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.buttonSearch]}
+                  onPress={handleDeletePatient}
+                >
+                  <Text style={styles.textStyle}>Eliminar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
     </View>
   );
 }
@@ -443,6 +501,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 }, // Desplazamiento de la sombra para iOS
     shadowOpacity: 0.1, // Opacidad de la sombra para iOS
     shadowRadius: 3, // Radio de difuminado de la sombra para iOS
+    flexDirection: "column", // Alineación de los elementos internos en fila
   },
   addButton: {
     position: "absolute",
@@ -462,7 +521,7 @@ const styles = StyleSheet.create({
     margin: 16,
     right: 0,
     bottom: 0,
-    backgroundColor: "#FFF",
+    backgroundColor: "#2cbdbf",
   },
   modalText: {
     marginBottom: 15,
@@ -484,14 +543,34 @@ const styles = StyleSheet.create({
   buttonSearch: {
     backgroundColor: "#2196F3",
   },
-  rightAction: { width: 50, height: 50, backgroundColor: 'purple' },
+  rightAction: { 
+    width: 70,
+   },
+  removeAction: {
+    backgroundColor: '#f44336',
+    justifyContent: 'center',
+    flex: 1,
+    alignItems: 'center',
+  },
+  editAction: {
+    backgroundColor: '#0058b3',
+    justifyContent: 'center',
+    flex: 1,
+    alignItems: 'center',
+  },
+  expedientAction: {
+    backgroundColor: '#8dc40d',
+    justifyContent: 'center',
+    flex: 1,
+    alignItems: 'center',
+  },
   separator: {
     width: '100%',
     borderTopWidth: 1,
   },
   swipeable: {
     height: 50,
-    backgroundColor: 'papayawhip',
+    
     alignItems: 'center',
   },
 });

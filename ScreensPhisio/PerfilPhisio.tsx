@@ -31,6 +31,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import MapView, { LatLng, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
+import { SelectList } from "react-native-dropdown-select-list";
 
 const { width, height } = Dimensions.get("window");
 
@@ -70,6 +71,7 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
   const [initialLat, setInitialLat] = useState<number | undefined>(undefined);
   const [initialLng, setInitialLng] = useState<number | undefined>(undefined);
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+  const [time, setTime] = useState<string>("");
 
   useEffect(() => {
     (async () => {
@@ -85,6 +87,17 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
       setInitialLng(location.coords.longitude);
     })();
   }, []);
+
+  useEffect(() => {
+
+  })
+
+  const data = [
+    { key: "1", value: "15 minutos" },
+    { key: "2", value: "30 minutos" },
+    { key: "3", value: "1 hora" },
+    { key: "4", value: "Personalizada" },
+  ];
 
   // console.log("Latitud: ", initialLat);
   // console.log("Longitud: ", initialLng);
@@ -269,6 +282,7 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
       setEmail(datosDelServidor.fisioterapeuta.correo);
       setTel(datosDelServidor.fisioterapeuta.telefono);
       setConsultorio(datosDelServidor.fisioterapeuta.location);
+      setTime(datosDelServidor.fisioterapeuta.tiempoConsulta);
       setImage(await AsyncStorage.getItem("photoPerfil"));
     }
   };
@@ -401,6 +415,7 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
       apellido: apellido,
       phone: tel,
       location: consultorio,
+      tiempoConsulta: time,
     });
 
     if (response.data.code === 500) {
@@ -545,7 +560,6 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
               label="Nombre(s)"
               style={styles.input}
               value={Name}
-              
               onChangeText={setName}
               outlineColor="#002245"
               activeOutlineColor="#002245"
@@ -598,10 +612,53 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
               outlineColor="#002245"
               activeOutlineColor="#002245"
               readOnly={true}
-              left={<TextInput.Icon style={{ marginTop: 10 }} icon="map-marker" />}
-              right={ <TextInput.Icon style={{ marginTop: 14, }} icon="border-color" onPress={toggleMaps}/>}
+              left={
+                <TextInput.Icon style={{ marginTop: 10 }} icon="map-marker" />
+              }
+              right={
+                <TextInput.Icon
+                  style={{ marginTop: 14 }}
+                  icon="border-color"
+                  onPress={toggleMaps}
+                />
+              }
             />
 
+
+              <Text style={{ color: "#000", fontSize: 16, fontWeight: "bold" }}>
+                Tiempo de consulta estimado:
+              </Text>
+            <SelectList
+              setSelected={(val: string) => {
+                setTime(val);
+              }}
+              data={data}
+              save="value"
+              search = {false}
+              dropdownItemStyles={{
+                backgroundColor: "#FFFFFF",
+                width: '100%',
+                height: 50,
+                borderBottomWidth: 1,
+                borderBottomColor: "#000000",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              dropdownStyles={{
+                backgroundColor: "#FFFFFF",
+                width: '100%',
+                height: 110,
+              }}
+              boxStyles={{
+                backgroundColor: "#FFFFFF",
+                width: '100%',
+                height: 50,
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: 30,
+              }}
+              placeholder="tiempo de consulta estimado"
+            />
           </View>
 
           <View style={styles.buttonsContainer}>

@@ -298,6 +298,7 @@ export default function RegistrarPersonales({
           }}
           data={data}
           save="value"
+          search = {false}
           dropdownItemStyles={{
             backgroundColor: "#FFFFFF",
             width: 300,
@@ -385,6 +386,7 @@ export default function RegistrarPersonales({
                 }}
                 data={dataSex}
                 save="value"
+                search = {false}
                 dropdownItemStyles={{
                   backgroundColor: "#FFFFFF",
                   width: 300,

@@ -340,7 +340,8 @@ export default function Registrar({
                     <View style={{
                       flexDirection: 'row',
                       alignItems: 'center',
-                    }}>
+                    }}
+                    key={index}>
                       <View style={styles.dot} />
                       <Text key={index} style={{
                         color: "#FF0000", 

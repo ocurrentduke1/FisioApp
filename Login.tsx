@@ -255,6 +255,7 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
           onChangeText={(text) => setEmail(text)}
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
+          keyboardType="email-address"
           style={stylesLogin.TextInput}
           left={<TextInput.Icon
             style={{ marginTop: 30 }} 

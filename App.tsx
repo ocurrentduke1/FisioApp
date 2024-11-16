@@ -51,6 +51,7 @@ import TinettiMetric from "./ScreensMetrics/TinettiMetric";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import BuscarContactos from "./ScreensPhisio/BuscarContactos";
 import 'react-native-gesture-handler';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 enableScreens();
 
@@ -59,7 +60,8 @@ export default function App() {
   const PatientDrawer = createDrawerNavigator();
   const FisioDrawer = createDrawerNavigator();
   const MetricsTab = createMaterialTopTabNavigator();
-
+  const PatientTabs = createBottomTabNavigator();
+  const FisioTabs = createBottomTabNavigator();
 
   function MyTabs() {
     
@@ -161,135 +163,106 @@ export default function App() {
     );
   }
 
-  function CustomDrawerContent(props: any) {
-
-    const [image, setImage] = useState<string | null>(null);
-
-    useEffect(() => {
-      const fetchImage = async () => {
-        const storedImage = await AsyncStorage.getItem("photoPerfil");
-        setImage(storedImage);
-        console.log("cambio drawer");
-      };
-
-      fetchImage();
-    }, [image]);
+  function TabsPatient() {
 
     return (
-      <DrawerContentScrollView {...props}>
-        <DrawerItem
-          label=""
-          icon={() => (
-            image ? (
-              <Image
-                source={{ uri: image, }}
-                style={styles.userImage}
-                resizeMode="cover"
-              />
-            ) : (
-              <Icon
-                name="user-circle"
-                size={120}
-                color="#000"
-                style={{ alignSelf: "center" }}
-              />
-            )
-          )}
-          onPress={() => {
-            props.navigation.navigate("perfil");
-          }}
-        />
-        <DrawerItemList {...props} />
-      </DrawerContentScrollView>
-    );
-  }
-
-  function PatientCustomDrawerContent(props: any) {
-
-    const [image, setImage] = useState<string | null>(null);
-
-    useEffect(() => {
-      const fetchImage = async () => {
-        const storedImage = await AsyncStorage.getItem("photoPerfil");
-        setImage(storedImage);
-      };
-
-      fetchImage();
-    }, []);
-    
-    return (
-      <DrawerContentScrollView {...props}>
-        <DrawerItem
-          label=""
-          icon={() => (
-            image ? (
-              <Image
-                source={{ uri: image, }}
-                style={styles.userImage}
-                resizeMode="cover"
-              />
-            ) : (
-              <Icon
-                name="user-circle"
-                size={120}
-                color="#000"
-                style={{ alignSelf: "center" }}
-              />
-            )
-          )}
-          onPress={() => {
-            props.navigation.navigate("perfilPaciente");
-          }}
-        />
-        <DrawerItemList {...props} />
-      </DrawerContentScrollView>
-    );
-  }
-
-  function PatientDrawerNavigator() {
-    return (
-      <PatientDrawer.Navigator
-        initialRouteName="mainPaciente"
-        screenOptions={{
-          drawerStyle: { backgroundColor: "#f6f6f6" },
-          headerStyle: { backgroundColor: "#2cbdbf" },
-          headerTintColor: "#FFFFFF",
-        }}
-        drawerContent={(props) => <PatientCustomDrawerContent {...props} />}
+      <PatientTabs.Navigator
+      initialRouteName="mainPaciente"
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: { backgroundColor: "#2cbdbf" },
+        tabBarActiveTintColor: "#FFFFFF",
+        tabBarInactiveTintColor: "#000",
+        tabBarBadgeStyle: {backgroundColor: "#FFFFFF"},
+        tabBarActiveBackgroundColor: "#34e1e3",
+      }}
       >
-        <PatientDrawer.Screen
-          name="menu Principal"
-          component={MainPatient}
-          options={{ title: "Menu Principal" }}
+        <PatientTabs.Screen 
+        name="menu Principal" 
+        component={MainPatient}
+        options={{
+          title: "menu principal" , 
+          tabBarIconStyle: {width: 100},
+          tabBarIcon: () => <Icon name="home" size={35} color={'#FFF'}/>,
+
+      }}
         />
-      </PatientDrawer.Navigator>
-    );
+        <PatientTabs.Screen
+        name="PerfilPaciente"
+        component={PerfilPaciente}
+        options={{ 
+          title: "perfil",
+          tabBarIcon: () => <Icon name="user" size={35} color={'#FFF'}/>,
+
+      }}
+        
+        />
+        
+      </PatientTabs.Navigator>
+    )
   }
-  function FisioDrawerNavigator() {
-    return (
+
+  function TabsFisio() {
       
-      <FisioDrawer.Navigator
-        initialRouteName="mainFisio"
+      return (
+        <FisioTabs.Navigator
+        initialRouteName="menu Principal"
         screenOptions={{
-          drawerStyle: { backgroundColor: "#f6f6f6" },
-          headerStyle: { backgroundColor: "#2cbdbf" },
-          headerTintColor: "#FFFFFF",
+          headerShown: false,
+          tabBarStyle: { backgroundColor: "#2cbdbf" },
+          tabBarActiveTintColor: "#FFFFFF",
+          tabBarInactiveTintColor: "#000",
+          tabBarBadgeStyle: {backgroundColor: "#FFFFFF"},
+          tabBarActiveBackgroundColor: "#34e1e3",
         }}
-        drawerContent={(props) => <CustomDrawerContent {...props} />}
-      >
-        <FisioDrawer.Screen name="Menu principal" component={MainPhisio} />
-        <FisioDrawer.Screen
+        >
+          <FisioTabs.Screen 
+          name="menu Principal" 
+          component={MainPhisio}
+          options={{
+            title: "menu principal" , 
+            tabBarIconStyle: {width: 100},
+            tabBarIcon: () => <Icon name="home" size={35} color={'#FFF'}/>,
+        }}
+          />
+          <FisioTabs.Screen
           name="Selector de Escalas"
           component={SelectorMetricas}
-        />
-        <FisioDrawer.Screen
+          options={{ 
+            title: "escalas",
+            tabBarIcon: () => <Icon name="bar-chart" size={30} color={'#FFF'}/>,
+          }}
+          />
+          <FisioTabs.Screen
           name="Contactos Fisioterapeutas"
           component={ContactosPhisio}
-        />
-        <FisioDrawer.Screen name="Agenda de citas" component={AgendaCitas} />
-      </FisioDrawer.Navigator>
-    );
+          options={{ 
+            title: "contactos",
+            tabBarIcon: () => <Icon name="address-book" size={30} color={'#FFF'}/>,
+          }}
+          />
+          <FisioTabs.Screen
+          name="Agenda de citas"
+          component={AgendaCitas}
+          options={{ 
+            title: "agenda",
+            tabBarIcon: () => <Icon name="calendar" size={30} color={'#FFF'}/>,
+          }}
+          />
+          <FisioTabs.Screen
+          name="PerfilFisio"
+          component={PerfilPhisio}
+          options={{ 
+            title: "perfil",
+            tabBarIcon: () => <Icon name="user" size={35} color={'#FFF'}/>,
+        }}
+          
+          />
+          
+        </FisioTabs.Navigator>
+      )
   }
+
 
   return (
     <NavigationContainer>
@@ -322,7 +295,7 @@ export default function App() {
         />
         <Stack.Screen
           name="mainFisio"
-          component={FisioDrawerNavigator}
+          component={TabsFisio}
           options={{ headerShown: false }}
         />
         <Stack.Screen
@@ -337,8 +310,8 @@ export default function App() {
         />
         <Stack.Screen
           name="mainPaciente"
-          component={PatientDrawerNavigator}
-          options={{ headerShown: false }}
+          component={TabsPatient}
+          options={{ headerShown: false}}
         />
         <Stack.Screen
           name="EvaluacionVideo"
