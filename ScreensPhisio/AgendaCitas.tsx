@@ -520,38 +520,6 @@ export default function AgendaCitas({
               ]}>
 
             </DropDownPicker>
-            {/* <SelectList
-              setSelected={(val: string) => {
-                setPatient(val);
-              }}
-              data={dataPatients}
-              save="value"
-              search={false}
-              dropdownItemStyles={{
-                backgroundColor: "#FFFFFF",
-                width: "auto",
-                height: 50,
-                borderBottomWidth: 1,
-                borderBottomColor: "#000000",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              dropdownStyles={{
-                backgroundColor: "#FFFFFF",
-                width: "auto",
-                height: 110,
-              }}
-              boxStyles={{
-                backgroundColor: "#FFFFFF",
-                width: 200,
-                height: 50,
-                justifyContent: "center",
-                alignItems: "center",
-                padding: 10,
-                margin: 5,
-              }}
-              placeholder="Selecciona un paciente"
-            /> */}
 
             <SelectList
               setSelected={(val: string) => {
