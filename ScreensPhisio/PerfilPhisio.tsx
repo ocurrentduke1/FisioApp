@@ -633,6 +633,7 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
               setSelected={(val: string) => {
                 setTime(val);
               }}
+              defaultOption={data[0]}
               data={data}
               save="value"
               search = {false}

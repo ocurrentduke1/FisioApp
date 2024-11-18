@@ -19,12 +19,12 @@ import { TextInput } from "react-native-paper";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Swipeable } from "react-native-gesture-handler";
 import { SelectList } from "react-native-dropdown-select-list";
-import { Animated, useWindowDimensions} from "react-native";
+import { Animated, useWindowDimensions } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BACKEND_URL } from "@env";
 import axios from "axios";
-import DropDownPicker from 'react-native-dropdown-picker'
+import DropDownPicker from "react-native-dropdown-picker";
 
 export default function AgendaCitas({
   navigation,
@@ -53,9 +53,36 @@ export default function AgendaCitas({
   };
 
   const fetchData = async () => {
+    const pacientes = await getPatients();
+    setDataPatients(pacientes);
+    console.log("pacientes", dataPatients);
     const datosDelServidor = await obtenerCitas();
     setCitas(datosDelServidor);
+    // console.log("horas", dataHours);
   };
+
+  const getPatients = async () => {
+    if (userID) {
+      const response = await axios.post(BACKEND_URL + "/obtener-pacientes", {
+        idFisio: Number(userID),
+      });
+      console.log("UserID:", userID);
+      // console.log("Response data:", response.data);
+      return response.data || [];
+    }
+  };
+
+  const getHours = async () => {
+    if (userID) {
+      const response = await axios.get(
+        `${BACKEND_URL}/horarios-disponibles/${userID}/${new Date(selectedDate).toISOString().substring(0, 10)}`
+      );
+
+      console.log("Response data:", response.data);
+      return response.data.horarios || [];
+    }
+  };
+
 
   useFocusEffect(
     useCallback(() => {
@@ -71,12 +98,21 @@ export default function AgendaCitas({
     }, [userID])
   );
 
+  useFocusEffect(
+    useCallback(() => {
+      if (userID) {
+        getPatients();
+      }
+    }, [userID])
+  );
+
   useEffect(() => {
     // Funcion para obtener ID de la sesion
     const getUserID = async () => {
       const id = await AsyncStorage.getItem("idSesion");
       setUserID(id);
     };
+
     getUserID();
   }, []);
 
@@ -88,9 +124,21 @@ export default function AgendaCitas({
   const [newDate, setNewDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [patient, setPatient] = useState("");
+  const [openPatient, setOpenPatient] = useState(false);
   const [location, setLocation] = useState("");
+  const [otherLocation, setOtherLocation] = useState(false);
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState("");
+  const [duration, setDuration] = useState(0);
+  const [dataHours, setDataHours] = useState([]);
+  const [dataPatients, setDataPatients] = useState<
+    {
+      nombre: string;
+      apellidos: string;
+      imagenPerfil?: string;
+      id: string;
+    }[]
+  >([]);
   const [citas, setCitas] = useState<
     {
       nombre: string;
@@ -101,32 +149,32 @@ export default function AgendaCitas({
       imagenPerfil?: string;
     }[]
   >([]);
-  const [openPatient, setOpenPatient] = useState(false)
-
-  const [selectedAppointment, setSelectedAppointment] = useState(null);
-
-  const data = [
-    { key: "1", value: "10:30" },
-    { key: "2", value: "11:00" },
-    { key: "3", value: "11:30" },
-    { key: "4", value: "12:00" },
-    { key: "5", value: "12:30" },
-    { key: "6", value: "13:00" },
-  ];
-
-  const dataPatients = [
-    { key: "2", value: "ramon" },
-    { key: "3", value: "maria" },
-    { key: "4", value: "juana" },
-    { key: "5", value: "carmen" },
-    { key: "6", value: "gerardo" },
-  ];
 
   const dataUbicacion = [
     { key: "1", value: "Cita a domicilio" },
     { key: "2", value: "Cita en clinica" },
     { key: "3", value: "ubicacion personalizada" },
   ];
+
+  const dataDuration = [
+    { key: "1", value: "30 minutos" },
+    { key: "2", value: "1 hora" },
+    { key: "3", value: "1 hora y 30 minutos" },
+    { key: "4", value: "2 horas" },
+  ];
+
+  const transformDuration = (duration: string) => {
+    if (duration == "30 minutos") {
+      setDuration(.5 * 60 * 60);
+      return duration;
+    } else if (duration == "1 hora") {
+      setDuration(1 * 60 * 60);
+    } else if (duration == "1 hora y 30 minutos") {
+      setDuration(1.5 * 60 * 60);
+    } else if (duration == "2 horas") {
+      setDuration(2 * 60 * 60);
+    }
+  }
 
   const togglePicker1 = () => {
     setShowPicker1(!showPicker1);
@@ -136,7 +184,9 @@ export default function AgendaCitas({
     setModalVisible(false);
   };
   //funciones para modal de busqueda
-  const openAdd = () => {
+  const openAdd = async () => {
+    const horarios = await getHours();
+    setDataHours(horarios);
     setModalAdd(true);
   };
 
@@ -237,7 +287,6 @@ export default function AgendaCitas({
     /* metodos para editar fecha*/
   }
   const handleEditPress = (appointment) => {
-    setSelectedAppointment(appointment); // Guarda toda la información de la cita
     setSelectedDate(appointment.date); // Extrae la fecha
     setSelectedTime(appointment.hora); // Extrae la hora
     setModalVisible(true); // Abre el modal de edición
@@ -250,6 +299,16 @@ export default function AgendaCitas({
       return true;
     }
   };
+
+  const handleAddLocation = (val: string) => {
+    if (val == "ubicacion personalizada") {
+      setOtherLocation(true);
+    }else{
+      setOtherLocation(false);
+    }
+  };
+
+  console.log("duracion ", duration);
 
   const renderRightActions = (progress, dragX, item) => {
     const translateX = dragX.interpolate({
@@ -288,23 +347,33 @@ export default function AgendaCitas({
       <Agenda
         items={transformarDatosParaAgenda()}
         selected={selectedDate}
-        renderEmptyData={() => 
-          <Animated.View style={{
-            flex: 1,
-            justifyContent: "center",
-            alignSelf: 'center',
-          }}>
-            <Icon name="calendar-check-o" size={150} style={{
-              opacity: .8,
-              alignSelf: 'center',
-            }}></Icon>
-            <Text style={{
-              marginTop: 20,
-              fontWeight: 'bold',
-              fontSize: 25
-            }}>¡Sin citas programadas!</Text>
+        renderEmptyData={() => (
+          <Animated.View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignSelf: "center",
+            }}
+          >
+            <Icon
+              name="calendar-check-o"
+              size={150}
+              style={{
+                opacity: 0.8,
+                alignSelf: "center",
+              }}
+            ></Icon>
+            <Text
+              style={{
+                marginTop: 20,
+                fontWeight: "bold",
+                fontSize: 25,
+              }}
+            >
+              ¡Sin citas programadas!
+            </Text>
           </Animated.View>
-        }
+        )}
         renderItem={(
           item: {
             name:
@@ -496,11 +565,14 @@ export default function AgendaCitas({
                 flexDirection: "row",
                 justifyContent: "flex-start",
                 padding: 2,
-                marginBottom: 2
+                marginBottom: 2,
               }}
             >
               <Icon name="calendar" size={20} color="#000" />
-              <Text> { new Date(selectedDate).toLocaleDateString() }</Text>
+              <Text>
+                {" "}
+                {new Date(selectedDate).toISOString().substring(0, 10)}
+              </Text>
             </View>
             <DropDownPicker
               setValue={setPatient}
@@ -510,25 +582,29 @@ export default function AgendaCitas({
               style={{
                 marginVertical: 5,
               }}
-              setOpen={setOpenPatient} 
+              setOpen={setOpenPatient}
               multiple={false}
-              items={[
-                {
-                  label: 'Hello',
-                  value: '2',
-                  icon: () => (<Image
-                    style={{ width: 30, height: 30, borderRadius: 15 }} 
+              items={dataPatients.map((patient) => ({
+                label: patient.nombre + " " + patient.apellidos,
+                value: patient.id,
+                Icon: () => (
+                  <Image
+                    style={{ width: 30, height: 30, borderRadius: 25 }}
                     source={{
-                    uri: 'https://fisioapp.s3.us-east-1.amazonaws.com/imagenes/perfil/8de182b9-116e-433b-ab1b-ef5afe8c3df0.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA6GBMHMITBIMODNOK%2F20241118%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20241118T201958Z&X-Amz-Expires=300&X-Amz-Signature=e1611d02987a59ab623b3eda969bd5dae4a11b59570311271d7fc00573bd01dd&X-Amz-SignedHeaders=host&x-id=GetObject'
-                  }}/>)
-                },
-              ]}>
-
-            </DropDownPicker>
+                      uri: patient.imagenPerfil,
+                    }}
+                  />
+                ),
+              }))}
+            ></DropDownPicker>
 
             <SelectList
               setSelected={(val: string) => {
                 setLocation(val);
+                if(val == "ubicacion personalizada"){
+                  setLocation("");
+                }
+                handleAddLocation(val);
               }}
               data={dataUbicacion}
               save="value"
@@ -549,7 +625,7 @@ export default function AgendaCitas({
               }}
               boxStyles={{
                 backgroundColor: "#FFFFFF",
-                width: width * .7,
+                width: width * 0.7,
                 height: 45,
                 justifyContent: "center",
                 alignItems: "center",
@@ -558,16 +634,16 @@ export default function AgendaCitas({
               placeholder="Ubicacion de cita"
             />
 
-            <SelectList
+<SelectList
               setSelected={(val: string) => {
-                setTime(val);
+                transformDuration(val);
               }}
-              data={data}
+              data={dataDuration}
               save="value"
               search={false}
               dropdownItemStyles={{
                 backgroundColor: "#FFFFFF",
-                width: 'auto',
+                width: "auto",
                 height: 50,
                 borderBottomWidth: 1,
                 borderBottomColor: "#000000",
@@ -581,7 +657,39 @@ export default function AgendaCitas({
               }}
               boxStyles={{
                 backgroundColor: "#FFFFFF",
-                width: width * .7,
+                width: width * 0.7,
+                height: 45,
+                justifyContent: "center",
+                alignItems: "center",
+                margin: 5,
+              }}
+              placeholder="Duracion de la cita"
+            />
+
+            <SelectList
+              setSelected={(val: string) => {
+                setTime(val);
+              }}
+              data={dataHours}
+              save="value"
+              search={false}
+              dropdownItemStyles={{
+                backgroundColor: "#FFFFFF",
+                width: "auto",
+                height: 50,
+                borderBottomWidth: 1,
+                borderBottomColor: "#000000",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              dropdownStyles={{
+                backgroundColor: "#FFFFFF",
+                width: "auto",
+                height: 110,
+              }}
+              boxStyles={{
+                backgroundColor: "#FFFFFF",
+                width: width * 0.7,
                 height: 45,
                 justifyContent: "center",
                 alignItems: "center",
@@ -589,6 +697,18 @@ export default function AgendaCitas({
               }}
               placeholder="Selecciona una hora"
             />
+
+            {otherLocation && (
+              <TextInput
+                mode="outlined"
+                outlineColor="#c5cae9"
+                activeOutlineColor="#c5cae9"
+                label="Ubicacion"
+                style={[styles.input, { width: width * 0.7 }]}
+                value={location}
+                onChangeText={setLocation}
+              />
+            )}
 
             <View style={styles.buttonContainer}>
               <TouchableOpacity
