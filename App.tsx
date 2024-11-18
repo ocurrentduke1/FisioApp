@@ -171,31 +171,61 @@ export default function App() {
       initialRouteName="mainPaciente"
       screenOptions={{
         headerShown: false,
-        tabBarStyle: { backgroundColor: "#2cbdbf" },
-        tabBarActiveTintColor: "#FFFFFF",
-        tabBarInactiveTintColor: "#000",
-        tabBarBadgeStyle: {backgroundColor: "#FFFFFF"},
-        tabBarActiveBackgroundColor: "#34e1e3",
       }}
       >
         <PatientTabs.Screen 
-        name="menu Principal" 
-        component={MainPatient}
-        options={{
-          title: "menu principal" , 
-          tabBarIconStyle: {width: 100},
-          tabBarIcon: () => <Icon name="home" size={35} color={'#FFF'}/>,
-
-      }}
+          name="menu Principal" 
+          component={MainPatient}
+          options={{
+            title: "Inicio" , 
+            tabBarIconStyle: {width: 100},
+            tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} iconName="home" />,
+            tabBarLabel: ({ focused }) => (
+              <Animated.Text
+                style={{
+                  color: focused ? '#000' : '#FFF',
+                  fontSize: focused ? 14 : 12,
+                  fontWeight: focused ? 'bold' : 'normal',
+                }}
+              >
+                Inicio
+              </Animated.Text>
+            ),
+            tabBarStyle: { backgroundColor: "#002245" },
+            tabBarBadgeStyle: { backgroundColor: "#FFFFFF" },
+            tabBarActiveBackgroundColor: "#34e1e3",  
+            tabBarLabelStyle: {
+              fontSize: 12,
+              color: "white",
+              fontWeight: "bold"         
+            }
+          }}
         />
         <PatientTabs.Screen
-        name="PerfilPaciente"
-        component={PerfilPaciente}
-        options={{ 
-          title: "perfil",
-          tabBarIcon: () => <Icon name="user" size={35} color={'#FFF'}/>,
-
-      }}
+          name="PerfilPaciente"
+          component={PerfilPaciente}
+          options={{ 
+            title: "Perfil",
+            tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} iconName="user" />,
+            tabBarLabel: ({ focused }) => (
+              <Animated.Text
+                style={{
+                  color: focused ? '#000' : '#FFF',
+                  fontSize: focused ? 14 : 12,
+                  fontWeight: focused ? 'bold' : 'normal',
+                }}
+              >
+                Perfil
+              </Animated.Text>
+            ),
+            tabBarStyle: { backgroundColor: "#002245" },
+            tabBarActiveBackgroundColor: "#34e1e3",  
+            tabBarLabelStyle: {
+              fontSize: 12,
+              color: "white",
+              fontWeight: "bold"         
+            },
+          }}
         
         />
         
@@ -351,7 +381,7 @@ export default function App() {
               options={{ 
                 title: "Perfil",
                 tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} iconName="user" />,
-                                tabBarLabel: ({ focused }) => (
+                tabBarLabel: ({ focused }) => (
                   <Animated.Text
                     style={{
                       color: focused ? '#000' : '#FFF',
