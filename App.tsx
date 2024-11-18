@@ -296,7 +296,7 @@ export default function App() {
               options={{ 
                 title: "Escalas",
                 tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} iconName="bar-chart" />,
-                                tabBarLabel: ({ focused }) => (
+                tabBarLabel: ({ focused }) => (
                   <Animated.Text
                     style={{
                       color: focused ? '#000' : '#FFF',
@@ -323,7 +323,7 @@ export default function App() {
               options={{ 
                 title: "Contactos",
                 tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} iconName="address-book" />,
-                                tabBarLabel: ({ focused }) => (
+                tabBarLabel: ({ focused }) => (
                   <Animated.Text
                     style={{
                       color: focused ? '#000' : '#FFF',
@@ -350,7 +350,7 @@ export default function App() {
               options={{ 
                 title: "Agenda",
                 tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} iconName="calendar" />,
-                                tabBarLabel: ({ focused }) => (
+                tabBarLabel: ({ focused }) => (
                   <Animated.Text
                     style={{
                       color: focused ? '#000' : '#FFF',

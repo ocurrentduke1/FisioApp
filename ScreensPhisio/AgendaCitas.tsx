@@ -278,6 +278,23 @@ export default function AgendaCitas({
       <Agenda
         items={transformarDatosParaAgenda()}
         selected={selectedDate}
+        renderEmptyData={() => 
+          <Animated.View style={{
+            flex: 1,
+            justifyContent: "center",
+            alignSelf: 'center',
+          }}>
+            <Icon name="calendar-check-o" size={150} style={{
+              opacity: .8,
+              alignSelf: 'center',
+            }}></Icon>
+            <Text style={{
+              marginTop: 20,
+              fontWeight: 'bold',
+              fontSize: 25
+            }}>¡Sin citas programadas!</Text>
+          </Animated.View>
+        }
         renderItem={(
           item: {
             name:
@@ -355,7 +372,6 @@ export default function AgendaCitas({
           </GestureHandlerRootView>
         )}
         onDayPress={handleDayPress}
-        // Puedes añadir más propiedades específicas de Agenda aquí
       />
 
       {/* Modal para editar una cita */}
@@ -684,18 +700,21 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flex: 1,
     alignItems: "center",
+    marginRight: 5,
   },
   editAction: {
     backgroundColor: "#0058b3",
     justifyContent: "center",
     flex: 1,
     alignItems: "center",
+    marginRight: 5,
   },
   expedientAction: {
     backgroundColor: "#8dc40d",
     justifyContent: "center",
     flex: 1,
     alignItems: "center",
+    marginRight: 5,
   },
   separator: {
     width: "100%",
