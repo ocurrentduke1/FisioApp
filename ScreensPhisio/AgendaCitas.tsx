@@ -331,7 +331,7 @@ export default function AgendaCitas({
                 {item.image ? (
                   <Image
                     source={{ 
-                      uri: item.image,
+                      uri: item.image
                     }}
                     style={{ width: 50, height: 50, borderRadius: 25 }}
                   />
