@@ -33,18 +33,16 @@ export default function AgendaCitas({
 
   const [userID, setUserID] = useState<string | null>(null);
 
-  const takePatients = async () => {
+  const obtenerCitas = async () => {
     if (userID) {
-      const response = await axios.get(`${BACKEND_URL}/citas/${userID}`
-);
+      const response = await axios.get(`${BACKEND_URL}/citas/${userID}`);
 
-      if (response.data.code == 404) {
-        Alert.alert("No se encontraron pacientes");
+      if (response.data.code == 500) {
+        Alert.alert("Error al encontrar citas");
         return;
       }
-      console.log("UserID:", userID);
-      console.log("Response data:", response.data);
-      return response.data || [];
+
+      return response.data.citas || [];
     }
   };
 
@@ -55,8 +53,8 @@ export default function AgendaCitas({
   };
 
   const fetchData = async () => {
-    const datosDelServidor = await takePatients();
-    setPacientes(datosDelServidor);
+    const datosDelServidor = await obtenerCitas();
+    setCitas(datosDelServidor);
   };
 
   useFocusEffect(
@@ -94,10 +92,10 @@ export default function AgendaCitas({
   const [location, setLocation] = useState("");
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState("");
-  const [pacientes, setPacientes] = useState<
+  const [citas, setCitas] = useState<
     {
       nombre: string;
-      apellidos: string;
+      apellido: string;
       proximaCita: string;
       hora: string;
       ubicacion: string;
@@ -194,58 +192,22 @@ export default function AgendaCitas({
     }
   };
 
-  useEffect(() => {
-    let datosDelServidor = [
-      {
-        nombre: "Juan",
-        apellidos: "Pérez",
-        proximaCita: "2024-08-06",
-        ubicacion: "Ciudad Central",
-        hora: "11:00",
-        imagenPerfil:
-          "https://imgs.search.brave.com/8ExXYVb8oTB9fWM1IvIH-QRrnpIM5ifHCiXrTuchK-I/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93d3cu/aXN0b2NrcGhvdG8u/Y29tL3Jlc291cmNl/cy9pbWFnZXMvSG9t/ZVBhZ2UvRm91clBh/Y2svQzItUGhvdG9z/LWlTdG9jay0xMzU2/MTk3Njk1LmpwZw",
-      },
-      {
-        nombre: "Ana",
-        apellidos: "Gómez",
-        proximaCita: "2024-08-12",
-        hora: "12:00",
-        ubicacion: "Ciudad Norte",
-      },
-      {
-        nombre: "Ana",
-        apellidos: "Gómez",
-        proximaCita: "2024-08-08",
-        hora: "13:00",
-        ubicacion: "Ciudad Norte",
-      },
-      {
-        nombre: "Ana",
-        apellidos: "Gómez",
-        proximaCita: "2024-08-23",
-        hora: "10:00",
-        ubicacion: "Ciudad Norte",
-      },
-      // Añade más pacientes según sea necesario
-    ];
-
-    setPacientes(datosDelServidor);
-  }, []);
 
   const transformarDatosParaAgenda = () => {
 
-    if (Array.isArray(pacientes) && pacientes.length > 0) {
-      return pacientes.reduce((acc: { [key: string]: any }, paciente) => {
+    if (Array.isArray(citas) && citas.length > 0) {
+      return citas.reduce((acc: { [key: string]: any }, cita) => {
         const {
           proximaCita,
           nombre,
-          apellidos,
+          apellido,
           ubicacion,
           imagenPerfil,
           hora,
-        } = paciente;
-        const cita = {
-          name: `${nombre} ${apellidos}`,
+        } = cita;
+        
+        const transformedCita = {
+          name: `${nombre} ${apellido}`,
           hora: hora,
           location: ubicacion,
           image: imagenPerfil,
@@ -253,9 +215,9 @@ export default function AgendaCitas({
         };
   
         if (acc[proximaCita]) {
-          acc[proximaCita].push(cita);
+          acc[proximaCita].push(transformedCita);
         } else {
-          acc[proximaCita] = [cita];
+          acc[proximaCita] = [transformedCita];
         }
   
         return acc;
@@ -368,7 +330,9 @@ export default function AgendaCitas({
               <View style={{ marginHorizontal: 10, paddingRight: 10, paddingTop: 10 }}>
                 {item.image ? (
                   <Image
-                    source={{ uri: item.image }}
+                    source={{ 
+                      uri: item.image,
+                    }}
                     style={{ width: 50, height: 50, borderRadius: 25 }}
                   />
                 ) : (
