@@ -19,7 +19,7 @@ import { TextInput } from "react-native-paper";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Swipeable } from "react-native-gesture-handler";
 import { SelectList } from "react-native-dropdown-select-list";
-import { Animated } from "react-native";
+import { Animated, useWindowDimensions} from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BACKEND_URL } from "@env";
@@ -281,6 +281,8 @@ export default function AgendaCitas({
     );
   };
 
+  const { width } = useWindowDimensions();
+
   return (
     <View style={styles.container}>
       <Agenda
@@ -505,6 +507,9 @@ export default function AgendaCitas({
               value={patient}
               open={openPatient}
               placeholder="Selecciona un paciente"
+              style={{
+                marginVertical: 5,
+              }}
               setOpen={setOpenPatient} 
               multiple={false}
               items={[
@@ -544,11 +549,10 @@ export default function AgendaCitas({
               }}
               boxStyles={{
                 backgroundColor: "#FFFFFF",
-                width: 200,
-                height: 50,
+                width: width * .7,
+                height: 45,
                 justifyContent: "center",
                 alignItems: "center",
-                padding: 10,
                 margin: 5,
               }}
               placeholder="Ubicacion de cita"
@@ -563,7 +567,7 @@ export default function AgendaCitas({
               search={false}
               dropdownItemStyles={{
                 backgroundColor: "#FFFFFF",
-                width: "auto",
+                width: 'auto',
                 height: 50,
                 borderBottomWidth: 1,
                 borderBottomColor: "#000000",
@@ -577,11 +581,10 @@ export default function AgendaCitas({
               }}
               boxStyles={{
                 backgroundColor: "#FFFFFF",
-                width: 200,
-                height: 50,
+                width: width * .7,
+                height: 45,
                 justifyContent: "center",
                 alignItems: "center",
-                padding: 10,
                 margin: 5,
               }}
               placeholder="Selecciona una hora"
