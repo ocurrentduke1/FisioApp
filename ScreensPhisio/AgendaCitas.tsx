@@ -24,6 +24,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BACKEND_URL } from "@env";
 import axios from "axios";
+import DropDownPicker from 'react-native-dropdown-picker'
 
 export default function AgendaCitas({
   navigation,
@@ -82,7 +83,7 @@ export default function AgendaCitas({
   const [modalVisible, setModalVisible] = useState(false);
   const [modalAdd, setModalAdd] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState(new Date().toDateString());
   const [showPicker1, setShowPicker1] = useState(false);
   const [newDate, setNewDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
@@ -100,6 +101,7 @@ export default function AgendaCitas({
       imagenPerfil?: string;
     }[]
   >([]);
+  const [openPatient, setOpenPatient] = useState(false)
 
   const [selectedAppointment, setSelectedAppointment] = useState(null);
 
@@ -113,7 +115,6 @@ export default function AgendaCitas({
   ];
 
   const dataPatients = [
-    { key: "1", value: "juan" },
     { key: "2", value: "ramon" },
     { key: "3", value: "maria" },
     { key: "4", value: "juana" },
@@ -487,18 +488,39 @@ export default function AgendaCitas({
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Agregar Cita</Text>
-            <TextInput
-              mode="outlined"
-              outlineColor="#c5cae9"
-              activeOutlineColor="#c5cae9"
-              label="Fecha"
-              style={[styles.input, {height: 20}]}
-              value={selectedDate}
-              onChangeText={setSelectedDate}
-              editable={false}
-            />
-            <SelectList
+            <Text style={styles.modalText}>¡Agenda tu cita!</Text>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "flex-start",
+                padding: 2,
+                marginBottom: 2
+              }}
+            >
+              <Icon name="calendar" size={20} color="#000" />
+              <Text> { new Date(selectedDate).toLocaleDateString() }</Text>
+            </View>
+            <DropDownPicker
+              setValue={setPatient}
+              value={patient}
+              open={openPatient}
+              placeholder="Selecciona un paciente"
+              setOpen={setOpenPatient} 
+              multiple={false}
+              items={[
+                {
+                  label: 'Hello',
+                  value: '2',
+                  icon: () => (<Image
+                    style={{ width: 30, height: 30, borderRadius: 15 }} 
+                    source={{
+                    uri: 'https://fisioapp.s3.us-east-1.amazonaws.com/imagenes/perfil/8de182b9-116e-433b-ab1b-ef5afe8c3df0.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA6GBMHMITBIMODNOK%2F20241118%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20241118T201958Z&X-Amz-Expires=300&X-Amz-Signature=e1611d02987a59ab623b3eda969bd5dae4a11b59570311271d7fc00573bd01dd&X-Amz-SignedHeaders=host&x-id=GetObject'
+                  }}/>)
+                },
+              ]}>
+
+            </DropDownPicker>
+            {/* <SelectList
               setSelected={(val: string) => {
                 setPatient(val);
               }}
@@ -529,7 +551,7 @@ export default function AgendaCitas({
                 margin: 5,
               }}
               placeholder="Selecciona un paciente"
-            />
+            /> */}
 
             <SelectList
               setSelected={(val: string) => {
