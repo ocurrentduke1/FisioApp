@@ -336,7 +336,6 @@ export default function RegistrarPersonales({
               style={{
                 backgroundColor: "white",
                 width: "80%",
-                height: "70%",
                 padding: 20,
                 borderRadius: 10,
                 alignItems: "center",

@@ -1080,6 +1080,36 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
           </View>
         </View>
       </Modal>
+
+      {/* Modal de cambiar tiempo de consulta */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={ModalLogout}
+        onRequestClose={toggleLogout}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>
+              ¿Seguro que quieres salir de tu sesión?
+            </Text>
+            <View style={styles.btnContainer}>
+              <TouchableOpacity
+                style={[styles.button, styles.btnClose]}
+                onPress={toggleLogout}
+              >
+                <Text style={styles.textStyle}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.btnSearch]}
+                onPress={logout}
+              >
+                <Text style={styles.textStyle}>Cerrar sesión</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };

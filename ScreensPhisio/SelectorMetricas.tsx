@@ -135,7 +135,6 @@ const enviarAlServidor = () => {
           paddingStart: windowHeight * 0.115,
           borderRadius: 20,
           marginTop: 100,
-          marginBottom: 20,
           marginHorizontal: 1,
           shadowColor: "#000",
           shadowOffset: { width: 2, height: 16 }, // Desplazamiento de la sombra hacia abajo

@@ -395,7 +395,7 @@ const PerfilPaciente = ({
 
   const SaveChanges = async () => {
     const response = await axios.post(BACKEND_URL + "/actualizar-usuario", {
-      id: Number(userID),
+      id: userID,
       userType: userRol,
       nombre: Name,
       apellido: apellido,

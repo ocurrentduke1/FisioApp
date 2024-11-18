@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,62 +6,127 @@ import {
   Modal,
   TouchableOpacity,
   Image,
+  Platform,
+  Alert,
 } from "react-native";
-import { NavigationProp } from "@react-navigation/native";
+import { NavigationProp, useFocusEffect } from "@react-navigation/native";
 import { Agenda } from "react-native-calendars";
 import { FAB } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Icon2 from "react-native-vector-icons/MaterialCommunityIcons";
 import Icon3 from "react-native-vector-icons/Foundation";
 import { TextInput } from "react-native-paper";
-import { GestureHandlerRootView, } from 'react-native-gesture-handler';
-import { Swipeable } from 'react-native-gesture-handler';
-import Reanimated, { SharedValue,useAnimatedStyle, } from 'react-native-reanimated';
-
-// function RightAction(prog: SharedValue<number>, drag: SharedValue<number>) {
-//   const styleAnimation = useAnimatedStyle(() => {
-//     console.log('showRightProgress:', prog.value);
-//     console.log('appliedTranslation:', drag.value);
-
-//     return {
-//       transform: [{ translateX: drag.value + 50 }],
-//     };
-//   });
-
-//   return (
-//     <Reanimated.View style={styleAnimation}>
-//       <Text style={styles.rightAction}>Text</Text>
-//     </Reanimated.View>
-//   );
-// }
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Swipeable } from "react-native-gesture-handler";
+import { SelectList } from "react-native-dropdown-select-list";
+import { Animated } from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BACKEND_URL } from "@env";
+import axios from "axios";
 
 export default function AgendaCitas({
   navigation,
 }: {
   navigation: NavigationProp<any>;
 }) {
+
+  const [userID, setUserID] = useState<string | null>(null);
+
+  const takePatients = async () => {
+    if (userID) {
+      const response = await axios.get(`${BACKEND_URL}/citas/${userID}`
+);
+
+      if (response.data.code == 404) {
+        Alert.alert("No se encontraron pacientes");
+        return;
+      }
+      console.log("UserID:", userID);
+      console.log("Response data:", response.data);
+      return response.data || [];
+    }
+  };
+
+  const getUserID = async () => {
+    const id = await AsyncStorage.getItem('idSesion');
+    console.log("Fetched UserID:", id); // Verifica que el ID se obtenga correctamente
+    setUserID(id);
+  };
+
+  const fetchData = async () => {
+    const datosDelServidor = await takePatients();
+    setPacientes(datosDelServidor);
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      getUserID();
+    }, [])
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      if (userID) {
+        fetchData();
+      }
+    }, [userID])
+  );
+
+  useEffect(() => {
+   // Funcion para obtener ID de la sesion
+    const getUserID = async () => {
+      const id = await AsyncStorage.getItem('idSesion');
+      setUserID(id);
+    };
+    getUserID();
+
+  }, []);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [modalAdd, setModalAdd] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
+  const [showPicker1, setShowPicker1] = useState(false);
+  const [newDate, setNewDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [patient, setPatient] = useState("");
   const [location, setLocation] = useState("");
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(new Date());
   const [time, setTime] = useState("");
   const [pacientes, setPacientes] = useState<
     {
       nombre: string;
       apellidos: string;
       proximaCita: string;
-      HoraCita: string;
+      hora: string;
       ubicacion: string;
       imagenPerfil?: string;
     }[]
   >([]);
 
-  const openVisible = () => {
-    setModalVisible(true);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+
+  const data = [
+    { key: "1", value: "10:30" },
+    { key: "2", value: "11:00" },
+    { key: "3", value: "11:30" },
+    { key: "4", value: "12:00" },
+    { key: "5", value: "12:30" },
+    { key: "6", value: "13:00" },
+  ];
+
+  const dataPatients = [
+    { key: "1", value: "juan" },
+    { key: "2", value: "ramon" },
+    { key: "3", value: "maria" },
+    { key: "4", value: "juana" },
+    { key: "5", value: "carmen" },
+    { key: "6", value: "gerardo" },
+  ];
+
+  const togglePicker1 = () => {
+    setShowPicker1(!showPicker1);
   };
 
   const closeVisible = () => {
@@ -99,36 +164,6 @@ export default function AgendaCitas({
     setModalAdd(false);
   };
 
-  const renderRightActions = () => {
-
-
-
-    return (
-      <View style={styles.rightAction}>
-        <TouchableOpacity style={styles.removeAction} 
-        onPress={openDelete}>
-        <Icon2 name="calendar-remove" size={30} color="#FFF" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.editAction} 
-        onPress={handleEditPress}>
-        <Icon2 name="calendar-edit" size={30} color="#FFF" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.expedientAction}
-        onPress={() => navigation.navigate("HistorialPaciente")}>
-        <Icon3 name="page-search" size={30} color="#FFF" />
-        </TouchableOpacity>
-      </View>
-
-    );
-  };
-
-  {
-    /* metodos para editar fecha*/
-  }
-  const handleEditPress = () => {
-    setModalVisible(true);
-  };
-
   const handleDateTimeChange = () => {
     console.log(`Fecha actualizada a: ${selectedDate}`);
     console.log(`Hora actualizada a: ${selectedTime}`);
@@ -139,6 +174,26 @@ export default function AgendaCitas({
     /* metodos para crear fecha*/
   }
 
+  const onChange1 = ({ type }: { type: string }, selectedDate: any) => {
+    if (type === "set") {
+      const currentDate = selectedDate;
+      setDate(currentDate);
+
+      if (Platform.OS === "android") {
+        togglePicker1();
+        setNewDate(
+          currentDate.toLocaleDateString("es-ES", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })
+        );
+      }
+    } else {
+      togglePicker1();
+    }
+  };
+
   useEffect(() => {
     let datosDelServidor = [
       {
@@ -146,7 +201,7 @@ export default function AgendaCitas({
         apellidos: "Pérez",
         proximaCita: "2024-08-06",
         ubicacion: "Ciudad Central",
-        HoraCita: "11:00",
+        hora: "11:00",
         imagenPerfil:
           "https://imgs.search.brave.com/8ExXYVb8oTB9fWM1IvIH-QRrnpIM5ifHCiXrTuchK-I/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93d3cu/aXN0b2NrcGhvdG8u/Y29tL3Jlc291cmNl/cy9pbWFnZXMvSG9t/ZVBhZ2UvRm91clBh/Y2svQzItUGhvdG9z/LWlTdG9jay0xMzU2/MTk3Njk1LmpwZw",
       },
@@ -154,21 +209,21 @@ export default function AgendaCitas({
         nombre: "Ana",
         apellidos: "Gómez",
         proximaCita: "2024-08-12",
-        HoraCita: "12:00",
+        hora: "12:00",
         ubicacion: "Ciudad Norte",
       },
       {
         nombre: "Ana",
         apellidos: "Gómez",
         proximaCita: "2024-08-08",
-        HoraCita: "13:00",
+        hora: "13:00",
         ubicacion: "Ciudad Norte",
       },
       {
         nombre: "Ana",
         apellidos: "Gómez",
         proximaCita: "2024-08-23",
-        HoraCita: "10:00",
+        hora: "10:00",
         ubicacion: "Ciudad Norte",
       },
       // Añade más pacientes según sea necesario
@@ -178,30 +233,36 @@ export default function AgendaCitas({
   }, []);
 
   const transformarDatosParaAgenda = () => {
-    return pacientes.reduce((acc: { [key: string]: any }, paciente) => {
-      const {
-        proximaCita,
-        nombre,
-        apellidos,
-        ubicacion,
-        imagenPerfil,
-        HoraCita,
-      } = paciente;
-      const cita = {
-        name: `${nombre} ${apellidos}`,
-        hora: HoraCita,
-        location: ubicacion,
-        image: imagenPerfil,
-      };
 
-      if (acc[proximaCita]) {
-        acc[proximaCita].push(cita);
-      } else {
-        acc[proximaCita] = [cita];
-      }
-
-      return acc;
-    }, {});
+    if (Array.isArray(pacientes) && pacientes.length > 0) {
+      return pacientes.reduce((acc: { [key: string]: any }, paciente) => {
+        const {
+          proximaCita,
+          nombre,
+          apellidos,
+          ubicacion,
+          imagenPerfil,
+          hora,
+        } = paciente;
+        const cita = {
+          name: `${nombre} ${apellidos}`,
+          hora: hora,
+          location: ubicacion,
+          image: imagenPerfil,
+          date: proximaCita,
+        };
+  
+        if (acc[proximaCita]) {
+          acc[proximaCita].push(cita);
+        } else {
+          acc[proximaCita] = [cita];
+        }
+  
+        return acc;
+      }, {});
+    }
+    
+    return {};
   };
 
   const handleDayPress = (day: {
@@ -210,11 +271,50 @@ export default function AgendaCitas({
     setSelectedDate(day.dateString);
   };
 
+  {
+    /* metodos para editar fecha*/
+  }
+  const handleEditPress = (appointment) => {
+    setSelectedAppointment(appointment); // Guarda toda la información de la cita
+    setSelectedDate(appointment.date); // Extrae la fecha
+    setSelectedTime(appointment.hora); // Extrae la hora
+    setModalVisible(true); // Abre el modal de edición
+  };
+
+  const renderRightActions = (progress, dragX, item) => {
+    const translateX = dragX.interpolate({
+      inputRange: [-100, 0],
+      outputRange: [0, 100],
+      extrapolate: "clamp",
+    });
+
+    return (
+      <Animated.View
+        style={[styles.rightAction, { transform: [{ translateX }] }]}
+      >
+        <TouchableOpacity style={styles.removeAction} onPress={openDelete}>
+          <Icon2 name="calendar-remove" size={30} color="#FFF" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.editAction}
+          onPress={() => handleEditPress(item)}
+        >
+          <Icon2 name="calendar-edit" size={30} color="#FFF" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.expedientAction}
+          onPress={() => navigation.navigate("HistorialPaciente")}
+        >
+          <Icon3 name="page-search" size={30} color="#FFF" />
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <Agenda
         items={transformarDatosParaAgenda()}
-        
         selected={selectedDate}
         renderItem={(
           item: {
@@ -250,20 +350,22 @@ export default function AgendaCitas({
               | null
               | undefined;
             image: any;
+            date: string;
           },
           isFirst: any
         ) => (
           <GestureHandlerRootView>
             <Swipeable
-            containerStyle={styles.itemContainer}
-            friction={2}
-            enableTrackpadTwoFingerGesture
-            rightThreshold={40}
-            renderRightActions={ renderRightActions } 
-            onSwipeableOpen={() => {
-
-            }}>
-              <View style={{ marginHorizontal: 10 }}>
+              containerStyle={styles.itemContainer}
+              friction={2}
+              enableTrackpadTwoFingerGesture
+              renderRightActions={(progress, dragX) =>
+                renderRightActions(progress, dragX, item)
+              }
+              onSwipeableOpen={() => {}}
+            >
+              <View style={{flexDirection: "row"}}>
+              <View style={{ marginHorizontal: 10, paddingRight: 10, paddingTop: 10 }}>
                 {item.image ? (
                   <Image
                     source={{ uri: item.image }}
@@ -273,19 +375,26 @@ export default function AgendaCitas({
                   <Icon name="user-circle" size={50} color="#000" />
                 )}
               </View>
-              <View>
-                <Text>cita con: {item.name}</Text>
-                <Text>localidad: {item.location}</Text>
-                <Text>Hora: {item.hora}</Text>
+              <View >
+                <Text style={{fontWeight: "bold"}}> {item.name}</Text>
+                <View style={{flexDirection: "row", justifyContent: "flex-start", padding: 2}}>
+                <Icon name="map-marker" size={20} color="#000" />
+                <Text> {item.location}</Text>
+                </View>
+                <View style={{flexDirection: "row", justifyContent: "flex-start", padding: 2}}>
+                  <Icon name="clock-o" size={18} color="#000" style={{marginRight: 2}}/>
+                <Text> {item.hora}</Text>
+                </View>
+              </View>
               </View>
             </Swipeable>
-
           </GestureHandlerRootView>
         )}
         onDayPress={handleDayPress}
         // Puedes añadir más propiedades específicas de Agenda aquí
       />
 
+      {/* Modal para editar una cita */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -301,19 +410,32 @@ export default function AgendaCitas({
               activeOutlineColor="#c5cae9"
               label="Fecha Actual"
               style={styles.input}
-              value={selectedDate}
+              value={selectedDate || ""}
               onChangeText={setSelectedDate}
               editable={false}
             />
+            <TouchableOpacity
+            style={{ padding: 10 }}
+             onPress={togglePicker1}>
+              {showPicker1 && (
+                    <DateTimePicker
+                      mode="date"
+                      display="spinner"
+                      value={date} // Provide a value prop with the current date or a specific date
+                      onChange={onChange1}
+                    />
+                  )}
             <TextInput
               mode="outlined"
               outlineColor="#c5cae9"
               activeOutlineColor="#c5cae9"
               label="Nueva Fecha"
               style={styles.input}
-              value={selectedDate}
+              value={newDate}
               onChangeText={setSelectedDate}
+              readOnly = {true}
             />
+            </TouchableOpacity>
             <TextInput
               mode="outlined"
               outlineColor="#c5cae9"
@@ -368,14 +490,37 @@ export default function AgendaCitas({
               onChangeText={setSelectedDate}
               editable={false}
             />
-            <TextInput
-              mode="outlined"
-              outlineColor="#c5cae9"
-              activeOutlineColor="#c5cae9"
-              label="Paciente"
-              style={styles.input}
-              value={patient}
-              onChangeText={setPatient}
+            <SelectList
+              setSelected={(val: string) => {
+                setTime(val);
+              }}
+              data={dataPatients}
+              save="value"
+              search={false}
+              dropdownItemStyles={{
+                backgroundColor: "#FFFFFF",
+                width: "auto",
+                height: 50,
+                borderBottomWidth: 1,
+                borderBottomColor: "#000000",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              dropdownStyles={{
+                backgroundColor: "#FFFFFF",
+                width: "auto",
+                height: 110,
+              }}
+              boxStyles={{
+                backgroundColor: "#FFFFFF",
+                width: "100%",
+                height: 50,
+                justifyContent: "center",
+                alignItems: "center",
+                padding: 10,
+                margin: 5,
+              }}
+              placeholder="Selecciona un paciente"
             />
             <TextInput
               mode="outlined"
@@ -386,14 +531,37 @@ export default function AgendaCitas({
               value={location}
               onChangeText={setLocation}
             />
-            <TextInput
-              mode="outlined"
-              outlineColor="#c5cae9"
-              activeOutlineColor="#c5cae9"
-              label="Hora"
-              style={styles.input}
-              value={time}
-              onChangeText={setTime}
+            <SelectList
+              setSelected={(val: string) => {
+                setTime(val);
+              }}
+              data={data}
+              save="value"
+              search={false}
+              dropdownItemStyles={{
+                backgroundColor: "#FFFFFF",
+                width: "auto",
+                height: 50,
+                borderBottomWidth: 1,
+                borderBottomColor: "#000000",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              dropdownStyles={{
+                backgroundColor: "#FFFFFF",
+                width: "auto",
+                height: 110,
+              }}
+              boxStyles={{
+                backgroundColor: "#FFFFFF",
+                width: "100%",
+                height: 50,
+                justifyContent: "center",
+                alignItems: "center",
+                padding: 10,
+                margin: 5,
+              }}
+              placeholder="Selecciona una hora"
             />
 
             <View style={styles.buttonContainer}>
@@ -415,33 +583,33 @@ export default function AgendaCitas({
       </Modal>
       {/* Modal para eliminar paciente */}
       <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalDelete}
-          onRequestClose={closeDelete}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>
-                ¿Seguro que quieres eliminar esta fecha?
-              </Text>
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity
-                  style={[styles.button, styles.buttonClose]}
-                  onPress={closeDelete}
-                >
-                  <Text style={styles.textStyle}>Cancelar</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.button, styles.buttonSearch]}
-                  onPress={handleDeletePatient}
-                >
-                  <Text style={styles.textStyle}>Eliminar</Text>
-                </TouchableOpacity>
-              </View>
+        animationType="slide"
+        transparent={true}
+        visible={modalDelete}
+        onRequestClose={closeDelete}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>
+              ¿Seguro que quieres eliminar esta fecha?
+            </Text>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonClose]}
+                onPress={closeDelete}
+              >
+                <Text style={styles.textStyle}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonSearch]}
+                onPress={handleDeletePatient}
+              >
+                <Text style={styles.textStyle}>Eliminar</Text>
+              </TouchableOpacity>
             </View>
           </View>
-        </Modal>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -478,9 +646,10 @@ const styles = StyleSheet.create({
     height: 40,
     margin: 5,
     padding: 10,
-    width: "80%",
+    width: 200,
     color: "black",
     backgroundColor: "white",
+    paddingHorizontal: 10,
   },
   buttonClose: {
     backgroundColor: "#f44336",
@@ -543,34 +712,34 @@ const styles = StyleSheet.create({
   buttonSearch: {
     backgroundColor: "#2196F3",
   },
-  rightAction: { 
-    width: 70,
-   },
+  rightAction: {
+    width: 90,
+  },
   removeAction: {
-    backgroundColor: '#f44336',
-    justifyContent: 'center',
+    backgroundColor: "#f44336",
+    justifyContent: "center",
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
   editAction: {
-    backgroundColor: '#0058b3',
-    justifyContent: 'center',
+    backgroundColor: "#0058b3",
+    justifyContent: "center",
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
   expedientAction: {
-    backgroundColor: '#8dc40d',
-    justifyContent: 'center',
+    backgroundColor: "#8dc40d",
+    justifyContent: "center",
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
   separator: {
-    width: '100%',
+    width: "100%",
     borderTopWidth: 1,
   },
   swipeable: {
     height: 50,
-    
-    alignItems: 'center',
+
+    alignItems: "center",
   },
 });

@@ -73,7 +73,7 @@ export default function MainPhisio({
         }
       );
       console.log("UserID:", userID);
-      // console.log("Response data:", response.data);
+      console.log("Response data:", response.data);
       return response.data || [];
     }
   };
@@ -141,12 +141,21 @@ export default function MainPhisio({
               <Text style={[stylesMain.datosPacienteMenuFisio, { fontWeight: 'bold' }]}>
                 {paciente.nombre} {paciente.apellidos}
               </Text>
-              <Text style={stylesMain.datosPacienteMenuFisio}>
-                proxima cita: {paciente.proximaCita}
+
+              {paciente.proximaCita == "Sin cita" ? <View/> : 
+              <View style={{flexDirection: "row", justifyContent: "flex-start"}}>
+              <Icon name="calendar" size={20} color="#000" style={stylesMain.datosPacienteMenuFisio}/>
+            <Text style={[stylesMain.datosPacienteMenuFisio, {marginLeft: 5}]}>
+               {paciente.proximaCita}
+            </Text>
+            </View>
+            }
+              <View style={{flexDirection: "row", justifyContent: "flex-start"}}>
+                <Icon name="map-marker" size={20} color="#000" style={stylesMain.datosPacienteMenuFisio}/>
+              <Text style={[stylesMain.datosPacienteMenuFisio, {marginLeft: 5, }]}>
+                 {paciente.ubicacion}
               </Text>
-              <Text style={stylesMain.datosPacienteMenuFisio}>
-                Domicilio: {paciente.ubicacion}
-              </Text>
+              </View>
             </View>
           </View>
         </TouchableOpacity>

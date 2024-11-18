@@ -48,7 +48,7 @@ export default StyleSheet.create({
     alignSelf: "center",
     justifyContent: "flex-start",
     width: windowWidth * 0.8,
-    height: windowHeight * 0.16,
+    height: windowHeight * 0.13,
     borderRadius: 25,
     marginVertical: 15,
     shadowColor: "#000",
@@ -81,10 +81,10 @@ export default StyleSheet.create({
     // height: 100,
   },
   imagenpaciente: {
-    alignItems: "flex-end",
+    alignSelf: "flex-start",
+    marginTop: 13,
     width: windowWidth * 0.19,
     height: windowHeight * 0.095,
-    marginTop: 30,
     borderRadius: 100,
   },
   datosPacienteMenuFisio: {
@@ -102,7 +102,7 @@ export default StyleSheet.create({
   formatMetrics: {
     width: windowWidth * 0.8,
     height: windowHeight * 0.8,
-    marginTop: 0,
+    marginTop: 100,
     borderColor: "#000",
     // borderWidth: 1,
   },
