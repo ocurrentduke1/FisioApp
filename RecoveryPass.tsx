@@ -141,6 +141,7 @@ export function RecoveryPass({
     if (response.data.code == 200) {
       setTipoUsuario(response.data.tipoUsuario);
       setModalAuth(false);
+      setAuthCode(["", "", "", "", ""]);
       openModalContraseña();
     }
   };

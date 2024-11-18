@@ -29,12 +29,16 @@ export default function ConfirmImage({
     navigation.goBack();
   }
 
-  const { image, exercise, port } = route.params as { image: string; exercise: string, port: string };
+  const { image, exercise, port } = route.params as {
+    image: string;
+    exercise: string;
+    port: string;
+  };
   const [userID, setUserID] = useState<string | null>(null);
   console.log(port);
 
   const getUserID = async () => {
-    const id = await AsyncStorage.getItem('idSesion');
+    const id = await AsyncStorage.getItem("idSesion");
     console.log("Fetched UserID:", id); // Verifica que el ID se obtenga correctamente
     setUserID(id);
   };
@@ -50,36 +54,40 @@ export default function ConfirmImage({
       const formData = new FormData();
       const imageBlob = {
         uri: image,
-        type: 'image/jpg', // o el tipo de imagen que sea
-        name: 'photo.jpg',
+        type: "image/jpg", // o el tipo de imagen que sea
+        name: "photo.jpg",
       } as any;
 
-      formData.append('image', imageBlob);
-      formData.append('exercise', exercise);
-      formData.append('port', port);
-      formData.append('idFisio', userID!);
+      formData.append("image", imageBlob);
+      formData.append("exercise", exercise);
+      formData.append("port", port);
+      formData.append("idFisio", userID!);
 
       // Imprime el contenido de FormData para verificar
-      console.log('FormData content:');
-      console.log('image:', imageBlob);
-      console.log('formData:', formData);
+      console.log("FormData content:");
+      console.log("image:", imageBlob);
+      console.log("formData:", formData);
 
-      const response = await axios.post(BACKEND_URL + '/obtener-postura-imagen', formData,  {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await axios.post(
+        BACKEND_URL + "/obtener-postura-imagen",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       if (response.status === 201) {
-        console.log('Éxito Imagen enviada correctamente');
-        console.log('Respuesta del servidor:', response.data);
+        console.log("Éxito Imagen enviada correctamente");
+        console.log("Respuesta del servidor:", response.data);
         navigation.navigate("Results", { results: response.data });
       } else {
-        console.log('Error No se pudo enviar la imagen');
+        console.log("Error No se pudo enviar la imagen");
       }
     } catch (error) {
       console.error(error);
-      console.log(' Ocurrió un error al enviar la imagen');
+      console.log(" Ocurrió un error al enviar la imagen");
     }
   };
 
@@ -143,8 +151,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     shadowColor: "#000",
     shadowOffset: { width: 2, height: 16 },
-    shadowOpacity: 0.5, 
-    shadowRadius: 6, 
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
     elevation: 8,
   },
   text: {

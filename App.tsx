@@ -568,13 +568,3 @@ export default function App() {
     </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  userImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 60, // Hacer la imagen circular
-    alignSelf: "center",
-  },
-  // Otros estilos...
-});

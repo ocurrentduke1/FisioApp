@@ -74,7 +74,7 @@ export default function AshwortMetric({
     console.log("Save result");
   }
   return (
-    <View style={[stylesMain.container, {alignItems: "center"}]}>
+    <View style={[stylesMain.container, { alignItems: "center" }]}>
       <SafeAreaView style={stylesMain.datosMetricas}>
         <ScrollView style={stylesMain.scrollMetrics}>
           <View style={[stylesMain.ContainerInput, { height: 630 }]}>
@@ -99,17 +99,11 @@ export default function AshwortMetric({
                 value={side}
               >
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="izquierdo"
-                    uncheckedColor="#BDBDBD"
-                  />
+                  <RadioButton value="izquierdo" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>Izquierdo</Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="derecho"
-                    uncheckedColor="#BDBDBD"
-                  />
+                  <RadioButton value="derecho" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>Derecho</Text>
                 </View>
               </RadioButton.Group>
@@ -124,57 +118,39 @@ export default function AshwortMetric({
                 value={state}
               >
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="0"
-                    uncheckedColor="#BDBDBD"
-                  />
+                  <RadioButton value="0" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     sin aumento en tono muscular
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="1"
-                    uncheckedColor="#BDBDBD"
-                  />
+                  <RadioButton value="1" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     aumento leve, resistencia minima al final del rango
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="1+"
-                    uncheckedColor="#BDBDBD"
-                  />
+                  <RadioButton value="1+" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     aumento leve, resistencia minima durante el resto del rango
                     de movimiento
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="2"
-                    uncheckedColor="#BDBDBD"
-                  />
+                  <RadioButton value="2" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     aumento pronunciado, la parte afectada se mueve con
                     facilidad
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="3"
-                    uncheckedColor="#BDBDBD"
-                  />
+                  <RadioButton value="3" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     aumento considerable, el movimiento pasivo es dificil
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="4"
-                    uncheckedColor="#BDBDBD"
-                  />
+                  <RadioButton value="4" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     la parte afectada esta rigida, en extension y flexion
                   </Text>

@@ -30,7 +30,6 @@ export default function AgendaCitas({
 }: {
   navigation: NavigationProp<any>;
 }) {
-
   const [userID, setUserID] = useState<string | null>(null);
 
   const obtenerCitas = async () => {
@@ -47,7 +46,7 @@ export default function AgendaCitas({
   };
 
   const getUserID = async () => {
-    const id = await AsyncStorage.getItem('idSesion');
+    const id = await AsyncStorage.getItem("idSesion");
     console.log("Fetched UserID:", id); // Verifica que el ID se obtenga correctamente
     setUserID(id);
   };
@@ -72,13 +71,12 @@ export default function AgendaCitas({
   );
 
   useEffect(() => {
-   // Funcion para obtener ID de la sesion
+    // Funcion para obtener ID de la sesion
     const getUserID = async () => {
-      const id = await AsyncStorage.getItem('idSesion');
+      const id = await AsyncStorage.getItem("idSesion");
       setUserID(id);
     };
     getUserID();
-
   }, []);
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -123,6 +121,12 @@ export default function AgendaCitas({
     { key: "6", value: "gerardo" },
   ];
 
+  const dataUbicacion = [
+    { key: "1", value: "Cita a domicilio" },
+    { key: "2", value: "Cita en clinica" },
+    { key: "3", value: "ubicacion personalizada" },
+  ];
+
   const togglePicker1 = () => {
     setShowPicker1(!showPicker1);
   };
@@ -160,6 +164,9 @@ export default function AgendaCitas({
     console.log(`Lugar: ${location}`);
     console.log(`Hora: ${time}`);
     setModalAdd(false);
+    setLocation("");
+    setPatient("");
+    setTime("");
   };
 
   const handleDateTimeChange = () => {
@@ -192,20 +199,12 @@ export default function AgendaCitas({
     }
   };
 
-
   const transformarDatosParaAgenda = () => {
-
     if (Array.isArray(citas) && citas.length > 0) {
       return citas.reduce((acc: { [key: string]: any }, cita) => {
-        const {
-          proximaCita,
-          nombre,
-          apellido,
-          ubicacion,
-          imagenPerfil,
-          hora,
-        } = cita;
-        
+        const { proximaCita, nombre, apellido, ubicacion, imagenPerfil, hora } =
+          cita;
+
         const transformedCita = {
           name: `${nombre} ${apellido}`,
           hora: hora,
@@ -213,17 +212,17 @@ export default function AgendaCitas({
           image: imagenPerfil,
           date: proximaCita,
         };
-  
+
         if (acc[proximaCita]) {
           acc[proximaCita].push(transformedCita);
         } else {
           acc[proximaCita] = [transformedCita];
         }
-  
+
         return acc;
       }, {});
     }
-    
+
     return {};
   };
 
@@ -241,6 +240,14 @@ export default function AgendaCitas({
     setSelectedDate(appointment.date); // Extrae la fecha
     setSelectedTime(appointment.hora); // Extrae la hora
     setModalVisible(true); // Abre el modal de edición
+  };
+
+  const validateDataRegister = () => {
+    if (location === "" || patient === "" || time === "") {
+      return false;
+    } else {
+      return true;
+    }
   };
 
   const renderRightActions = (progress, dragX, item) => {
@@ -343,30 +350,53 @@ export default function AgendaCitas({
               }
               onSwipeableOpen={() => {}}
             >
-              <View style={{flexDirection: "row"}}>
-              <View style={{ marginHorizontal: 10, paddingRight: 10, paddingTop: 10 }}>
-                {item.image ? (
-                  <Image
-                    source={{ 
-                      uri: item.image
+              <View style={{ flexDirection: "row" }}>
+                <View
+                  style={{
+                    marginHorizontal: 10,
+                    paddingRight: 10,
+                    paddingTop: 10,
+                  }}
+                >
+                  {item.image ? (
+                    <Image
+                      source={{
+                        uri: item.image,
+                      }}
+                      style={{ width: 50, height: 50, borderRadius: 25 }}
+                    />
+                  ) : (
+                    <Icon name="user-circle" size={50} color="#000" />
+                  )}
+                </View>
+                <View>
+                  <Text style={{ fontWeight: "bold" }}> {item.name}</Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "flex-start",
+                      padding: 2,
                     }}
-                    style={{ width: 50, height: 50, borderRadius: 25 }}
-                  />
-                ) : (
-                  <Icon name="user-circle" size={50} color="#000" />
-                )}
-              </View>
-              <View >
-                <Text style={{fontWeight: "bold"}}> {item.name}</Text>
-                <View style={{flexDirection: "row", justifyContent: "flex-start", padding: 2}}>
-                <Icon name="map-marker" size={20} color="#000" />
-                <Text> {item.location}</Text>
+                  >
+                    <Icon name="map-marker" size={20} color="#000" />
+                    <Text> {item.location}</Text>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "flex-start",
+                      padding: 2,
+                    }}
+                  >
+                    <Icon
+                      name="clock-o"
+                      size={18}
+                      color="#000"
+                      style={{ marginRight: 2 }}
+                    />
+                    <Text> {item.hora}</Text>
+                  </View>
                 </View>
-                <View style={{flexDirection: "row", justifyContent: "flex-start", padding: 2}}>
-                  <Icon name="clock-o" size={18} color="#000" style={{marginRight: 2}}/>
-                <Text> {item.hora}</Text>
-                </View>
-              </View>
               </View>
             </Swipeable>
           </GestureHandlerRootView>
@@ -394,27 +424,25 @@ export default function AgendaCitas({
               onChangeText={setSelectedDate}
               editable={false}
             />
-            <TouchableOpacity
-            style={{ padding: 10 }}
-             onPress={togglePicker1}>
+            <TouchableOpacity style={{ padding: 10 }} onPress={togglePicker1}>
               {showPicker1 && (
-                    <DateTimePicker
-                      mode="date"
-                      display="spinner"
-                      value={date} // Provide a value prop with the current date or a specific date
-                      onChange={onChange1}
-                    />
-                  )}
-            <TextInput
-              mode="outlined"
-              outlineColor="#c5cae9"
-              activeOutlineColor="#c5cae9"
-              label="Nueva Fecha"
-              style={styles.input}
-              value={newDate}
-              onChangeText={setSelectedDate}
-              readOnly = {true}
-            />
+                <DateTimePicker
+                  mode="date"
+                  display="spinner"
+                  value={date} // Provide a value prop with the current date or a specific date
+                  onChange={onChange1}
+                />
+              )}
+              <TextInput
+                mode="outlined"
+                outlineColor="#c5cae9"
+                activeOutlineColor="#c5cae9"
+                label="Nueva Fecha"
+                style={styles.input}
+                value={newDate}
+                onChangeText={setSelectedDate}
+                readOnly={true}
+              />
             </TouchableOpacity>
             <TextInput
               mode="outlined"
@@ -447,7 +475,7 @@ export default function AgendaCitas({
       {/* Modal para agregar una cita */}
       <FAB
         icon="calendar-plus"
-        color="#FFF"
+        color="#000"
         style={styles.fab}
         onPress={() => openAdd()}
       />
@@ -465,14 +493,14 @@ export default function AgendaCitas({
               outlineColor="#c5cae9"
               activeOutlineColor="#c5cae9"
               label="Fecha"
-              style={styles.input}
+              style={[styles.input, {height: 20}]}
               value={selectedDate}
               onChangeText={setSelectedDate}
               editable={false}
             />
             <SelectList
               setSelected={(val: string) => {
-                setTime(val);
+                setPatient(val);
               }}
               data={dataPatients}
               save="value"
@@ -493,7 +521,7 @@ export default function AgendaCitas({
               }}
               boxStyles={{
                 backgroundColor: "#FFFFFF",
-                width: "100%",
+                width: 200,
                 height: 50,
                 justifyContent: "center",
                 alignItems: "center",
@@ -502,15 +530,40 @@ export default function AgendaCitas({
               }}
               placeholder="Selecciona un paciente"
             />
-            <TextInput
-              mode="outlined"
-              outlineColor="#c5cae9"
-              activeOutlineColor="#c5cae9"
-              label="Lugar"
-              style={styles.input}
-              value={location}
-              onChangeText={setLocation}
+
+            <SelectList
+              setSelected={(val: string) => {
+                setLocation(val);
+              }}
+              data={dataUbicacion}
+              save="value"
+              search={false}
+              dropdownItemStyles={{
+                backgroundColor: "#FFFFFF",
+                width: "auto",
+                height: 50,
+                borderBottomWidth: 1,
+                borderBottomColor: "#000000",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              dropdownStyles={{
+                backgroundColor: "#FFFFFF",
+                width: "auto",
+                height: 110,
+              }}
+              boxStyles={{
+                backgroundColor: "#FFFFFF",
+                width: 200,
+                height: 50,
+                justifyContent: "center",
+                alignItems: "center",
+                padding: 10,
+                margin: 5,
+              }}
+              placeholder="Ubicacion de cita"
             />
+
             <SelectList
               setSelected={(val: string) => {
                 setTime(val);
@@ -534,7 +587,7 @@ export default function AgendaCitas({
               }}
               boxStyles={{
                 backgroundColor: "#FFFFFF",
-                width: "100%",
+                width: 200,
                 height: 50,
                 justifyContent: "center",
                 alignItems: "center",
@@ -554,6 +607,7 @@ export default function AgendaCitas({
               <TouchableOpacity
                 style={[styles.button, styles.buttonSearch]}
                 onPress={handleSaveAppointment}
+                disabled={!validateDataRegister()}
               >
                 <Text style={styles.textStyle}>Agregar</Text>
               </TouchableOpacity>
@@ -561,7 +615,7 @@ export default function AgendaCitas({
           </View>
         </View>
       </Modal>
-      {/* Modal para eliminar paciente */}
+      {/* Modal para eliminar cita */}
       <Modal
         animationType="slide"
         transparent={true}

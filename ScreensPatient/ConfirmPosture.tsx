@@ -1,4 +1,4 @@
-import React, { } from "react";
+import React from "react";
 import {
   View,
   Image,
@@ -24,19 +24,19 @@ type RouteParams = {
 
 // Suponiendo que este es tu componente
 const ConfirmPosture = ({
-  navigation, route,
+  navigation,
+  route,
 }: {
   route: RouteProp<RouteParams, "params">;
   navigation: NavigationProp<any>;
 }) => {
-  
   const { imageSource } = route.params;
   const { exercise } = route.params;
   const { port } = route.params;
 
   console.log(port);
-  console.log(exercise)
-  console.log(imageSource)
+  console.log(exercise);
+  console.log(imageSource);
 
   return (
     <SafeAreaView style={stylesHistorial.container}>
@@ -46,7 +46,7 @@ const ConfirmPosture = ({
           source={imageSource} // Asegúrate de cambiar la ruta al lugar correcto donde tienes tu GIF
           style={styles.gifStyle}
         />
-        <Text style={{color: "black"}}>
+        <Text style={{ color: "black" }}>
           Instrucciones para la realizacion de la postura y su visualizacion
         </Text>
       </View>

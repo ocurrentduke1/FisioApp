@@ -1,36 +1,33 @@
-import { CameraView, FlashMode, CameraType } from 'expo-camera'
+import React from "react";
+import { CameraView, FlashMode, CameraType } from "expo-camera";
 import { useRef, useState } from "react";
-import {
-  TouchableOpacity,
-  View,
-  SafeAreaView,
-} from "react-native";
+import { TouchableOpacity, View, SafeAreaView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { NavigationProp } from "@react-navigation/native";
 import { RouteProp } from "@react-navigation/native";
 import { FontAwesome6 } from "@expo/vector-icons";
-import styleCamera from '../styles/styleCamera';
-
+import styleCamera from "../styles/styleCamera";
 
 export default function CamaraImagen({
-  navigation, route,
+  navigation,
+  route,
 }: {
   route: RouteProp<any, any>;
   navigation: NavigationProp<any>;
 }) {
-  const [type, setType] = useState<CameraType>('back')
-  const [flash, setFlash] = useState<FlashMode>('off')
-  const cameraRef = useRef<CameraView>(null)
+  const [type, setType] = useState<CameraType>("back");
+  const [flash, setFlash] = useState<FlashMode>("off");
+  const cameraRef = useRef<CameraView>(null);
   const [image, setImage] = useState<string | null>(null); // Update the type of the image state variable
-  const [cameraReady, setCameraReady] = useState<boolean>(false)
+  const [cameraReady, setCameraReady] = useState<boolean>(false);
 
   const { exercise } = route.params as { exercise: string };
-  const { port } = route.params as { port: string }
+  const { port } = route.params as { port: string };
 
   console.log(port);
   const onCameraReady = async () => {
-    setCameraReady(true)
-  }
+    setCameraReady(true);
+  };
 
   const takePicture = async () => {
     if (cameraRef) {
@@ -38,7 +35,11 @@ export default function CamaraImagen({
         const data = await cameraRef.current?.takePictureAsync({});
         console.log(data);
         setImage(data!.uri);
-        navigation.navigate("ConfirmImage", { image: data!.uri, exercise, port });
+        navigation.navigate("ConfirmImage", {
+          image: data!.uri,
+          exercise,
+          port,
+        });
       } catch (e) {
         console.log(e);
       }
@@ -46,12 +47,12 @@ export default function CamaraImagen({
   };
 
   const turnOnOffFlash = () => {
-    setFlash((flash) => (flash === 'off' ? 'on' : 'off'))
-   }
+    setFlash((flash) => (flash === "off" ? "on" : "off"));
+  };
 
   const flipCamera = () => {
-    setType((type) => (type === 'back' ? 'front' : 'back'))
-   }
+    setType((type) => (type === "back" ? "front" : "back"));
+  };
 
   return (
     <View style={styleCamera.container}>
@@ -89,11 +90,12 @@ export default function CamaraImagen({
                   style={styleCamera.PressableButton}
                   onPress={takePicture}
                 >
-                  <View
-                    style={styleCamera.ViewPressable}
-                  >
+                  <View style={styleCamera.ViewPressable}>
                     <View
-                      style={[styleCamera.PressableView, { backgroundColor: "white" }]}
+                      style={[
+                        styleCamera.PressableView,
+                        { backgroundColor: "white" },
+                      ]}
                     ></View>
                   </View>
                 </TouchableOpacity>

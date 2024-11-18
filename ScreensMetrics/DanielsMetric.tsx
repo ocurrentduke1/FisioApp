@@ -90,7 +90,7 @@ export default function DanielsMetric({
     console.log("Save result");
   }
   return (
-    <View style={[stylesMain.container, {alignItems: "center"}]}>
+    <View style={[stylesMain.container, { alignItems: "center" }]}>
       <SafeAreaView style={stylesMain.datosMetricas}>
         <ScrollView style={stylesMain.scrollMetrics}>
           <View style={[stylesMain.ContainerInput, { height: 900 }]}>
@@ -114,17 +114,11 @@ export default function DanielsMetric({
                 value={side}
               >
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="izquierdo"
-                    uncheckedColor="#BDBDBD"
-                  />
+                  <RadioButton value="izquierdo" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>Izquierdo</Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="derecho"
-                    uncheckedColor="#BDBDBD"
-                  />
+                  <RadioButton value="derecho" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>Derecho</Text>
                 </View>
               </RadioButton.Group>
@@ -139,68 +133,47 @@ export default function DanielsMetric({
                 value={state}
               >
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="0"
-                    uncheckedColor="#BDBDBD"
-                  />
+                  <RadioButton value="0" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     Paralisis Total o ausencia de movimiento
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="1"
-                    uncheckedColor="#BDBDBD"
-                  />
+                  <RadioButton value="1" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     Contraccion minima visible, pero sin movimiento
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="2"
-                    uncheckedColor="#BDBDBD"
-                  />
+                  <RadioButton value="2" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     Contraccion escasa, con movimiento, pero inexistente con
                     resistencia
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="3-"
-                    uncheckedColor="#BDBDBD"
-                  />
+                  <RadioButton value="3-" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     Contraccion regular negativa, con movimiento parcial y
                     liberacion gradual desde la posicion de prueba
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="3"
-                    uncheckedColor="#BDBDBD"
-                  />
+                  <RadioButton value="3" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     Contraccion regular, con movimiento parcial y con la
                     gravedad como unica resistencia
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="3+"
-                    uncheckedColor="#BDBDBD"
-                  />
+                  <RadioButton value="3+" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     Contraccion regular positiva, con movimiento completo, pero
                     solo en contra de la gravedad
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="4-"
-                    uncheckedColor="#BDBDBD"
-                  />
+                  <RadioButton value="4-" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     Contraccion buena negativa o regular, con movimiento
                     completo contra la gravedad y con la aplicacion de
@@ -208,30 +181,21 @@ export default function DanielsMetric({
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="4"
-                    uncheckedColor="#BDBDBD"
-                  />
+                  <RadioButton value="4" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     Contraccion buena, con movimiento completo contra la
                     gravedad y con la aplicacion de resistencia Moderada
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="4+"
-                    uncheckedColor="#BDBDBD"
-                  />
+                  <RadioButton value="4+" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     Contraccion buena positiva, con movimiento completo contra
                     la gravedad y con la aplicacion de resistencia fuerte
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="5"
-                    uncheckedColor="#BDBDBD"
-                  />
+                  <RadioButton value="5" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     Contraccion normal, con movimiento completo contra la
                     gravedad y con la aplicacion de resistencia maxima

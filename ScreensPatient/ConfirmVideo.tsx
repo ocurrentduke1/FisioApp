@@ -29,13 +29,16 @@ export default function ConfirmVideo({
     navigation.goBack();
   }
 
-  const { video, exercise} = route.params as { video: string, exercise: string};
+  const { video, exercise } = route.params as {
+    video: string;
+    exercise: string;
+  };
   const { port } = route.params as { port: string };
   const [userID, setUserID] = useState<string | null>(null);
   console.log(port);
 
   const getUserID = async () => {
-    const id = await AsyncStorage.getItem('idSesion');
+    const id = await AsyncStorage.getItem("idSesion");
     console.log("Fetched UserID:", id); // Verifica que el ID se obtenga correctamente
     setUserID(id);
   };
@@ -53,36 +56,40 @@ export default function ConfirmVideo({
       const formData = new FormData();
       const videoBlob = {
         uri: video,
-        type: 'video/mp4', // o el tipo de imagen que sea
-        name: 'video.mp4',
+        type: "video/mp4", // o el tipo de imagen que sea
+        name: "video.mp4",
       } as any;
 
-      formData.append('video', videoBlob);
-      formData.append('exercise', exercise);
-      formData.append('port', port);
-      formData.append('idFisio', userID!);
+      formData.append("video", videoBlob);
+      formData.append("exercise", exercise);
+      formData.append("port", port);
+      formData.append("idFisio", userID!);
 
       // Imprime el contenido de FormData para verificar
-      console.log('FormData content:');
-      console.log('video:', videoBlob);
-      console.log('formData:', formData);
+      console.log("FormData content:");
+      console.log("video:", videoBlob);
+      console.log("formData:", formData);
 
-      const response = await axios.post(BACKEND_URL + '/obtener-postura-video', formData,  {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await axios.post(
+        BACKEND_URL + "/obtener-postura-video",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       if (response.status === 201) {
-        console.log('Éxito Video enviado correctamente');
-        console.log('Respuesta del servidor:', response.data);
+        console.log("Éxito Video enviado correctamente");
+        console.log("Respuesta del servidor:", response.data);
         navigation.navigate("Results", { results: response.data });
       } else {
-        console.log('Error No se pudo enviar el video');
+        console.log("Error No se pudo enviar el video");
       }
     } catch (error) {
       console.error(error);
-      console.log(' Ocurrió un error al enviar el video');
+      console.log(" Ocurrió un error al enviar el video");
     }
   };
 
@@ -151,10 +158,10 @@ const styles = StyleSheet.create({
     height: 50,
     marginBottom: 30,
     shadowColor: "#000",
-    shadowOffset: { width: 2, height: 6 }, 
-    shadowOpacity: 0.8, 
-    shadowRadius: 6, 
-    elevation: 8, 
+    shadowOffset: { width: 2, height: 6 },
+    shadowOpacity: 0.8,
+    shadowRadius: 6,
+    elevation: 8,
   },
   text: {
     fontSize: 20,

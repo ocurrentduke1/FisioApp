@@ -1,45 +1,66 @@
-import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, ImageBackground, StyleSheet } from 'react-native';
-import { NavigationProp } from '@react-navigation/native';
-import stylesMain from '../styles/stylesMain';
+import { StatusBar } from "expo-status-bar";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ImageBackground,
+  StyleSheet,
+} from "react-native";
+import { NavigationProp } from "@react-navigation/native";
+import stylesMain from "../styles/stylesMain";
 import Icon from "react-native-vector-icons/FontAwesome";
 
-export default function MainPatient({ navigation }: { navigation: NavigationProp<any> }){
-
+export default function MainPatient({
+  navigation,
+}: {
+  navigation: NavigationProp<any>;
+}) {
   return (
-    <View style={[stylesMain.container, {alignItems: "center"}]}>  
-    <ImageBackground source={require("../assets/logo_blanco.png")} resizeMode="contain" style={styles.image} imageStyle={{opacity: 0.5}}>   
-    <TouchableOpacity style={stylesMain.opcPatient}
-     onPress={() => navigation.navigate('EvaluacionVideo')}>
-      <Text style={stylesMain.buttonText}>Evaluacion de video</Text>
-      <Icon name="video-camera" size={150} color="#000" />
-      {/* <Image
+    <View style={[stylesMain.container, { alignItems: "center" }]}>
+      <ImageBackground
+        source={require("../assets/logo_blanco.png")}
+        resizeMode="contain"
+        style={styles.image}
+        imageStyle={{ opacity: 0.5 }}
+      >
+        <TouchableOpacity
+          style={stylesMain.opcPatient}
+          onPress={() => navigation.navigate("EvaluacionVideo")}
+        >
+          <Text style={stylesMain.buttonText}>Evaluacion de video</Text>
+          <Icon name="video-camera" size={150} color="#000" />
+          {/* <Image
           style={stylesMain.image}
           source={require("./assets/video-camara-alt.png")}
         /> */}
-      </TouchableOpacity>
-      <TouchableOpacity style={stylesMain.opcPatient}
-     onPress={() => navigation.navigate('EvaluacionImagen')}>
-      <Text style={stylesMain.buttonText}>Evaluacion de imagen</Text>
-      <Icon name="camera" size={140} color="#000"/>
-      {/* <Image
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={stylesMain.opcPatient}
+          onPress={() => navigation.navigate("EvaluacionImagen")}
+        >
+          <Text style={stylesMain.buttonText}>Evaluacion de imagen</Text>
+          <Icon name="camera" size={140} color="#000" />
+          {/* <Image
           style={stylesMain.image}
           source={require("./assets/imagen.png")}
         /> */}
-      </TouchableOpacity>
+        </TouchableOpacity>
 
-      <TouchableOpacity style={stylesMain.opcPatient}
-       onPress={() => navigation.navigate('Expediente')}>
-        <Text style={stylesMain.buttonText}>Expediente</Text>
-        <Icon name="file-text-o" size={150} color="#000" />
-        {/* <Image
+        <TouchableOpacity
+          style={stylesMain.opcPatient}
+          onPress={() => navigation.navigate("Expediente")}
+        >
+          <Text style={stylesMain.buttonText}>Expediente</Text>
+          <Icon name="file-text-o" size={150} color="#000" />
+          {/* <Image
           style={stylesMain.image}
           source={require("./assets/documento-firmado.png")}
         /> */}
-      </TouchableOpacity>
-    <StatusBar style="auto" />
-    </ImageBackground>
+        </TouchableOpacity>
+        <StatusBar style="auto" />
+      </ImageBackground>
     </View>
   );
 }
@@ -47,6 +68,6 @@ export default function MainPatient({ navigation }: { navigation: NavigationProp
 const styles = StyleSheet.create({
   image: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
 });

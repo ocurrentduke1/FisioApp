@@ -1,11 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView, SafeAreaView, TouchableOpacity, Dimensions } from 'react-native';
-import { NavigationProp } from '@react-navigation/native';
-import stylesMain from '../styles/stylesMain';
-import { RadioButton, TextInput } from 'react-native-paper';
+import {
+  View,
+  Text,
+  ScrollView,
+  SafeAreaView,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
+import { NavigationProp } from "@react-navigation/native";
+import stylesMain from "../styles/stylesMain";
+import { RadioButton, TextInput } from "react-native-paper";
 
-export default function SeidelMetric({ navigation }: { navigation: NavigationProp<any> }){
-
+export default function SeidelMetric({
+  navigation,
+}: {
+  navigation: NavigationProp<any>;
+}) {
   const windowWidth = Dimensions.get("window").width;
   const windowHeight = Dimensions.get("window").height;
 
@@ -19,16 +29,20 @@ export default function SeidelMetric({ navigation }: { navigation: NavigationPro
     let message = "";
     switch (state) {
       case "1":
-        message = " Fóvea ligera, desaparece rapidamente, sin distorcion detectable.";
+        message =
+          " Fóvea ligera, desaparece rapidamente, sin distorcion detectable.";
         break;
       case "2":
-        message = " Fóvea mas profunda, no hay distorcion detectable, desaparece en 10 a 15 segundos.";
+        message =
+          " Fóvea mas profunda, no hay distorcion detectable, desaparece en 10 a 15 segundos.";
         break;
       case "3":
-        message = " Fovea profunda, dura mas de 1 minuto, distorcion detectable.";
+        message =
+          " Fovea profunda, dura mas de 1 minuto, distorcion detectable.";
         break;
       case "4":
-        message = " Fóvea muy profunda, dura mas de 2 minutos, distorcion marcada.";
+        message =
+          " Fóvea muy profunda, dura mas de 2 minutos, distorcion marcada.";
         break;
     }
 
@@ -41,7 +55,7 @@ export default function SeidelMetric({ navigation }: { navigation: NavigationPro
     return muscle.trim() !== "" && side.trim() !== "" && state.trim() !== "";
   };
 
-  useEffect (() => {
+  useEffect(() => {
     setIsButtonDisabled(!allFieldsFilled());
   }, [muscle, side, state]);
 
@@ -53,7 +67,7 @@ export default function SeidelMetric({ navigation }: { navigation: NavigationPro
     console.log("Save result");
   }
   return (
-    <View style={[stylesMain.container, {alignItems: "center"}]}>
+    <View style={[stylesMain.container, { alignItems: "center" }]}>
       <SafeAreaView style={stylesMain.datosMetricas}>
         <ScrollView style={stylesMain.scrollMetrics}>
           <View style={[stylesMain.ContainerInput, { height: 550 }]}>
@@ -77,17 +91,11 @@ export default function SeidelMetric({ navigation }: { navigation: NavigationPro
                 value={side}
               >
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="izquierdo"
-                    uncheckedColor="#BDBDBD"
-                  />
+                  <RadioButton value="izquierdo" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>Izquierdo</Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="derecho"
-                    uncheckedColor="#BDBDBD"
-                  />
+                  <RadioButton value="derecho" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>Derecho</Text>
                 </View>
               </RadioButton.Group>
@@ -102,46 +110,27 @@ export default function SeidelMetric({ navigation }: { navigation: NavigationPro
                 value={state}
               >
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="0"
-                    uncheckedColor="#BDBDBD"
-                  />
-                  <Text style={stylesMain.metricText}>
-                    No hay respuesta
-                  </Text>
+                  <RadioButton value="0" uncheckedColor="#BDBDBD" />
+                  <Text style={stylesMain.metricText}>No hay respuesta</Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="1"
-                    uncheckedColor="#BDBDBD"
-                  />
+                  <RadioButton value="1" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     Respuesta ligeramente disminuida
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="2"
-                    uncheckedColor="#BDBDBD"
-                  />
-                  <Text style={stylesMain.metricText}>
-                    respuesta normal
-                  </Text>
+                  <RadioButton value="2" uncheckedColor="#BDBDBD" />
+                  <Text style={stylesMain.metricText}>respuesta normal</Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="3"
-                    uncheckedColor="#BDBDBD"
-                  />
+                  <RadioButton value="3" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     Respuesta mas intensa de lo normal
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton
-                    value="4"
-                    uncheckedColor="#BDBDBD"
-                  />
+                  <RadioButton value="4" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     Respuesta exaltada (posible clonus)
                   </Text>

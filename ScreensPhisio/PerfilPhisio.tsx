@@ -178,6 +178,7 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
     }
     if (response.data.code === 200) {
       setModalAuth(false);
+      setAuthCode(["", "", "", "", ""]);
       openModalContraseña();
     }
   };

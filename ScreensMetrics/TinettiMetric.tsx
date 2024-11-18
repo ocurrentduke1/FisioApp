@@ -81,7 +81,7 @@ export default function TinettiMetric({
   }
 
   return (
-    <View style={[stylesMain.container, {alignItems: "center"}]}>
+    <View style={[stylesMain.container, { alignItems: "center" }]}>
       <SafeAreaView style={stylesMain.datosMetricas}>
         <ScrollView style={stylesMain.scrollMetrics}>
           <Text style={stylesMain.exersiceTitle}>Evaluacion de equilibrio</Text>
@@ -257,11 +257,7 @@ export default function TinettiMetric({
             />
           </View>
 
-          <Text
-            style={stylesMain.exersiceTitle}
-          >
-            Evaluacion de marcha
-          </Text>
+          <Text style={stylesMain.exersiceTitle}>Evaluacion de marcha</Text>
 
           <View style={[stylesMain.ContainerInput, { height: 1630 }]}>
             <Text style={stylesMain.metricTitle}>1.Inicio de marcha</Text>

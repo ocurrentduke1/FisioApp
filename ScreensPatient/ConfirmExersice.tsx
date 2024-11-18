@@ -1,4 +1,4 @@
-import React, { } from "react";
+import React from "react";
 import {
   View,
   Image,
@@ -24,7 +24,8 @@ type RouteParams = {
 
 // Suponiendo que este es tu componente
 const ConfirmExercise = ({
-  route,navigation,
+  route,
+  navigation,
 }: {
   navigation: NavigationProp<any>;
   route: RouteProp<RouteParams, "params">;
@@ -35,40 +36,42 @@ const ConfirmExercise = ({
   const { exercise } = route.params;
   const { port } = route.params;
   //const { Instructions } = route.params;
-  console.log(port)
+  console.log(port);
 
   return (
     <SafeAreaView style={stylesHistorial.container}>
       <View style={stylesHistorial.containerRegistro}>
         <Text style={styles.Text}>Ejemplo de realizacion de ejercicio</Text>
         <View style={styles.gifContainer}>
-        <Image
-          source={gifSource} 
-          style={styles.gifStyle}
-        />
+          <Image source={gifSource} style={styles.gifStyle} />
         </View>
         <RadioButton.Group
-            onValueChange={newValue => setSide(newValue)}
-            value={side}
-          >
-            <View style={styles.radioGroupContainer}>
+          onValueChange={(newValue) => setSide(newValue)}
+          value={side}
+        >
+          <View style={styles.radioGroupContainer}>
             <View style={styles.radioButtonContainer}>
-              <RadioButton value="Izquierda"/>
-              <Text >Izquierdo</Text>
+              <RadioButton value="Izquierda" />
+              <Text>Izquierdo</Text>
             </View>
             <View style={styles.radioButtonContainer}>
               <RadioButton value="Derecha" />
-              <Text >Derecho</Text>
+              <Text>Derecho</Text>
             </View>
-            </View>
-          </RadioButton.Group>
-        <Text style={{color: "black", paddingHorizontal: 10, paddingTop: 10}}>
+          </View>
+        </RadioButton.Group>
+        <Text style={{ color: "black", paddingHorizontal: 10, paddingTop: 10 }}>
           Instrucciones para la realizacion del ejercicio y su visualizacion
         </Text>
       </View>
       <TouchableOpacity
         style={stylesHistorial.button}
-        onPress={() => navigation.navigate("CamaraVideo", {exercise: exercise + side, port}) }
+        onPress={() =>
+          navigation.navigate("CamaraVideo", {
+            exercise: exercise + side,
+            port,
+          })
+        }
       >
         <Text style={stylesHistorial.buttonText}>Evaluar</Text>
       </TouchableOpacity>
@@ -94,13 +97,13 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   radioButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 10,
   },
   radioGroupContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 10,
   },
 });

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { CameraView, CameraType, Camera } from 'expo-camera'
+import { CameraView, CameraType, Camera } from "expo-camera";
 import { NavigationProp } from "@react-navigation/native";
 import { RouteProp } from "@react-navigation/native";
 import {
@@ -14,27 +14,28 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import styleCamera from "../styles/styleCamera";
 
 export default function CamaraVideo({
-  navigation, route,
+  navigation,
+  route,
 }: {
   route: RouteProp<any, any>;
   navigation: NavigationProp<any>;
 }) {
-  const [type, setType] = useState<CameraType>('back')
-  const cameraRef = useRef<CameraView>(null)
+  const [type, setType] = useState<CameraType>("back");
+  const cameraRef = useRef<CameraView>(null);
   const [record, setRecord] = useState<string | null>(null);
   const [timeElapsed, setTimeElapsed] = useState(0);
   let interval: NodeJS.Timeout | undefined;
   const [maxDuration, setMaxDuration] = useState(15);
   const [isRecording, setIsRecording] = useState(false);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [cameraReady, setCameraReady] = useState<boolean>(false)
+  const [cameraReady, setCameraReady] = useState<boolean>(false);
 
   const { exercise } = route.params as { exercise: string };
   const { port } = route.params as { port: string };
 
   const onCameraReady = async () => {
-    setCameraReady(true)
-  }
+    setCameraReady(true);
+  };
 
   function closeCamera() {
     navigation.goBack();
@@ -44,7 +45,9 @@ export default function CamaraVideo({
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
       const audioStatus = await Camera.requestMicrophonePermissionsAsync();
-      setHasPermission(status === 'granted' && audioStatus.status === 'granted');
+      setHasPermission(
+        status === "granted" && audioStatus.status === "granted"
+      );
     })();
   }, []);
 
@@ -73,7 +76,11 @@ export default function CamaraVideo({
           const response = await cameraRef.current.recordAsync({});
           if (response) {
             setRecord(response.uri);
-            navigation.navigate('ConfirmVideo', { video: response.uri, exercise, port });
+            navigation.navigate("ConfirmVideo", {
+              video: response.uri,
+              exercise,
+              port,
+            });
           }
           console.log(response);
         } catch (e) {
@@ -101,17 +108,16 @@ export default function CamaraVideo({
 
   //function to change the camera type
   const flipCamera = () => {
-    setType((type) => (type === 'back' ? 'front' : 'back'))
-   }
-
+    setType((type) => (type === "back" ? "front" : "back"));
+  };
 
   return (
     <View style={styleCamera.container}>
       <SafeAreaView>
         <View style={[styleCamera.mainContainer, { top: 20 }]}>
-          <View style={[styleCamera.cameraContainer, {flexDirection: "row"}]}>
+          <View style={[styleCamera.cameraContainer, { flexDirection: "row" }]}>
             <CameraView
-            mode="video"
+              mode="video"
               style={{
                 flex: 1,
                 justifyContent: "center",
@@ -121,18 +127,16 @@ export default function CamaraVideo({
               onCameraReady={onCameraReady}
             >
               <TouchableOpacity
-          style={{
-            position: "absolute",
-            left: "5%",
-            top: "6%",
-          }}
-          onPress={closeCamera}
-        >
-          <Icon name="chevron-left" size={30} color="#757575" />
-        </TouchableOpacity>
-              <View
-                style={styleCamera.CronoView}
+                style={{
+                  position: "absolute",
+                  left: "5%",
+                  top: "6%",
+                }}
+                onPress={closeCamera}
               >
+                <Icon name="chevron-left" size={30} color="#757575" />
+              </TouchableOpacity>
+              <View style={styleCamera.CronoView}>
                 <Text style={{ color: "white" }}>{timeElapsed} seg</Text>
               </View>
               <TouchableOpacity
@@ -157,11 +161,12 @@ export default function CamaraVideo({
                   style={styleCamera.PressableButton}
                   onPress={recording}
                 >
-                  <View
-                    style={styleCamera.ViewPressable}
-                  >
+                  <View style={styleCamera.ViewPressable}>
                     <View
-                      style={[styleCamera.PressableView, { backgroundColor: "red" }]}
+                      style={[
+                        styleCamera.PressableView,
+                        { backgroundColor: "red" },
+                      ]}
                     ></View>
                   </View>
                 </Pressable>

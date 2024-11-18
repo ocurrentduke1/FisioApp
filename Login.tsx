@@ -24,7 +24,6 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [auth, setAuth] = useState(false);
   const [authCode, setAuthCode] = useState(["", "", "", "", ""]);
   const [modalAuth, setModalAuth] = useState(false);
   const inputRefs = useRef<any[]>([]);
@@ -71,6 +70,7 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
     if(response.data.code == 200){
       loggin();
       setModalAuth(false);
+      setAuthCode(["", "", "", "", ""]);
     }
   };
 

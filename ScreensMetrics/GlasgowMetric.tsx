@@ -34,7 +34,11 @@ export default function GlasgowMetric({
   }
 
   const allFieldsFilled = () => {
-    return valueOcular.trim() !== '' && valueVerbal.trim() !== '' && valueMotriz.trim() !== '';
+    return (
+      valueOcular.trim() !== "" &&
+      valueVerbal.trim() !== "" &&
+      valueMotriz.trim() !== ""
+    );
   };
 
   const canSaveResult = () => {
@@ -42,7 +46,7 @@ export default function GlasgowMetric({
   };
 
   function getSeverityMessage(sum: number | null): string {
-    if (sum === null ) return "";
+    if (sum === null) return "";
     if (sum <= 5) return "Severidad Baja";
     if (sum <= 10) return "Severidad Moderada";
     return "Severidad Alta";
@@ -52,18 +56,18 @@ export default function GlasgowMetric({
     console.log("Save result");
   }
   return (
-    <View style={[stylesMain.container, {alignItems: "center"}]}>
+    <View style={[stylesMain.container, { alignItems: "center" }]}>
       <SafeAreaView style={stylesMain.datosMetricas}>
-        <ScrollView
-          style={stylesMain.scrollMetrics}
-        >
+        <ScrollView style={stylesMain.scrollMetrics}>
           <View
-            style={[stylesMain.ContainerInput, {height: windowHeight * 0.85,}]}
+            style={[stylesMain.ContainerInput, { height: windowHeight * 0.85 }]}
           >
             <Text style={stylesMain.metricTitle}>Evaluacion Ocular</Text>
             <Text style={stylesMain.metricText}>1-No Responde</Text>
             <Text style={stylesMain.metricText}>2-Respuesta al Dolor</Text>
-            <Text style={stylesMain.metricText}>3-Respuesta por orden verbal</Text>
+            <Text style={stylesMain.metricText}>
+              3-Respuesta por orden verbal
+            </Text>
             <Text style={stylesMain.metricText}>4-Respuesta Espontanea</Text>
             <TextInput
               mode="outlined"
@@ -95,8 +99,12 @@ export default function GlasgowMetric({
             />
             <Text style={stylesMain.metricTitle}>Evaluacion Motora</Text>
             <Text style={stylesMain.metricText}>1-No Responde</Text>
-            <Text style={stylesMain.metricText}>2-Extension de Estremidades</Text>
-            <Text style={stylesMain.metricText}>3-Flexion Anormal de Extremidades</Text>
+            <Text style={stylesMain.metricText}>
+              2-Extension de Estremidades
+            </Text>
+            <Text style={stylesMain.metricText}>
+              3-Flexion Anormal de Extremidades
+            </Text>
             <Text style={stylesMain.metricText}>4-Retirada y Flexion</Text>
             <Text style={stylesMain.metricText}>5-Localiza el Dolor</Text>
             <Text style={stylesMain.metricText}>6-Obedece a orden Verban</Text>
@@ -111,27 +119,46 @@ export default function GlasgowMetric({
               keyboardType="numeric"
               onChangeText={(value) => setValueMotriz(value)}
             />
-            <TouchableOpacity style={{ justifyContent: "center", alignSelf: "center", paddingTop: 10 }}
-            onPress={evaluate} disabled={!allFieldsFilled()}>
-              <Text style={[stylesMain.metricTitle, { fontSize: 20}]}>Evaluar</Text>
+            <TouchableOpacity
+              style={{
+                justifyContent: "center",
+                alignSelf: "center",
+                paddingTop: 10,
+              }}
+              onPress={evaluate}
+              disabled={!allFieldsFilled()}
+            >
+              <Text style={[stylesMain.metricTitle, { fontSize: 20 }]}>
+                Evaluar
+              </Text>
             </TouchableOpacity>
           </View>
           <View
-            style={[stylesMain.resultsMetrics,{height: windowHeight * 0.3,}]}
+            style={[stylesMain.resultsMetrics, { height: windowHeight * 0.3 }]}
           >
-            <Text style={{ marginBottom: 1, fontSize: 24, color: "#000"}}>Resultado</Text>
-            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000"}}>
-            {result == null ? "" :  `${result}`}
+            <Text style={{ marginBottom: 1, fontSize: 24, color: "#000" }}>
+              Resultado
             </Text>
-            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000"}}>
+            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
+              {result == null ? "" : `${result}`}
+            </Text>
+            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
               {getSeverityMessage(result)}
             </Text>
-            <Text style={{ marginBottom: 1, fontSize: 24, color: "#000"}}>
+            <Text style={{ marginBottom: 1, fontSize: 24, color: "#000" }}>
               Ejercicios Recomendados
             </Text>
-            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000"}}>Ejercicio 1</Text>
-            <TouchableOpacity style={{paddingTop: 10, alignSelf: 'center'}} onPress={saveResult} disabled={!canSaveResult}>
-              <Text style={[stylesMain.metricTitle, { fontSize: 20}]}>Guardar Resultado</Text>
+            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
+              Ejercicio 1
+            </Text>
+            <TouchableOpacity
+              style={{ paddingTop: 10, alignSelf: "center" }}
+              onPress={saveResult}
+              disabled={!canSaveResult}
+            >
+              <Text style={[stylesMain.metricTitle, { fontSize: 20 }]}>
+                Guardar Resultado
+              </Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

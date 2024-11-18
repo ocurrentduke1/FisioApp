@@ -22,7 +22,6 @@ import { LineChart } from "react-native-chart-kit";
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
-
 // type RouteParams = {
 //   params: {
 //     paciente: {
@@ -151,21 +150,54 @@ export default function VerExpedientePaciente({
                   marginLeft: -30,
                   borderRadius: 100,}} />
               )} */}
-              <Icon name="user-circle" size={70} color="#000" style={{alignItems: "flex-end",
-                  width: windowWidth * 0.19,
-                  height: windowHeight * 0.095,
-                  marginLeft: -30,
-                  borderRadius: 100,}} />
-          <Text style={{ marginLeft: -40, alignSelf: 'flex-start', color: "black", fontWeight: "bold" }}> victo</Text>
-          <Text style={{ marginLeft: -40, alignSelf: 'flex-start', color: "black", fontWeight: "bold" }}> medina</Text>
+          <Icon
+            name="user-circle"
+            size={70}
+            color="#000"
+            style={{
+              alignItems: "flex-end",
+              width: windowWidth * 0.19,
+              height: windowHeight * 0.095,
+              marginLeft: -30,
+              borderRadius: 100,
+            }}
+          />
+          <Text
+            style={{
+              marginLeft: -40,
+              alignSelf: "flex-start",
+              color: "black",
+              fontWeight: "bold",
+            }}
+          >
+            {" "}
+            victo
+          </Text>
+          <Text
+            style={{
+              marginLeft: -40,
+              alignSelf: "flex-start",
+              color: "black",
+              fontWeight: "bold",
+            }}
+          >
+            {" "}
+            medina
+          </Text>
         </View>
         <View style={{ alignItems: "flex-start", paddingTop: 20 }}>
-          <Text style={{ marginLeft: 10, color: "black" }}>proxima cita: sin cita</Text>
-          <Text style={{ marginLeft: 10, color: "black" }}>localidad: guadalajara</Text>
+          <Text style={{ marginLeft: 10, color: "black" }}>
+            proxima cita: sin cita
+          </Text>
+          <Text style={{ marginLeft: 10, color: "black" }}>
+            localidad: guadalajara
+          </Text>
           <View>
-          <Text style={{ marginLeft: 10, color: "black" }}>3322112278</Text>
+            <Text style={{ marginLeft: 10, color: "black" }}>3322112278</Text>
           </View>
-          <Text style={{ marginLeft: 10, color: "black" }}>a21110128@ceti.mx</Text>
+          <Text style={{ marginLeft: 10, color: "black" }}>
+            a21110128@ceti.mx
+          </Text>
         </View>
       </View>
       <View style={stylesHistorial.menuPaciente}>

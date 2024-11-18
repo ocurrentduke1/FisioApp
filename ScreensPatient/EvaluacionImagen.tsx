@@ -10,12 +10,16 @@ export default function EvaluacionImagen({
   navigation: NavigationProp<any>;
 }) {
   return (
-
-    <View style={[stylesMain.container, {alignItems: "center"}]}>
-
+    <View style={[stylesMain.container, { alignItems: "center" }]}>
       <TouchableOpacity
         style={stylesMain.opcPatient}
-        onPress={() => navigation.navigate("ConfirmPosture", {imageSource: require("../assets/lateral.png"), exercise: "curvaturaEspalda", port: "5008"})}
+        onPress={() =>
+          navigation.navigate("ConfirmPosture", {
+            imageSource: require("../assets/lateral.png"),
+            exercise: "curvaturaEspalda",
+            port: "5008",
+          })
+        }
       >
         <Text
           style={{
@@ -26,13 +30,20 @@ export default function EvaluacionImagen({
             fontWeight: "bold",
             paddingHorizontal: 10,
           }}
-        >Evaluacion de Curvatura de espalda</Text>
-
+        >
+          Evaluacion de Curvatura de espalda
+        </Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={stylesMain.opcPatient}
-        onPress={() => navigation.navigate("ConfirmPosture", {imageSource: require("../assets/frontal.png"), exercise: "curvaturaPiernas", port: "5003"})}
+        onPress={() =>
+          navigation.navigate("ConfirmPosture", {
+            imageSource: require("../assets/frontal.png"),
+            exercise: "curvaturaPiernas",
+            port: "5003",
+          })
+        }
       >
         <Text
           style={{
@@ -43,7 +54,9 @@ export default function EvaluacionImagen({
             fontWeight: "bold",
             paddingHorizontal: 10,
           }}
-        >Evaluacion de Desviacion de piernas</Text>
+        >
+          Evaluacion de Desviacion de piernas
+        </Text>
       </TouchableOpacity>
 
       <StatusBar style="auto" />

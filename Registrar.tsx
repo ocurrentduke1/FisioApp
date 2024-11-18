@@ -118,6 +118,7 @@ export default function Registrar({
     }
 
     setModalAuth(false);
+    setAuthCode(["", "", "", "", ""]);
     navigation.navigate("registrarPersonales", {
       registerData: registerData,
     });
