@@ -18,6 +18,7 @@ import { NavigationProp } from "@react-navigation/native";
 import stylesHistorial from "../styles/stylesHistorial";
 import Icon from "react-native-vector-icons/FontAwesome";
 import IconFoundation from "react-native-vector-icons/Foundation";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LineChart } from "react-native-chart-kit";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -39,6 +40,7 @@ type RouteParams = {
       ubicacion: string;
       proximaCita: string;
       numeroContacto: string;
+      mail: string;
     };
   };
 };
@@ -223,70 +225,119 @@ export default function HistorialPaciente({
     <PaperProvider>
     <SafeAreaView style={stylesHistorial.container}>
       <View style={stylesHistorial.datosPaciente}>
-        <View style={stylesHistorial.viewpaciente}>
-          {paciente.imagenPerfil ? (
-            <Image
-              source={{ uri: paciente.imagenPerfil }}
-              style={{
-                alignItems: "flex-end",
-                width: windowWidth * 0.19,
-                height: windowHeight * 0.095,
-                borderRadius: 100,
-                marginLeft: -30,
-              }}
-            />
-          ) : (
-            <Icon
-              name="user-circle"
-              size={70}
-              color="#000"
-              style={{
-                alignItems: "flex-end",
-                width: windowWidth * 0.19,
-                height: windowHeight * 0.095,
-                marginLeft: -30,
-                borderRadius: 100,
-              }}
-            />
-          )}
-          <Text
-            style={{
-              marginLeft: -40,
-              alignSelf: "flex-start",
-              color: "black",
-              fontWeight: "bold",
-            }}
-          >
-            {" "}
-            {paciente.nombre}
-          </Text>
-          <Text
-            style={{
-              marginLeft: -40,
-              alignSelf: "flex-start",
-              color: "black",
-              fontWeight: "bold",
-            }}
-          >
-            {" "}
-            {paciente.apellidos}
-          </Text>
-        </View>
-        <View style={{ alignItems: "flex-start", paddingTop: 20 }}>
-          <Text style={{ marginLeft: 10, color: "black" }}>
-            proxima cita: {paciente.proximaCita}
-          </Text>
-          <Text style={{ marginLeft: 10, color: "black" }}>
-            Domicilio: {paciente.ubicacion}
-          </Text>
-          <View>
-            <Text style={{ marginLeft: 10, color: "black" }}>
-              Contacto: {paciente.numeroContacto}
-            </Text>
+        <Text
+          style={{
+            fontWeight: "bold",
+            fontSize: 18,
+            color: "black",
+            textAlign: "center"
+          }}
+        > { (paciente.nombre + ' ' + paciente.apellidos).toUpperCase() }
+        </Text>
+        <View 
+          style={{
+            flexDirection: "row",
+            justifyContent: "center", 
+          }}
+        >
+          <View style={stylesHistorial.viewpaciente}>
+            {paciente.imagenPerfil ? (
+              <Image
+                source={{ uri: paciente.imagenPerfil }}
+                style={{
+                  alignItems: "flex-end",
+                  width: windowWidth * 0.19,
+                  height: windowHeight * 0.095,
+                  borderRadius: 100,
+                  marginLeft: 30,
+                }}
+              />
+            ) : (
+              <Icon
+                name="user-circle"
+                size={70}
+                color="#000"
+                style={{
+                  alignItems: "flex-end",
+                  width: windowWidth * 0.19,
+                  height: windowHeight * 0.095,
+                  marginLeft: -30,
+                  borderRadius: 100,
+                }}
+              />
+            )}
           </View>
-          <Text style={{ marginLeft: 10, color: "black" }}>
-            correo@correo.com
-          </Text>
+          <View style={{ alignItems: "flex-start", marginTop: 5, marginLeft: 15}}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "flex-start",
+                padding: 2,
+              }}
+            >
+              <Icon name="calendar" size={20} color="#000" style={{ marginRight: 10 }} />
+              <Text
+              style={{
+                fontWeight: "bold",
+              }}
+              > 
+                {paciente.proximaCita == 'Sin cita' ? 'Sin cita programada' : paciente.proximaCita}
+              </Text>
+              {paciente.proximaCita == 'Sin cita' ? null : (
+                <>
+                  <Icon name="clock-o" size={20} color="#000" style={{ marginLeft: 10 }}/>
+                  <Text> {paciente.proximaCita}</Text>              
+                </>
+              )}
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "flex-start",
+                padding: 2,
+              }}
+            >
+              <Icon name="map-marker" size={20} color="#000" style={{ marginRight: 5 }}/>
+              <Text> {paciente.ubicacion}</Text>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "flex-start",
+                padding: 2,
+              }}
+            >
+              <Icon name="phone" size={20} color="#000" style={{ marginRight: 5 }}/>
+              <Text> {paciente.numeroContacto}</Text>
+            </View>
+            {paciente.mail == '' ? (
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "flex-start",
+                  padding: 2,
+                }}
+              >
+                <MaterialCommunityIcons name="incognito" size={20} color="#000"/>
+                <Text
+                  style={{
+                    fontWeight: "bold",
+                  }}
+                > Usuario sin cuenta</Text>
+              </View>
+            ) : (
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "flex-start",
+                  padding: 2,
+                }}
+              >
+                <MaterialCommunityIcons name="email" size={20} color="#000"/>
+                <Text> {paciente.mail}</Text>
+              </View>
+            )}
+          </View>
         </View>
       </View>
       <View style={stylesHistorial.menuPaciente}>

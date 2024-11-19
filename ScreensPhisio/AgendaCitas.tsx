@@ -864,17 +864,19 @@ const styles = StyleSheet.create({
   },
   removeAction: {
     backgroundColor: "#f44336",
-    justifyContent: "center",
+    justifyContent: "flex-end",
     flex: 1,
     alignItems: "center",
     marginRight: 5,
+    maxWidth: '60%',
   },
   editAction: {
     backgroundColor: "#0058b3",
     justifyContent: "center",
-    flex: 1,
+    flex: 1,  
     alignItems: "center",
     marginRight: 5,
+    maxWidth: '60%',
   },
   expedientAction: {
     backgroundColor: "#8dc40d",
@@ -882,6 +884,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     marginRight: 5,
+    maxWidth: '60%',
   },
   separator: {
     width: "100%",

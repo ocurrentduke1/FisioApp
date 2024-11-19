@@ -21,7 +21,7 @@ export default StyleSheet.create({
   },
   viewpaciente: {
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "center", 
     flexDirection: "column",
   },
   imagenpaciente: {
@@ -35,8 +35,7 @@ export default StyleSheet.create({
   },
   datosPaciente: {
     backgroundColor: "#FFFFFF",
-    flexDirection: "row",
-    justifyContent: "center", // Alinea los elementos verticalmente al principio
+    justifyContent: "center",
     width: windowWidth * 0.8,
     height: windowHeight * 0.2,
     borderRadius: 25,
