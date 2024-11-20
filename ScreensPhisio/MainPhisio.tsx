@@ -227,6 +227,7 @@ export default function MainPhisio({
                             style={{
                               flexDirection: "row",
                               justifyContent: "flex-start",
+                              width: 210
                             }}
                           >
                             <Icon
@@ -237,6 +238,8 @@ export default function MainPhisio({
                             />
                             <Text
                               style={{ marginLeft: 5, marginTop: 7 }}
+                              ellipsizeMode="tail"
+                              numberOfLines={1}
                             >
                               {paciente.ubicacion}
                             </Text>

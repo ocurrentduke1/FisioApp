@@ -45,16 +45,14 @@ import TinettiMetric from "./ScreensMetrics/TinettiMetric";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import BuscarContactos from "./ScreensPhisio/BuscarContactos";
 import 'react-native-gesture-handler';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
 import { GestureHandlerRootView, Gesture, GestureDetector } from "react-native-gesture-handler";
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 enableScreens();
 
 export default function App() {
   const Stack = createNativeStackNavigator();
-  const PatientDrawer = createDrawerNavigator();
-  const FisioDrawer = createDrawerNavigator();
   const MetricsTab = createMaterialTopTabNavigator();
   const PatientTabs = createBottomTabNavigator();
   const FisioTabs = createBottomTabNavigator();
@@ -279,6 +277,7 @@ export default function App() {
           screenOptions={{
             headerShown: false,              
           }}
+    
           >
         <FisioTabs.Screen 
             name="menu Principal" 

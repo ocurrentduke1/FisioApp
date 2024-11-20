@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
   Button,
   TextInput,
   Platform,
+  Animated,
 } from "react-native";
 import { RouteProp } from "@react-navigation/native";
 import { NavigationProp } from "@react-navigation/native";
@@ -22,8 +23,8 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LineChart } from "react-native-chart-kit";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { FAB, Portal, PaperProvider } from 'react-native-paper';
-import { MultipleSelectList } from 'react-native-dropdown-select-list'
+import { FAB, Portal, PaperProvider } from "react-native-paper";
+import { MultipleSelectList } from "react-native-dropdown-select-list";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -89,13 +90,16 @@ const anchoGrafico =
 const screenWidth = Dimensions.get("window").width;
 const width = Math.max(screenWidth, anchoGrafico);
 
-export default function HistorialPaciente({
-  route,
-  navigation,
-}: {
-  navigation: NavigationProp<any>;
-  route: RouteProp<RouteParams, "params">;
-}) {
+export default function HistorialPaciente(
+  {
+    route,
+    navigation,
+  }: {
+    navigation: NavigationProp<any>;
+    route: RouteProp<RouteParams, "params">;
+  },
+  { text, maxWidth }
+) {
   const [modalSearch, setModalSearch] = useState(false);
   const [modalShare, setModalShare] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
@@ -107,14 +111,14 @@ export default function HistorialPaciente({
   const [selected, setSelected] = React.useState<string[]>([]);
 
   const SearchData = [
-    {key:'1', value:'Mobiles', disabled:true},
-    {key:'2', value:'Appliances'},
-    {key:'3', value:'Cameras'},
-    {key:'4', value:'Computers', disabled:true},
-    {key:'5', value:'Vegetables'},
-    {key:'6', value:'Diary Products'},
-    {key:'7', value:'Drinks'},
-]
+    { key: "1", value: "Mobiles", disabled: true },
+    { key: "2", value: "Appliances" },
+    { key: "3", value: "Cameras" },
+    { key: "4", value: "Computers", disabled: true },
+    { key: "5", value: "Vegetables" },
+    { key: "6", value: "Diary Products" },
+    { key: "7", value: "Drinks" },
+  ];
 
   const [state, setState] = React.useState({ open: false });
   const onStateChange = ({ open }: { open: boolean }) => setState({ open });
@@ -221,96 +225,77 @@ export default function HistorialPaciente({
     );
   };
 
+  const [containerWidth, setContainerWidth] = useState(0); // Ancho del contenedor
+  const [textWidth, setTextWidth] = useState(0); // Ancho del texto
+  const scrollX = useRef(new Animated.Value(0)).current; // Animación del desplazamiento
+
+  useEffect(() => {
+    if (textWidth > containerWidth) {
+      startScrolling(); // Inicia el desplazamiento si el texto es más ancho que el contenedor
+    }
+  }, [textWidth, containerWidth]);
+
+  const startScrolling = () => {
+    Animated.loop(
+      Animated.timing(scrollX, {
+        toValue: -(textWidth - containerWidth), // Desplaza hasta el final visible
+        duration: 10000, // Duración ajustable
+        useNativeDriver: true,
+      })
+    ).start();
+  };
+
   return (
     <PaperProvider>
-    <SafeAreaView style={stylesHistorial.container}>
-      <View style={stylesHistorial.datosPaciente}>
-        <Text
-          style={{
-            fontWeight: "bold",
-            fontSize: 18,
-            color: "black",
-            textAlign: "center"
-          }}
-        > { (paciente.nombre + ' ' + paciente.apellidos).toUpperCase() }
-        </Text>
-        <View 
-          style={{
-            flexDirection: "row",
-            justifyContent: "center", 
-          }}
-        >
-          <View style={stylesHistorial.viewpaciente}>
-            {paciente.imagenPerfil ? (
-              <Image
-                source={{ uri: paciente.imagenPerfil }}
-                style={{
-                  alignItems: "flex-end",
-                  width: windowWidth * 0.19,
-                  height: windowHeight * 0.095,
-                  borderRadius: 100,
-                  marginLeft: 30,
-                }}
-              />
-            ) : (
-              <Icon
-                name="user-circle"
-                size={70}
-                color="#000"
-                style={{
-                  alignItems: "flex-end",
-                  width: windowWidth * 0.19,
-                  height: windowHeight * 0.095,
-                  marginLeft: -30,
-                  borderRadius: 100,
-                }}
-              />
-            )}
-          </View>
-          <View style={{ alignItems: "flex-start", marginTop: 5, marginLeft: 15}}>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "flex-start",
-                padding: 2,
-              }}
-            >
-              <Icon name="calendar" size={20} color="#000" style={{ marginRight: 10 }} />
-              <Text
-              style={{
-                fontWeight: "bold",
-              }}
-              > 
-                {paciente.proximaCita == 'Sin cita' ? 'Sin cita programada' : paciente.proximaCita}
-              </Text>
-              {paciente.proximaCita == 'Sin cita' ? null : (
-                <>
-                  <Icon name="clock-o" size={20} color="#000" style={{ marginLeft: 10 }}/>
-                  <Text> {paciente.proximaCita}</Text>              
-                </>
+      <SafeAreaView style={stylesHistorial.container}>
+        <View style={stylesHistorial.datosPaciente} onLayout={(event) => setContainerWidth(event.nativeEvent.layout.width)}>
+          <Text
+            style={{
+              fontWeight: "bold",
+              fontSize: 18,
+              color: "black",
+              textAlign: "center",
+            }}
+          >
+            {" "}
+            {(paciente.nombre + " " + paciente.apellidos).toUpperCase()}
+          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+            }}
+          >
+            <View style={stylesHistorial.viewpaciente}>
+              {paciente.imagenPerfil ? (
+                <Image
+                  source={{ uri: paciente.imagenPerfil }}
+                  style={{
+                    alignItems: "flex-end",
+                    width: windowWidth * 0.19,
+                    height: windowHeight * 0.095,
+                    borderRadius: 100,
+                    marginLeft: 30,
+                  }}
+                />
+              ) : (
+                <Icon
+                  name="user-circle"
+                  size={70}
+                  color="#000"
+                  style={{
+                    alignItems: "flex-end",
+                    width: windowWidth * 0.19,
+                    height: windowHeight * 0.095,
+                    marginLeft: -30,
+                    borderRadius: 100,
+                  }}
+                />
               )}
             </View>
             <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "flex-start",
-                padding: 2,
-              }}
+              style={{ alignItems: "flex-start", marginTop: 5, marginLeft: 15 }}
             >
-              <Icon name="map-marker" size={20} color="#000" style={{ marginRight: 5 }}/>
-              <Text> {paciente.ubicacion}</Text>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "flex-start",
-                padding: 2,
-              }}
-            >
-              <Icon name="phone" size={20} color="#000" style={{ marginRight: 5 }}/>
-              <Text> {paciente.numeroContacto}</Text>
-            </View>
-            {paciente.mail == '' ? (
               <View
                 style={{
                   flexDirection: "row",
@@ -318,14 +303,58 @@ export default function HistorialPaciente({
                   padding: 2,
                 }}
               >
-                <MaterialCommunityIcons name="incognito" size={20} color="#000"/>
+                <Icon
+                  name="calendar"
+                  size={20}
+                  color="#000"
+                  style={{ marginRight: 10 }}
+                />
                 <Text
                   style={{
                     fontWeight: "bold",
                   }}
-                > Usuario sin cuenta</Text>
+                >
+                  {paciente.proximaCita == "Sin cita"
+                    ? "Sin cita programada"
+                    : paciente.proximaCita}
+                </Text>
+                {paciente.proximaCita == "Sin cita" ? null : (
+                  <>
+                    <Icon
+                      name="clock-o"
+                      size={20}
+                      color="#000"
+                      style={{ marginLeft: 10 }}
+                    />
+                    <Text> {paciente.proximaCita}</Text>
+                  </>
+                )}
               </View>
-            ) : (
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "flex-start",
+                  padding: 2,
+                  overflow: "hidden"
+                }}
+              >
+                <Icon
+                  name="map-marker"
+                  size={20}
+                  color="#000"
+                  style={{ marginRight: 5 }}
+                />
+                <View style={{overflow: "hidden"}}>
+                  <Animated.Text
+                    style={{transform: [{ translateX: scrollX }]}}
+                    onLayout={(event) => setTextWidth(event.nativeEvent.layout.width)}
+                  >
+                    {paciente.ubicacion}
+                  </Animated.Text>
+                </View>
+              </View>
+
               <View
                 style={{
                   flexDirection: "row",
@@ -333,278 +362,323 @@ export default function HistorialPaciente({
                   padding: 2,
                 }}
               >
-                <MaterialCommunityIcons name="email" size={20} color="#000"/>
-                <Text> {paciente.mail}</Text>
+                <Icon
+                  name="phone"
+                  size={20}
+                  color="#000"
+                  style={{ marginRight: 5 }}
+                />
+                <Text> {paciente.numeroContacto}</Text>
               </View>
-            )}
+              {paciente.mail == "" ? (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "flex-start",
+                    padding: 2,
+                  }}
+                >
+                  <MaterialCommunityIcons
+                    name="account-off"
+                    size={20}
+                    color="#000"
+                  />
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {" "}
+                    Usuario sin cuenta
+                  </Text>
+                </View>
+              ) : (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "flex-start",
+                    padding: 2,
+                  }}
+                >
+                  <MaterialCommunityIcons name="email" size={20} color="#000" />
+                  <Text> {paciente.mail}</Text>
+                </View>
+              )}
+            </View>
           </View>
         </View>
-      </View>
-      <View style={stylesHistorial.menuPaciente}>
-        <ScrollView style={stylesHistorial.scrollView}>
-          <TouchableOpacity
-            style={stylesHistorial.containerPdf}
-            onPress={openSearch}
-          >
-            <IconFoundation name="page-search" size={50} color="#000" />
-            <View style={{ paddingLeft: 10 }}>
-              <Text>Buscar Expedientes</Text>
-            </View>
-          </TouchableOpacity>
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalSearch}
-            onRequestClose={closeSearch}
-          >
-            <View style={styles.modalContainer}>
-              <View style={styles.modalView}>
-                <Text style={styles.modalText}>Buscar Expedientes</Text>
-                <TouchableOpacity 
-                style={{paddingTop: 5}}
-                onPress={togglePicker1}>
-                  {showPicker1 && (
+        <View style={stylesHistorial.menuPaciente}>
+          <ScrollView style={stylesHistorial.scrollView}>
+            <TouchableOpacity
+              style={stylesHistorial.containerPdf}
+              onPress={openSearch}
+            >
+              <IconFoundation name="page-search" size={50} color="#000" />
+              <View style={{ paddingLeft: 10 }}>
+                <Text>Buscar Expedientes</Text>
+              </View>
+            </TouchableOpacity>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalSearch}
+              onRequestClose={closeSearch}
+            >
+              <View style={styles.modalContainer}>
+                <View style={styles.modalView}>
+                  <Text style={styles.modalText}>Buscar Expedientes</Text>
+                  <TouchableOpacity
+                    style={{ paddingTop: 5 }}
+                    onPress={togglePicker1}
+                  >
+                    {showPicker1 && (
+                      <DateTimePicker
+                        mode="date"
+                        display="spinner"
+                        value={date} // Provide a value prop with the current date or a specific date
+                        onChange={onChange1}
+                      />
+                    )}
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Desde"
+                      value={Fecha1}
+                      onChangeText={setFecha1}
+                      editable={false}
+                    />
+                  </TouchableOpacity>
+                  {showPicker2 && (
                     <DateTimePicker
                       mode="date"
                       display="spinner"
                       value={date} // Provide a value prop with the current date or a specific date
-                      onChange={onChange1}
+                      onChange={onChange2}
                     />
                   )}
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Desde"
-                    value={Fecha1}
-                    onChangeText={setFecha1}
-                    editable={false}
+                  <TouchableOpacity
+                    style={{ paddingTop: 5 }}
+                    onPress={togglePicker2}
+                  >
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Hasta"
+                      value={Fecha2}
+                      onChangeText={setFecha2}
+                      editable={false}
+                    />
+                  </TouchableOpacity>
+                  <View style={styles.buttonContainer}>
+                    <TouchableOpacity
+                      style={[styles.button, styles.buttonClose]}
+                      onPress={closeSearch}
+                    >
+                      <Text style={styles.textStyle}>Cancelar</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.button, styles.buttonSearch]}
+                      onPress={handleSearch}
+                    >
+                      <Text style={styles.textStyle}>Buscar</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </Modal>
+            <TouchableOpacity
+              style={stylesHistorial.containerPdf}
+              onPress={() => navigation.navigate("VisualizarPdf")}
+            >
+              <Icon name="file-text-o" size={50} color="#000" />
+              <View style={{ paddingLeft: 5 }}>
+                <Text>Fecha de creacion:</Text>
+                <Text>Evaluacion realizada</Text>
+              </View>
+            </TouchableOpacity>
+            {/* <TouchableOpacity style={{ flex: 1 }}> */}
+            {data.map((scale, index) => (
+              <View key={index}>
+                <Text
+                  style={{
+                    fontSize: 20,
+                    textAlign: "center",
+                    marginVertical: 10,
+                  }}
+                >
+                  {scale.name}
+                </Text>
+                <ScrollView horizontal={true}>
+                  <LineChart
+                    data={{
+                      labels: scale.citas.map((cita) => cita.fecha),
+                      datasets: [
+                        {
+                          data: scale.citas.map((cita) => cita.rango),
+                        },
+                      ],
+                    }}
+                    width={width} // from react-native
+                    height={220}
+                    yAxisInterval={1} // optional, defaults to 1
+                    chartConfig={{
+                      backgroundColor: "#91FFFA",
+                      backgroundGradientFrom: "#009688",
+                      backgroundGradientTo: "#4CAF50",
+                      color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                      labelColor: (opacity = 1) =>
+                        `rgba(255, 255, 255, ${opacity})`,
+                      style: {
+                        borderRadius: 16,
+                      },
+                      propsForLabels: {
+                        fontSize: "10", // Ajusta este valor según necesites
+                      },
+                    }}
+                    bezier // optional, adds a bezier curve
+                    style={{
+                      marginRight: 10,
+                      marginVertical: 8,
+                      borderRadius: 16,
+                    }}
                   />
-                </TouchableOpacity>
-                {showPicker2 && (
-                  <DateTimePicker
-                    mode="date"
-                    display="spinner"
-                    value={date} // Provide a value prop with the current date or a specific date
-                    onChange={onChange2}
-                  />
-                )}
-                <TouchableOpacity 
-                style={{paddingTop: 5}}
-                onPress={togglePicker2}>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Hasta"
-                    value={Fecha2}
-                    onChangeText={setFecha2}
-                    editable={false}
-                  />
-                </TouchableOpacity>
+                </ScrollView>
+                {/* </TouchableOpacity> */}
+              </View>
+            ))}
+          </ScrollView>
+
+          {/* Modal para compartir paciente */}
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalShare}
+            onRequestClose={closeShare}
+          >
+            <View style={styles.modalContainer}>
+              <View style={styles.modalView}>
+                <Text style={styles.modalText}>
+                  Compartir perfil del paciente
+                </Text>
+                <MultipleSelectList
+                  setSelected={(val: string[]) => setSelected(val)}
+                  boxStyles={{ borderRadius: 5, width: 250 }}
+                  dropdownStyles={{
+                    borderWidth: 1,
+                    borderColor: "black",
+                    borderRadius: 5,
+                    width: 250,
+                  }}
+                  placeholder="Contactos"
+                  searchPlaceholder="Buscar"
+                  data={SearchData}
+                  save="value"
+                  label="Compartir con:"
+                />
                 <View style={styles.buttonContainer}>
                   <TouchableOpacity
                     style={[styles.button, styles.buttonClose]}
-                    onPress={closeSearch}
+                    onPress={closeShare}
                   >
                     <Text style={styles.textStyle}>Cancelar</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[styles.button, styles.buttonSearch]}
-                    onPress={handleSearch}
+                    onPress={handleShareProfile}
                   >
-                    <Text style={styles.textStyle}>Buscar</Text>
+                    <Text style={styles.textStyle}>Compartir</Text>
                   </TouchableOpacity>
                 </View>
               </View>
             </View>
           </Modal>
-          <TouchableOpacity
-            style={stylesHistorial.containerPdf}
-            onPress={() => navigation.navigate("VisualizarPdf")}
+
+          {/* Modal para eliminar paciente */}
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalDelete}
+            onRequestClose={closeDelete}
           >
-            <Icon name="file-text-o" size={50} color="#000" />
-            <View style={{ paddingLeft: 5 }}>
-              <Text>Fecha de creacion:</Text>
-              <Text>Evaluacion realizada</Text>
-            </View>
-          </TouchableOpacity>
-          {/* <TouchableOpacity style={{ flex: 1 }}> */}
-          {data.map((scale, index) => (
-            <View key={index}>
-              <Text
-                style={{
-                  fontSize: 20,
-                  textAlign: "center",
-                  marginVertical: 10,
-                }}
-              >
-                {scale.name}
-              </Text>
-              <ScrollView horizontal={true}>
-                <LineChart
-                  data={{
-                    labels: scale.citas.map((cita) => cita.fecha),
-                    datasets: [
-                      {
-                        data: scale.citas.map((cita) => cita.rango),
-                      },
-                    ],
-                  }}
-                  width={width} // from react-native
-                  height={220}
-                  yAxisInterval={1} // optional, defaults to 1
-                  chartConfig={{
-                    backgroundColor: "#91FFFA",
-                    backgroundGradientFrom: "#009688",
-                    backgroundGradientTo: "#4CAF50",
-                    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                    labelColor: (opacity = 1) =>
-                      `rgba(255, 255, 255, ${opacity})`,
-                    style: {
-                      borderRadius: 16,
-                    },
-                    propsForLabels: {
-                      fontSize: "10", // Ajusta este valor según necesites
-                    },
-                  }}
-                  bezier // optional, adds a bezier curve
-                  style={{
-                    marginRight: 10,
-                    marginVertical: 8,
-                    borderRadius: 16,
-                  }}
-                />
-              </ScrollView>
-              {/* </TouchableOpacity> */}
-            </View>
-          ))}
-        </ScrollView>
-
-        {/* Modal para compartir paciente */}
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalShare}
-          onRequestClose={closeShare}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalView}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalView}>
                 <Text style={styles.modalText}>
-                Compartir perfil del paciente
+                  ¿Seguro que quieres eliminar este perfil?
                 </Text>
-                <MultipleSelectList 
-                setSelected={(val: string[]) => setSelected(val)} 
-                boxStyles={{ borderRadius: 5, width: 250}}
-                dropdownStyles={{borderWidth: 1, borderColor: 'black', borderRadius: 5, width: 250}}
-                placeholder="Contactos"
-                searchPlaceholder="Buscar"
-                data={SearchData} 
-                save="value"
-                label="Compartir con:" 
-                />
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity
-                  style={[styles.button, styles.buttonClose]}
-                  onPress={closeShare}
-                >
-                  <Text style={styles.textStyle}>Cancelar</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.button, styles.buttonSearch]}
-                  onPress={handleShareProfile}
-                >
-                  <Text style={styles.textStyle}>Compartir</Text>
-                </TouchableOpacity>
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity
+                    style={[styles.button, styles.buttonClose]}
+                    onPress={closeDelete}
+                  >
+                    <Text style={styles.textStyle}>Cancelar</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.button, styles.buttonSearch]}
+                    onPress={handleDeletePatient}
+                  >
+                    <Text style={styles.textStyle}>Eliminar</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-          </View>
-        </Modal>
-
-        {/* Modal para eliminar paciente */}
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalDelete}
-          onRequestClose={closeDelete}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>
-                ¿Seguro que quieres eliminar este perfil?
-              </Text>
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity
-                  style={[styles.button, styles.buttonClose]}
-                  onPress={closeDelete}
-                >
-                  <Text style={styles.textStyle}>Cancelar</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.button, styles.buttonSearch]}
-                  onPress={handleDeletePatient}
-                >
-                  <Text style={styles.textStyle}>Eliminar</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Modal>
-      </View>
-      <Portal>
-        <FAB.Group
-          open={open}
-          visible
-          icon={open ? 'menu-down' : 'plus'}
-          backdropColor="rgba(0, 0, 0, 0.5)"
-          color="#000"
-          fabStyle={{ backgroundColor: "#FFF" }}
-          actions={[
-            { icon: 'plus',
-              label: "Agregar escala",
-              labelStyle: { color: "white"},
-              style: { backgroundColor: '#FFF' },
-              color: "#000",
-               onPress: () => navigation.navigate("CrearEscala")
-            },
-            {
-              icon: 'file-document-edit',
-              label: 'Nuevo Expediente',
-              labelStyle: { color: "white"},
-              style: { backgroundColor: '#FFF' },
-              color: "#000",
-              onPress: () => navigation.navigate("CrearExpediente"),
-            },
-            {
-              icon: 'email',
-              label: 'Enviar Mensaje',
-              labelStyle: { color: "white"},
-              style: { backgroundColor: '#FFF' },
-              color: "#000",
-              onPress: () => openWhatsApp(),
-            },
-            {
-              icon: 'share',
-              label: 'Compartir',
-              labelStyle: { color: "white"},
-              style: { backgroundColor: '#FFF' },
-              color: "#000",
-              onPress: () => openShare(),
-            },
-            {
-              icon: 'delete',
-              label: 'Eliminar paciente',
-              labelStyle: { color: "white"},
-              style: { backgroundColor: '#FFF' },
-              color: "#000",
-              onPress: () => openDelete(),
-            },
-          ]}
-          onStateChange={onStateChange}
-          onPress={() => {
-            if (open) {
-
-            }
-          }}
-        />
-      </Portal>
-    </SafeAreaView>
+          </Modal>
+        </View>
+        <Portal>
+          <FAB.Group
+            open={open}
+            visible
+            icon={open ? "menu-down" : "plus"}
+            backdropColor="rgba(0, 0, 0, 0.5)"
+            color="#000"
+            fabStyle={{ backgroundColor: "#FFF" }}
+            actions={[
+              {
+                icon: "plus",
+                label: "Agregar escala",
+                labelStyle: { color: "white" },
+                style: { backgroundColor: "#FFF" },
+                color: "#000",
+                onPress: () => navigation.navigate("CrearEscala"),
+              },
+              {
+                icon: "file-document-edit",
+                label: "Nuevo Expediente",
+                labelStyle: { color: "white" },
+                style: { backgroundColor: "#FFF" },
+                color: "#000",
+                onPress: () => navigation.navigate("CrearExpediente"),
+              },
+              {
+                icon: "email",
+                label: "Enviar Mensaje",
+                labelStyle: { color: "white" },
+                style: { backgroundColor: "#FFF" },
+                color: "#000",
+                onPress: () => openWhatsApp(),
+              },
+              {
+                icon: "share",
+                label: "Compartir",
+                labelStyle: { color: "white" },
+                style: { backgroundColor: "#FFF" },
+                color: "#000",
+                onPress: () => openShare(),
+              },
+              {
+                icon: "delete",
+                label: "Eliminar paciente",
+                labelStyle: { color: "white" },
+                style: { backgroundColor: "#FFF" },
+                color: "#000",
+                onPress: () => openDelete(),
+              },
+            ]}
+            onStateChange={onStateChange}
+            onPress={() => {
+              if (open) {
+              }
+            }}
+          />
+        </Portal>
+      </SafeAreaView>
     </PaperProvider>
   );
 }
@@ -666,5 +740,10 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     textAlign: "center",
+  },
+  container: {
+    overflow: "hidden", // Asegura que el texto no se desborde
+    height: 50, // Altura fija para la visualización
+    justifyContent: "center",
   },
 });

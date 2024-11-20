@@ -613,6 +613,7 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
               outlineColor="#002245"
               activeOutlineColor="#002245"
               readOnly={true}
+              textAlign= "left"
               left={
                 <TextInput.Icon style={{ marginTop: 10 }} icon="map-marker" />
               }
@@ -625,42 +626,6 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
               }
             />
 
-
-              <Text style={{ color: "#000", fontSize: 16, fontWeight: "bold" }}>
-                Tiempo de consulta estimado:
-              </Text>
-            <SelectList
-              setSelected={(val: string) => {
-                setTime(val);
-              }}
-              defaultOption={data[0]}
-              data={data}
-              save="value"
-              search = {false}
-              dropdownItemStyles={{
-                backgroundColor: "#FFFFFF",
-                width: '100%',
-                height: 50,
-                borderBottomWidth: 1,
-                borderBottomColor: "#000000",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-              dropdownStyles={{
-                backgroundColor: "#FFFFFF",
-                width: '100%',
-                height: 110,
-              }}
-              boxStyles={{
-                backgroundColor: "#FFFFFF",
-                width: '100%',
-                height: 50,
-                justifyContent: "center",
-                alignItems: "center",
-                marginTop: 30,
-              }}
-              placeholder="tiempo de consulta estimado"
-            />
           </View>
 
           <View style={styles.buttonsContainer}>
@@ -915,7 +880,7 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
             </View>
           </Modal>
 
-          {/* Botón de Datos Bancarios */}
+          {/* modal de Datos Bancarios */}
           <Modal
             animationType="slide"
             transparent={true}
