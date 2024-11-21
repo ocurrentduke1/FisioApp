@@ -12,7 +12,7 @@ import {
   ImageBackground,
 } from "react-native";
 import stylesMain from "../styles/stylesMain";
-import { NavigationProp, useRoute } from "@react-navigation/native";
+import { NavigationProp, useNavigation, useNavigationContainerRef, useRoute } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Octicons from "react-native-vector-icons/Octicons";
@@ -22,8 +22,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import * as Notifications from "expo-notifications";
 import { FAB, Portal, PaperProvider } from "react-native-paper";
-import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
-import { useSharedValue, withSpring } from "react-native-reanimated";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { runOnJS, useSharedValue, withSpring } from "react-native-reanimated";
 
 type VerifiedIconProps = {
   display: boolean;
@@ -119,32 +119,47 @@ export default function MainPhisio({
 
   const translateX = useSharedValue(0);
 
+  const handleGestureEnd = useCallback((event) => {
+    if (event.translationX > 50) {
+      console.log('Deslizó a la derecha');
+      try {
+        if (navigation && navigation.navigate) {
+          navigation.navigate('Agenda de citas');
+        }
+      } catch (error) {
+        console.log('Error al navegar: ', error);
+      }
+    } else if (event.translationX < -50) {
+      console.log('Deslizó a la izquierda');
+    }
+
+    translateX.value = withSpring(0, { damping: 20 });
+  }, [navigation, translateX]);
+
   const gesture = Gesture.Pan()
     .onUpdate((event) => {
       translateX.value = event.translationX;
     })
     .onEnd((event) => {
-      if (event.translationX > 50) {
-        console.log('Deslizó a la derecha');
-      } else if (event.translationX < -50) {
-        console.log('Deslizó a la izquierda');
-        // navigation.navigate('menu Principal')
+      try {
+        runOnJS(handleGestureEnd)(event);
+        // TODO: Manejar logica para cambiar entre pantallas con un array de los nombres y un contador
+      } catch (error) {
+        console.log(error.stack);
       }
-
-      translateX.value = withSpring(0, { damping: 20 });
-  });  
+    });
 
   return (
-    <GestureHandlerRootView>
-      <GestureDetector gesture={gesture}>
-        <PaperProvider>
-          <SafeAreaView style={stylesMain.container}>
-            <ImageBackground
-              source={require("../assets/logo_blanco.png")}
-              resizeMode="contain"
-              style={styles.image}
-              imageStyle={{ opacity: 0.5 }}
-            >
+    <PaperProvider>
+      <SafeAreaView style={stylesMain.container}>
+        <ImageBackground
+          source={require("../assets/logo_blanco.png")}
+          resizeMode="contain"
+          style={styles.image}
+          imageStyle={{ opacity: 0.5 }}
+        >
+          <GestureDetector gesture={gesture}>
+            <View style={{ flex: 1}}>
               <ScrollView style={stylesMain.scrollView}>
                 {pacientes && pacientes.length > 0 ? (
                   pacientes.map((paciente, index) => (
@@ -285,11 +300,11 @@ export default function MainPhisio({
                   }}
                 />
               </Portal>
-            </ImageBackground>
-          </SafeAreaView>
-        </PaperProvider>
-      </GestureDetector>
-    </GestureHandlerRootView>
+            </View>
+          </GestureDetector>
+        </ImageBackground>
+      </SafeAreaView>
+    </PaperProvider>
   );
 }
 

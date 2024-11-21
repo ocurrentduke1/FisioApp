@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import { NavigationContainer, useNavigation, useNavigationContainerRef } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createDrawerNavigator} from "@react-navigation/drawer";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
@@ -46,7 +46,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import BuscarContactos from "./ScreensPhisio/BuscarContactos";
 import 'react-native-gesture-handler';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
-import { GestureHandlerRootView, Gesture, GestureDetector } from "react-native-gesture-handler";
+import { GestureHandlerRootView, Gesture, GestureDetector, PanGestureHandler } from "react-native-gesture-handler";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 enableScreens();
@@ -158,93 +158,71 @@ export default function App() {
   }
 
   function TabsPatient() {
-    const translateX = useSharedValue(0);
-    const navigation = useNavigation();  // Usamos el hook de navegación
-  
-    // Definir el gesto de deslizamiento
-    const gesture = Gesture.Pan()
-      .onUpdate((event) => {
-        translateX.value = event.translationX;
-      })
-      .onEnd((event) => {
-        if (event.translationX > 100) {
-          console.log('Deslizó a la derecha');
-        } else if (event.translationX < -100) {
-          console.log('Deslizó a la izquierda');
-          // navigation.navigate()
-        }
-
-        translateX.value = withSpring(0, { damping: 20 });
-      });  
 
     return (
-      <GestureHandlerRootView>
-        <GestureDetector gesture={gesture}>
-          <PatientTabs.Navigator
-          initialRouteName="mainPaciente"
-          screenOptions={{
-            headerShown: false,
-          }}
-          >
-            <PatientTabs.Screen 
-              name="menu Principal" 
-              component={MainPatient}
-              options={{
-                title: "Inicio" , 
-                tabBarIconStyle: {width: 100},
-                tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} iconName="home" />,
-                tabBarLabel: ({ focused }) => (
-                  <Animated.Text
-                    style={{
-                      color: focused ? '#000' : '#FFF',
-                      fontSize: focused ? 14 : 12,
-                      fontWeight: focused ? 'bold' : 'normal',
-                    }}
-                  >
-                    Inicio
-                  </Animated.Text>
-                ),
-                tabBarStyle: { backgroundColor: "#002245" },
-                tabBarBadgeStyle: { backgroundColor: "#FFFFFF" },
-                tabBarActiveBackgroundColor: "#34e1e3",  
-                tabBarLabelStyle: {
-                  fontSize: 12,
-                  color: "white",
-                  fontWeight: "bold"         
-                }
-              }}
-            />
-            <PatientTabs.Screen
-              name="PerfilPaciente"
-              component={PerfilPaciente}
-              options={{ 
-                title: "Perfil",
-                tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} iconName="user" />,
-                tabBarLabel: ({ focused }) => (
-                  <Animated.Text
-                    style={{
-                      color: focused ? '#000' : '#FFF',
-                      fontSize: focused ? 14 : 12,
-                      fontWeight: focused ? 'bold' : 'normal',
-                    }}
-                  >
-                    Perfil
-                  </Animated.Text>
-                ),
-                tabBarStyle: { backgroundColor: "#002245" },
-                tabBarActiveBackgroundColor: "#34e1e3",  
-                tabBarLabelStyle: {
-                  fontSize: 12,
-                  color: "white",
-                  fontWeight: "bold"         
-                },
-              }}
-            
-            />
-            
-          </PatientTabs.Navigator>
-        </GestureDetector>
-      </GestureHandlerRootView>
+      <PatientTabs.Navigator
+        initialRouteName="mainPaciente"
+        screenOptions={{
+          headerShown: false,
+        }}
+        >
+          <PatientTabs.Screen 
+            name="menu Principal" 
+            component={MainPatient}
+            options={{
+              title: "Inicio" , 
+              tabBarIconStyle: {width: 100},
+              tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} iconName="home" />,
+              tabBarLabel: ({ focused }) => (
+                <Animated.Text
+                  style={{
+                    color: focused ? '#000' : '#FFF',
+                    fontSize: focused ? 14 : 12,
+                    fontWeight: focused ? 'bold' : 'normal',
+                  }}
+                >
+                  Inicio
+                </Animated.Text>
+              ),
+              tabBarStyle: { backgroundColor: "#002245" },
+              tabBarBadgeStyle: { backgroundColor: "#FFFFFF" },
+              tabBarActiveBackgroundColor: "#34e1e3",  
+              tabBarLabelStyle: {
+                fontSize: 12,
+                color: "white",
+                fontWeight: "bold"         
+              }
+            }}
+          />
+          <PatientTabs.Screen
+            name="PerfilPaciente"
+            component={PerfilPaciente}
+            options={{ 
+              title: "Perfil",
+              tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} iconName="user" />,
+              tabBarLabel: ({ focused }) => (
+                <Animated.Text
+                  style={{
+                    color: focused ? '#000' : '#FFF',
+                    fontSize: focused ? 14 : 12,
+                    fontWeight: focused ? 'bold' : 'normal',
+                  }}
+                >
+                  Perfil
+                </Animated.Text>
+              ),
+              tabBarStyle: { backgroundColor: "#002245" },
+              tabBarActiveBackgroundColor: "#34e1e3",  
+              tabBarLabelStyle: {
+                fontSize: 12,
+                color: "white",
+                fontWeight: "bold"         
+              },
+            }}
+          
+          />
+          
+      </PatientTabs.Navigator>
     )
   }
 
@@ -269,9 +247,9 @@ export default function App() {
     );
   }
   
-  function TabsFisio() {
-
-      return (
+  function TabsFisio() {  
+    return (
+      <GestureHandlerRootView>
         <FisioTabs.Navigator
           initialRouteName="menu Principal"
           screenOptions={{
@@ -418,169 +396,170 @@ export default function App() {
             }}
           />
         </FisioTabs.Navigator>
-      )
+      </GestureHandlerRootView>
+    )
   }
 
   return (
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="login"
-          screenOptions={{
-            headerStyle: { backgroundColor: "#073E75" },
-            headerTintColor: "#FFFFFF",
-          }}
-        >
-          <Stack.Screen
-            name="App"
-            component={App}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="login"
-            component={Login}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="registrar"
-            component={Registrar}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="registrarPersonales"
-            component={RegistrarPersonales}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="mainFisio"
-            component={TabsFisio}
-            options={{ headerShown: false, gestureEnabled: true, gestureDirection: 'horizontal' }}
-          />
-          <Stack.Screen
-            name="recuperarContraseña"
-            component={RecoveryPass}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="registrarTarjeta"
-            component={RegistrarTarjeta}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="mainPaciente"
-            component={TabsPatient}
-            options={{ headerShown: false}}
-          />
-          <Stack.Screen
-            name="EvaluacionVideo"
-            component={EvaluacionVideo}
-            options={{ title: "" }}
-          />
-          <Stack.Screen
-            name="EvaluacionImagen"
-            component={EvaluacionImagen}
-            options={{ title: "" }}
-          />
-          <Stack.Screen
-            name="Expediente"
-            component={VerExpedientePaciente}
-            options={{ title: "" }}
-          />
-          <Stack.Screen
-            name="perfil"
-            component={PerfilPhisio}
-            options={{ headerShown: false, title: ""  }}
-          />
-          <Stack.Screen
-            name="perfilPaciente"
-            component={PerfilPaciente}
-            options={{ headerShown: false, title: "" }}
-          />
-          <Stack.Screen
-            name="CamaraVideo"
-            component={CamaraVideo}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="CamaraImagen"
-            component={CamaraImagen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="HistorialPaciente"
-            component={HistorialPaciente}
-            options={{ headerShown: true, title: "" }}
-          />
-          <Stack.Screen
-            name="RegistrarNuevoPaciente"
-            component={RegistrarNuevoPaciente}
-            options={{ headerShown: true, title: "" }}
-          />
-          <Stack.Screen
-            name="VerExpedientePaciente"
-            component={VerExpedientePaciente}
-            options={{ headerShown: true, title: "" }}
-          />
-          <Stack.Screen
-            name="ConfirmImage"
-            component={ConfirmImage}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="ConfirmVideo"
-            component={ConfirmVideo}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Results"
-            component={Results}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="ConfirmExercise"
-            component={ConfirmExercise}
-            options={{ title: "" }}
-          />
-          <Stack.Screen
-            name="ConfirmPosture"
-            component={ConfirmPosture}
-            options={{ title: "" }}
-          />
-          <Stack.Screen
-            name="CrearExpediente"
-            component={CrearExpediente}
-            options={{ title: "" }}
-          />
-          <Stack.Screen
-            name="CrearEscala"
-            component={MyTabs}
-            options={{ title: "" }}
-          />
-          <Stack.Screen
-            name="PacientesCompartidos"
-            component={PacientesCompartidos}
-            options={{ title: "" }}
-          />
-          <Stack.Screen
-            name="ContactFisio"
-            component={ContactosPhisio}
-            options={{ title: "" }}
-          />
-          <Stack.Screen
-            name="BuscarPaciente"
-            component={BuscarPacientes}
-            options={{ title: "" }}
-          />
-          <Stack.Screen
-            name="VisualizarPdf"
-            component={VisualizarPdf}
-            options={{ title: "" }}
-          />
-          <Stack.Screen
-            name="BuscarContactos"
-            component={BuscarContactos}
-            options={{ title: "" }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="login"
+        screenOptions={{
+          headerStyle: { backgroundColor: "#073E75" },
+          headerTintColor: "#FFFFFF",
+        }}
+      >
+        <Stack.Screen
+          name="App"
+          component={App}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="login"
+          component={Login}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="registrar"
+          component={Registrar}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="registrarPersonales"
+          component={RegistrarPersonales}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="mainFisio"
+          component={TabsFisio}
+          options={{ headerShown: false, gestureEnabled: true, gestureDirection: 'horizontal' }}
+        />
+        <Stack.Screen
+          name="recuperarContraseña"
+          component={RecoveryPass}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="registrarTarjeta"
+          component={RegistrarTarjeta}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="mainPaciente"
+          component={TabsPatient}
+          options={{ headerShown: false}}
+        />
+        <Stack.Screen
+          name="EvaluacionVideo"
+          component={EvaluacionVideo}
+          options={{ title: "" }}
+        />
+        <Stack.Screen
+          name="EvaluacionImagen"
+          component={EvaluacionImagen}
+          options={{ title: "" }}
+        />
+        <Stack.Screen
+          name="Expediente"
+          component={VerExpedientePaciente}
+          options={{ title: "" }}
+        />
+        <Stack.Screen
+          name="perfil"
+          component={PerfilPhisio}
+          options={{ headerShown: false, title: ""  }}
+        />
+        <Stack.Screen
+          name="perfilPaciente"
+          component={PerfilPaciente}
+          options={{ headerShown: false, title: "" }}
+        />
+        <Stack.Screen
+          name="CamaraVideo"
+          component={CamaraVideo}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="CamaraImagen"
+          component={CamaraImagen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="HistorialPaciente"
+          component={HistorialPaciente}
+          options={{ headerShown: true, title: "" }}
+        />
+        <Stack.Screen
+          name="RegistrarNuevoPaciente"
+          component={RegistrarNuevoPaciente}
+          options={{ headerShown: true, title: "" }}
+        />
+        <Stack.Screen
+          name="VerExpedientePaciente"
+          component={VerExpedientePaciente}
+          options={{ headerShown: true, title: "" }}
+        />
+        <Stack.Screen
+          name="ConfirmImage"
+          component={ConfirmImage}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ConfirmVideo"
+          component={ConfirmVideo}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Results"
+          component={Results}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ConfirmExercise"
+          component={ConfirmExercise}
+          options={{ title: "" }}
+        />
+        <Stack.Screen
+          name="ConfirmPosture"
+          component={ConfirmPosture}
+          options={{ title: "" }}
+        />
+        <Stack.Screen
+          name="CrearExpediente"
+          component={CrearExpediente}
+          options={{ title: "" }}
+        />
+        <Stack.Screen
+          name="CrearEscala"
+          component={MyTabs}
+          options={{ title: "" }}
+        />
+        <Stack.Screen
+          name="PacientesCompartidos"
+          component={PacientesCompartidos}
+          options={{ title: "" }}
+        />
+        <Stack.Screen
+          name="ContactFisio"
+          component={ContactosPhisio}
+          options={{ title: "" }}
+        />
+        <Stack.Screen
+          name="BuscarPaciente"
+          component={BuscarPacientes}
+          options={{ title: "" }}
+        />
+        <Stack.Screen
+          name="VisualizarPdf"
+          component={VisualizarPdf}
+          options={{ title: "" }}
+        />
+        <Stack.Screen
+          name="BuscarContactos"
+          component={BuscarContactos}
+          options={{ title: "" }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
