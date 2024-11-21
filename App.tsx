@@ -251,14 +251,14 @@ export default function App() {
     return (
       <GestureHandlerRootView>
         <FisioTabs.Navigator
-          initialRouteName="menu Principal"
+          initialRouteName="mainMenuFisio"
           screenOptions={{
             headerShown: false,              
           }}
     
           >
         <FisioTabs.Screen 
-            name="menu Principal" 
+            name="mainMenuFisio" 
             component={MainPhisio}
             options={{
               title: "Inicio" , 
@@ -285,7 +285,7 @@ export default function App() {
             }}
         />
         <FisioTabs.Screen
-            name="Selector de Escalas"
+            name="metricsSelector"
             component={SelectorMetricas}
             options={{ 
               title: "Escalas",
@@ -312,7 +312,7 @@ export default function App() {
             }}
         />
         <FisioTabs.Screen
-            name="Contactos Fisioterapeutas"
+            name="contactsFisio"
             component={ContactosPhisio}
             options={{ 
               title: "Contactos",
@@ -339,7 +339,7 @@ export default function App() {
             }}
         />
         <FisioTabs.Screen
-            name="Agenda de citas"
+            name="calendar"
             component={AgendaCitas}
             options={{ 
               title: "Agenda",
@@ -370,7 +370,7 @@ export default function App() {
             }}
         />
         <FisioTabs.Screen
-            name="PerfilFisio"
+            name="profileFisio"
             component={PerfilPhisio}
             options={{ 
               title: "Perfil",

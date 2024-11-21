@@ -120,17 +120,10 @@ export default function MainPhisio({
   const translateX = useSharedValue(0);
 
   const handleGestureEnd = useCallback((event) => {
-    if (event.translationX > 50) {
-      console.log('Deslizó a la derecha');
-      try {
-        if (navigation && navigation.navigate) {
-          navigation.navigate('Agenda de citas');
-        }
-      } catch (error) {
-        console.log('Error al navegar: ', error);
+    if (event.translationX < -50) {
+      if (navigation && navigation.navigate) {
+        navigation.navigate('metricsSelector');
       }
-    } else if (event.translationX < -50) {
-      console.log('Deslizó a la izquierda');
     }
 
     translateX.value = withSpring(0, { damping: 20 });
@@ -143,7 +136,6 @@ export default function MainPhisio({
     .onEnd((event) => {
       try {
         runOnJS(handleGestureEnd)(event);
-        // TODO: Manejar logica para cambiar entre pantallas con un array de los nombres y un contador
       } catch (error) {
         console.log(error.stack);
       }

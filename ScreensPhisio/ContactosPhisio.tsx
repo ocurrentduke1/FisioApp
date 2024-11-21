@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -13,6 +13,8 @@ import { NavigationProp } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { FAB } from 'react-native-paper';
+import { runOnJS, useSharedValue, withSpring } from "react-native-reanimated";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 
 // Suponiendo que este es tu componente
 const ContactosPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
@@ -67,48 +69,76 @@ const ContactosPhisio = ({ navigation }: { navigation: NavigationProp<any> }) =>
     setPacientes(datosDelServidor);
   }, []);
 
+  const translateX = useSharedValue(0);
+
+  const handleGestureEnd = useCallback((event) => {
+    if(navigation && navigation.navigate) {
+      if (event.translationX > 50) {
+          navigation.navigate('metricsSelector');
+      } else if (event.translationX < -50) {
+          navigation.navigate('calendar');
+      }
+    }
+
+    translateX.value = withSpring(0, { damping: 20 });
+  }, [navigation, translateX]);
+
+  const gesture = Gesture.Pan()
+    .onUpdate((event) => {
+      translateX.value = event.translationX;
+    })
+    .onEnd((event) => {
+      try {
+        runOnJS(handleGestureEnd)(event);
+      } catch (error) {
+        console.log(error.stack);
+      }
+    });
+
   return (
     <SafeAreaView style={stylesMain.container}>
-      <ImageBackground source={require("../assets/logo_blanco.png")} resizeMode="contain" style={styles.image} imageStyle={{opacity: 0.5}}>
-      <ScrollView style={stylesMain.scrollView}>
-        {pacientes.map((paciente, index) => (
-          <TouchableOpacity
-            key={index}
-            style={stylesMain.datosFisio}
-             onPress={() => navigation.navigate("PacientesCompartidos", {paciente})}
-          >
-            <View style={stylesMain.casillaPerfilPaciente}>
-            {paciente.imagenPerfil ? (
-                <Image
-                  source={{ uri: paciente.imagenPerfil }}
-                  style={stylesMain.imagenpaciente}
-                />
-              ) : (
-                <Icon name="user-circle" size={70} color="#000" style={stylesMain.imagenpaciente} />
-              )}
-              <View style={{flexWrap: "wrap", justifyContent: "flex-start",}}>
-                <Text style={stylesMain.datosPacienteMenuFisio}>
-                   {paciente.nombre} {paciente.apellidos}
-                </Text>
-                <Text style={stylesMain.datosPacienteMenuFisio}>
-                  Compartidos: {paciente.pacientesCompartidos}
-                </Text>
-                {/* <Text style={stylesMain.datosPacienteMenuFisio}>
-                   {paciente.}
-                </Text> */}
-              </View>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-      <FAB
-    icon="account-plus"
-    color="#000"
-    
-    style={styles.fab}
-    onPress={() => navigation.navigate("BuscarContactos")}
-  />
-      </ImageBackground>
+        <ImageBackground source={require("../assets/logo_blanco.png")} resizeMode="contain" style={styles.image} imageStyle={{opacity: 0.5}}>
+        <GestureDetector gesture={gesture}>
+          <ScrollView style={stylesMain.scrollView}>
+            {pacientes.map((paciente, index) => (
+              <TouchableOpacity
+                key={index}
+                style={stylesMain.datosFisio}
+                onPress={() => navigation.navigate("PacientesCompartidos", {paciente})}
+              >
+                <View style={stylesMain.casillaPerfilPaciente}>
+                {paciente.imagenPerfil ? (
+                    <Image
+                      source={{ uri: paciente.imagenPerfil }}
+                      style={stylesMain.imagenpaciente}
+                    />
+                  ) : (
+                    <Icon name="user-circle" size={70} color="#000" style={stylesMain.imagenpaciente} />
+                  )}
+                  <View style={{flexWrap: "wrap", justifyContent: "flex-start",}}>
+                    <Text style={stylesMain.datosPacienteMenuFisio}>
+                      {paciente.nombre} {paciente.apellidos}
+                    </Text>
+                    <Text style={stylesMain.datosPacienteMenuFisio}>
+                      Compartidos: {paciente.pacientesCompartidos}
+                    </Text>
+                    {/* <Text style={stylesMain.datosPacienteMenuFisio}>
+                      {paciente.}
+                    </Text> */}
+                  </View>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </GestureDetector>
+        <FAB
+          icon="account-plus"
+          color="#000"
+          
+          style={styles.fab}
+          onPress={() => navigation.navigate("BuscarContactos")}
+        />
+        </ImageBackground>
     </SafeAreaView>
   );
 };
