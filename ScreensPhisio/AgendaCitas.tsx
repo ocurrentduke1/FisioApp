@@ -6,7 +6,6 @@ import {
   Modal,
   TouchableOpacity,
   Image,
-  Platform,
   Alert,
 } from "react-native";
 import { NavigationProp, useFocusEffect } from "@react-navigation/native";
@@ -20,7 +19,6 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Swipeable } from "react-native-gesture-handler";
 import { SelectList } from "react-native-dropdown-select-list";
 import { Animated, useWindowDimensions } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BACKEND_URL } from "@env";
 import axios from "axios";
@@ -55,7 +53,7 @@ export default function AgendaCitas({
   const fetchData = async () => {
     const pacientes = await getPatients();
     setDataPatients(pacientes);
-    console.log("pacientes", dataPatients);
+    // console.log("pacientes", dataPatients);
     const datosDelServidor = await obtenerCitas();
     setCitas(datosDelServidor);
     // console.log("horas", dataHours);
@@ -75,14 +73,15 @@ export default function AgendaCitas({
   const getHours = async () => {
     if (userID) {
       const response = await axios.get(
-        `${BACKEND_URL}/horarios-disponibles/${userID}/${new Date(selectedDate).toISOString().substring(0, 10)}`
+        `${BACKEND_URL}/horarios-disponibles/${userID}/${new Date(selectedDate)
+          .toISOString()
+          .substring(0, 10)}`
       );
 
-      console.log("Response data:", response.data);
+      // console.log("Response data:", response.data);
       return response.data.horarios || [];
     }
   };
-
 
   useFocusEffect(
     useCallback(() => {
@@ -116,18 +115,17 @@ export default function AgendaCitas({
     getUserID();
   }, []);
 
-  const [modalVisible, setModalVisible] = useState(false);
+
   const [modalAdd, setModalAdd] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
+  const [dateTo, setDateTo] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date().toDateString());
-  const [showPicker1, setShowPicker1] = useState(false);
-  const [newDate, setNewDate] = useState("");
-  const [selectedTime, setSelectedTime] = useState("");
+
   const [patient, setPatient] = useState("");
   const [openPatient, setOpenPatient] = useState(false);
   const [location, setLocation] = useState("");
   const [otherLocation, setOtherLocation] = useState(false);
-  const [date, setDate] = useState(new Date());
+
   const [time, setTime] = useState("");
   const [duration, setDuration] = useState(0);
   const [dataHours, setDataHours] = useState([]);
@@ -137,10 +135,12 @@ export default function AgendaCitas({
       apellidos: string;
       imagenPerfil?: string;
       id: string;
+      mail: string;
     }[]
   >([]);
   const [citas, setCitas] = useState<
     {
+      id: string;
       nombre: string;
       apellido: string;
       proximaCita: string;
@@ -165,7 +165,7 @@ export default function AgendaCitas({
 
   const transformDuration = (duration: string) => {
     if (duration == "30 minutos") {
-      setDuration(.5 * 60 * 60);
+      setDuration(0.5 * 60 * 60);
       return duration;
     } else if (duration == "1 hora") {
       setDuration(1 * 60 * 60);
@@ -174,15 +174,8 @@ export default function AgendaCitas({
     } else if (duration == "2 horas") {
       setDuration(2 * 60 * 60);
     }
-  }
-
-  const togglePicker1 = () => {
-    setShowPicker1(!showPicker1);
   };
 
-  const closeVisible = () => {
-    setModalVisible(false);
-  };
   //funciones para modal de busqueda
   const openAdd = async () => {
     const horarios = await getHours();
@@ -195,66 +188,28 @@ export default function AgendaCitas({
   };
 
   //funciones para modal de eliminar
-  const openDelete = () => {
+  const openDelete = (item) => {
+    setDateTo(item.id);
     setModalDelete(true);
+    console.log("item", item);
   };
 
   const closeDelete = () => {
     setModalDelete(false);
   };
 
-  const handleDeletePatient = () => {
-    console.log("Eliminar paciente");
-    closeDelete();
-  };
-
-  const handleSaveAppointment = () => {
-    console.log(`cita creada`);
-    console.log(`Fecha: ${selectedDate}`);
-    console.log(`Paciente: ${patient}`);
-    console.log(`Lugar: ${location}`);
-    console.log(`Hora: ${time}`);
-    setModalAdd(false);
-    setLocation("");
-    setPatient("");
-    setTime("");
-  };
-
-  const handleDateTimeChange = () => {
-    console.log(`Fecha actualizada a: ${selectedDate}`);
-    console.log(`Hora actualizada a: ${selectedTime}`);
-    setModalVisible(false);
-  };
-
-  {
-    /* metodos para crear fecha*/
-  }
-
-  const onChange1 = ({ type }: { type: string }, selectedDate: any) => {
-    if (type === "set") {
-      const currentDate = selectedDate;
-      setDate(currentDate);
-
-      if (Platform.OS === "android") {
-        togglePicker1();
-        setNewDate(
-          currentDate.toLocaleDateString("es-ES", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-          })
-        );
-      }
-    } else {
-      togglePicker1();
-    }
-  };
-
   const transformarDatosParaAgenda = () => {
     if (Array.isArray(citas) && citas.length > 0) {
       return citas.reduce((acc: { [key: string]: any }, cita) => {
-        const { proximaCita, nombre, apellido, ubicacion, imagenPerfil, hora } =
-          cita;
+        const {
+          proximaCita,
+          nombre,
+          apellido,
+          ubicacion,
+          imagenPerfil,
+          hora,
+          id,
+        } = cita;
 
         const transformedCita = {
           name: `${nombre} ${apellido}`,
@@ -262,6 +217,7 @@ export default function AgendaCitas({
           location: ubicacion,
           image: imagenPerfil,
           date: proximaCita,
+          id: id,
         };
 
         if (acc[proximaCita]) {
@@ -283,15 +239,6 @@ export default function AgendaCitas({
     setSelectedDate(day.dateString);
   };
 
-  {
-    /* metodos para editar fecha*/
-  }
-  const handleEditPress = (appointment) => {
-    setSelectedDate(appointment.date); // Extrae la fecha
-    setSelectedTime(appointment.hora); // Extrae la hora
-    setModalVisible(true); // Abre el modal de edición
-  };
-
   const validateDataRegister = () => {
     if (location === "" || patient === "" || time === "") {
       return false;
@@ -303,12 +250,37 @@ export default function AgendaCitas({
   const handleAddLocation = (val: string) => {
     if (val == "ubicacion personalizada") {
       setOtherLocation(true);
-    }else{
+    } else {
       setOtherLocation(false);
     }
   };
 
-  console.log("duracion ", duration);
+  const RegistrarCita = async () => {
+    const response = await axios.post(BACKEND_URL + "/cita", {
+      pacienteId: patient,
+      fisioterapeutaId: userID,
+      fecha: selectedDate + " " + time,
+      duracion: duration.toString(),
+      ubicacion: location,
+    });
+
+    console.log("cita registrada", response);
+
+    closeAdd();
+    fetchData();
+    setLocation("");
+    setPatient("");
+    setTime("");
+  };
+
+  const CancelarCita = async () => {
+    const response = await axios.delete(`${BACKEND_URL}/cita/${dateTo}`, {});
+
+    setCitas(citas.filter((cita) => cita.id !== dateTo));
+
+    console.log("cita eliminada", response);
+    closeDelete();
+  };
 
   const renderRightActions = (progress, dragX, item) => {
     const translateX = dragX.interpolate({
@@ -321,14 +293,11 @@ export default function AgendaCitas({
       <Animated.View
         style={[styles.rightAction, { transform: [{ translateX }] }]}
       >
-        <TouchableOpacity style={styles.removeAction} onPress={openDelete}>
-          <Icon2 name="calendar-remove" size={30} color="#FFF" />
-        </TouchableOpacity>
         <TouchableOpacity
-          style={styles.editAction}
-          onPress={() => handleEditPress(item)}
+          style={styles.removeAction}
+          onPress={() => openDelete(item)}
         >
-          <Icon2 name="calendar-edit" size={30} color="#FFF" />
+          <Icon2 name="calendar-remove" size={30} color="#FFF" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.expedientAction}
@@ -476,74 +445,6 @@ export default function AgendaCitas({
         onDayPress={handleDayPress}
       />
 
-      {/* Modal para editar una cita */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={closeVisible}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Editar Cita</Text>
-            <TextInput
-              mode="outlined"
-              outlineColor="#c5cae9"
-              activeOutlineColor="#c5cae9"
-              label="Fecha Actual"
-              style={styles.input}
-              value={selectedDate || ""}
-              onChangeText={setSelectedDate}
-              editable={false}
-            />
-            <TouchableOpacity style={{ padding: 10 }} onPress={togglePicker1}>
-              {showPicker1 && (
-                <DateTimePicker
-                  mode="date"
-                  display="spinner"
-                  value={date} // Provide a value prop with the current date or a specific date
-                  onChange={onChange1}
-                />
-              )}
-              <TextInput
-                mode="outlined"
-                outlineColor="#c5cae9"
-                activeOutlineColor="#c5cae9"
-                label="Nueva Fecha"
-                style={styles.input}
-                value={newDate}
-                onChangeText={setSelectedDate}
-                readOnly={true}
-              />
-            </TouchableOpacity>
-            <TextInput
-              mode="outlined"
-              outlineColor="#c5cae9"
-              activeOutlineColor="#c5cae9"
-              label="Nueva Hora"
-              style={styles.input}
-              value={selectedTime}
-              onChangeText={setSelectedTime}
-            />
-
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={[styles.button, styles.buttonClose]}
-                onPress={closeVisible}
-              >
-                <Text style={styles.textStyle}>Cancelar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.buttonSearch]}
-                onPress={handleDateTimeChange}
-              >
-                <Text style={styles.textStyle}>Agregar</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
       {/* Modal para agregar una cita */}
       <FAB
         icon="calendar-plus"
@@ -601,7 +502,7 @@ export default function AgendaCitas({
             <SelectList
               setSelected={(val: string) => {
                 setLocation(val);
-                if(val == "ubicacion personalizada"){
+                if (val == "ubicacion personalizada") {
                   setLocation("");
                 }
                 handleAddLocation(val);
@@ -634,7 +535,7 @@ export default function AgendaCitas({
               placeholder="Ubicacion de cita"
             />
 
-<SelectList
+            <SelectList
               setSelected={(val: string) => {
                 transformDuration(val);
               }}
@@ -719,7 +620,7 @@ export default function AgendaCitas({
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.button, styles.buttonSearch]}
-                onPress={handleSaveAppointment}
+                onPress={RegistrarCita}
                 disabled={!validateDataRegister()}
               >
                 <Text style={styles.textStyle}>Agregar</Text>
@@ -749,7 +650,7 @@ export default function AgendaCitas({
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.button, styles.buttonSearch]}
-                onPress={handleDeletePatient}
+                onPress={CancelarCita}
               >
                 <Text style={styles.textStyle}>Eliminar</Text>
               </TouchableOpacity>
@@ -864,27 +765,19 @@ const styles = StyleSheet.create({
   },
   removeAction: {
     backgroundColor: "#f44336",
-    justifyContent: "flex-end",
+    justifyContent: "center",
     flex: 1,
     alignItems: "center",
     marginRight: 5,
-    maxWidth: '60%',
-  },
-  editAction: {
-    backgroundColor: "#0058b3",
-    justifyContent: "center",
-    flex: 1,  
-    alignItems: "center",
-    marginRight: 5,
-    maxWidth: '60%',
+    maxWidth: "60%",
   },
   expedientAction: {
-    backgroundColor: "#8dc40d",
+    backgroundColor: "#0058b3",
     justifyContent: "center",
     flex: 1,
     alignItems: "center",
     marginRight: 5,
-    maxWidth: '60%',
+    maxWidth: "60%",
   },
   separator: {
     width: "100%",
