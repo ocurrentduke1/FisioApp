@@ -22,9 +22,9 @@ import { BACKEND_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import * as Notifications from "expo-notifications";
-import { FAB, Portal, PaperProvider } from "react-native-paper";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { runOnJS, useSharedValue, withSpring } from "react-native-reanimated";
+import { FAB, Portal, PaperProvider, TouchableRipple } from "react-native-paper";
+import { Directions, Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
 
 type VerifiedIconProps = {
   display: boolean;
@@ -49,7 +49,7 @@ export default function MainPhisio({
   route: RouteProp<any, any>;
 }) {
   const [userID, setUserID] = useState<string | null>(null);
-
+  const [enableFling, setEnableFling] = useState<boolean>(true);
   const [state, setState] = React.useState({ open: false });
   const onStateChange = ({ open }: { open: boolean }) => setState({ open });
   const { open } = state;
@@ -132,6 +132,7 @@ export default function MainPhisio({
   }, []);
 
   const translateX = useSharedValue(0);
+  const startTranslateX = useSharedValue(0);
 
   const handleGestureEnd = useCallback((event) => {
     if (event.translationX < -50) {
@@ -143,17 +144,35 @@ export default function MainPhisio({
     translateX.value = withSpring(0, { damping: 20 });
   }, [navigation, translateX]);
 
-  const gesture = Gesture.Pan()
-    .onUpdate((event) => {
-      translateX.value = event.translationX;
-    })
-    .onEnd((event) => {
-      try {
-        runOnJS(handleGestureEnd)(event);
-      } catch (error) {
-        console.log(error.stack);
-      }
+  const animatedStyles = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX.value },
+    ],
+  }));
+  const maxTranslateX = 300; // Este es el valor máximo para el rango de movimiento
+
+  const gesture = Gesture.Fling()
+  .enabled(enableFling)
+  .direction(Directions.LEFT | Directions.RIGHT)
+  .onBegin((event) => {
+    // Guardamos la posición inicial cuando se empieza el gesto.
+    startTranslateX.value = event.x;
+  })
+  .onTouchesMove((event) => {
+    // Mientras el dedo se mueve, actualizamos la posición de la vista
+    const newTranslateX = event.allTouches[0].x - startTranslateX.value;
+
+    translateX.value = withSpring( Math.max(Math.min(newTranslateX, maxTranslateX), -maxTranslateX),
+    {
+      damping: 20,  // Controla cuán rápido se detiene el movimiento
+      stiffness: 10,
     });
+  })
+  .runOnJS(true)
+  .onTouchesUp((e) => {
+    translateX.value = withTiming(0, { duration: 200 });
+  });
+
 
   return (
     <PaperProvider>
@@ -164,116 +183,124 @@ export default function MainPhisio({
           style={styles.image}
           imageStyle={{ opacity: 0.5 }}
         >
-          {/* <GestureDetector gesture={gesture}> */}
             <View style={{ flex: 1}}>
-              <ScrollView style={stylesMain.scrollView}
-              refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-              }>
-                {pacientes && pacientes.length > 0 ? (
-                  pacientes.map((paciente, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      style={{
-                        ...stylesMain.datosFisio,
-                      }}
-                      onPress={() =>
-                        navigation.navigate("HistorialPaciente", { paciente })
-                      }
-                    >
-                      <View style={{
-                        ...stylesMain.casillaPerfilPaciente,
-                        }}>
-                        {paciente.imagenPerfil ? (
-                          <View>
-                            <VerifiedAccountIcon display={true} ></VerifiedAccountIcon>
-                            <Image
-                              source={{ uri: paciente.imagenPerfil }}
-                              style={stylesMain.imagenpaciente}
-                            />
-                          </View>
-                        ) : (
-                          <View>
-                            <VerifiedAccountIcon display={paciente.tipo == 'account'} ></VerifiedAccountIcon>
-                            <Icon
-                              name="user-circle"
-                              size={70}
-                              color="#000"
-                              style={stylesMain.imagenpaciente}
-                            />
-                          </View>
-                        )}
-                        <View>
-                          <Text
-                            style={[
-                              stylesMain.datosPacienteMenuFisio,
-                              { fontWeight: "bold" },
-                            ]}
-                          >
-                            {paciente.nombre} {paciente.apellidos}
-                          </Text>
+              <ScrollView style={stylesMain.scrollView} onScrollBeginDrag={() => {
+                setEnableFling(false);
+              }} onScrollEndDrag={() => {
+                setEnableFling(true);
+              }}>
+                <GestureDetector gesture={gesture}>
+                  <Animated.View style={animatedStyles}>
+                    {pacientes && pacientes.length > 0 ? (
+                      pacientes.map((paciente, index) => (
+                        <TouchableRipple
+                          key={index}
+                          style={{
+                            ...stylesMain.datosFisio,
+                          }}
+                          rippleColor="rgba(0, 0, 0, 0.4)"
+                          
+                          onPress={() => {
+                              navigation.navigate("HistorialPaciente", { paciente })
+                            }
+                          }
+                        >
+                          <View style={{
+                            ...stylesMain.casillaPerfilPaciente,
+                            }}>
+                            {paciente.imagenPerfil ? (
+                              <View>
+                                <VerifiedAccountIcon display={true} ></VerifiedAccountIcon>
+                                <Image
+                                  source={{ uri: paciente.imagenPerfil }}
+                                  style={stylesMain.imagenpaciente}
+                                />
+                              </View>
+                            ) : (
+                              <View>
+                                <VerifiedAccountIcon display={paciente.tipo == 'account'} ></VerifiedAccountIcon>
+                                <Icon
+                                  name="user-circle"
+                                  size={70}
+                                  color="#000"
+                                  style={stylesMain.imagenpaciente}
+                                />
+                              </View>
+                            )}
+                            <View>
+                              <Text
+                                style={[
+                                  stylesMain.datosPacienteMenuFisio,
+                                  { fontWeight: "bold" },
+                                ]}
+                              >
+                                {paciente.nombre} {paciente.apellidos}
+                              </Text>
 
-                          {paciente.proximaCita == "Sin cita" ? (
-                            <View />
-                          ) : (
-                            <View
-                              style={{
-                                flexDirection: "row",
-                                justifyContent: "flex-start",
-                              }}
-                            >
-                              <Icon
-                                name="calendar"
-                                size={20}
-                                color="#000"
-                                style={stylesMain.datosPacienteMenuFisio}
-                              />
-                              <Text
-                                style={{ marginLeft: 5, marginTop: 7, fontWeight: 'bold' }}
+                              {paciente.proximaCita == "Sin cita" ? (
+                                <View />
+                              ) : (
+                                <View
+                                  style={{
+                                    flexDirection: "row",
+                                    justifyContent: "flex-start",
+                                  }}
+                                >
+                                  <Icon
+                                    name="calendar"
+                                    size={20}
+                                    color="#000"
+                                    style={stylesMain.datosPacienteMenuFisio}
+                                  />
+                                  <Text
+                                    style={{ marginLeft: 5, marginTop: 7, fontWeight: 'bold' }}
+                                  >
+                                    { paciente.proximaCita }
+                                  </Text>
+                                  <Icon
+                                    name="clock-o"
+                                    size={20}
+                                    color="#000"
+                                    style={stylesMain.datosPacienteMenuFisio}
+                                  />
+                                  <Text
+                                    style={{ marginLeft: 5, marginTop: 7, fontWeight: 'bold' }}
+                                  >
+                                    { paciente.horaCita }
+                                  </Text>
+                                </View>
+                              )}
+
+                              <View
+                                style={{
+                                  flexDirection: "row",
+                                  justifyContent: "flex-start",
+                                  width: 210
+                                }}
                               >
-                                { paciente.proximaCita }
-                              </Text>
-                              <Icon
-                                name="clock-o"
-                                size={20}
-                                color="#000"
-                                style={stylesMain.datosPacienteMenuFisio}
-                              />
-                              <Text
-                                style={{ marginLeft: 5, marginTop: 7, fontWeight: 'bold' }}
-                              >
-                                { paciente.horaCita }
-                              </Text>
+                                <Icon
+                                  name="map-marker"
+                                  size={20}
+                                  color="#000"
+                                  style={stylesMain.datosPacienteMenuFisio}
+                                />
+                                <Text
+                                  style={{ marginLeft: 5, marginTop: 7 }}
+                                  ellipsizeMode="tail"
+                                  numberOfLines={1}
+                                >
+                                  {paciente.ubicacion}
+                                </Text>
+                              </View>
                             </View>
-                          )}
-
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              justifyContent: "flex-start",
-                              width: 210
-                            }}
-                          >
-                            <Icon
-                              name="map-marker"
-                              size={20}
-                              color="#000"
-                              style={stylesMain.datosPacienteMenuFisio}
-                            />
-                            <Text
-                              style={{ marginLeft: 5, marginTop: 7 }}
-                              ellipsizeMode="tail"
-                              numberOfLines={1}
-                            >
-                              {paciente.ubicacion}
-                            </Text>
                           </View>
-                        </View>
-                      </View>
-                    </TouchableOpacity>
-                  ))
-                ) : (
-                  <Text></Text>
-                )}
+                        </TouchableRipple>
+                      ))
+                      ) : (
+                        <Text></Text>
+                      )}
+                  </Animated.View>
+                </GestureDetector>
               </ScrollView>
               <Portal>
                 <FAB.Group
@@ -309,7 +336,6 @@ export default function MainPhisio({
                 />
               </Portal>
             </View>
-          {/* </GestureDetector> */}
         </ImageBackground>
       </SafeAreaView>
     </PaperProvider>
