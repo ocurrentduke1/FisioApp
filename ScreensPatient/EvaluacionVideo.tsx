@@ -18,14 +18,14 @@ export default function EvaluacionVideo({
   navigation: NavigationProp<any>;
 }) {
   return (
-    <View style={[stylesMain.container, { alignItems: "center" }]}>
+    <View style={[stylesMain.container, { alignItems: "center", }]}>
       <ImageBackground
         source={require("../assets/logo_blanco.png")}
         resizeMode="contain"
         style={styles.image}
         imageStyle={{ opacity: 0.5 }}
       >
-        <ScrollView style={stylesMain.scrollView}>
+        <ScrollView style={[stylesMain.scrollView, {marginTop: 50}]}>
           <TouchableOpacity
             style={stylesMain.opcPatient}
             onPress={() =>

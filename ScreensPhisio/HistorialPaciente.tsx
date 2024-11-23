@@ -287,7 +287,7 @@ export default function HistorialPaciente(
                     alignItems: "flex-end",
                     width: windowWidth * 0.19,
                     height: windowHeight * 0.095,
-                    marginLeft: -30,
+                    marginLeft: 30,
                     borderRadius: 100,
                   }}
                 />

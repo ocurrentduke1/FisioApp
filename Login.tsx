@@ -130,7 +130,7 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
         }
         const tipoUsuario = await AsyncStorage.getItem("tipoUsuario");
         navigation.navigate(
-          tipoUsuario === "fisioterapeuta" ? "mainFisio" : "mainPaciente"
+          tipoUsuario === "fisioterapeuta" ? "mainFisio" : "VerExpedientePaciente"
         );
       }
     };
@@ -186,7 +186,7 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
       navigation.navigate(
         jwtDecode.tipoUsuario === "fisioterapeuta"
           ? "mainFisio"
-          : "mainPaciente"
+          : "VerExpedientePaciente"
       );
       }
       
@@ -204,7 +204,7 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
 
   //   } else if (email === "p" && password === "123") {
       
-  //       navigation.navigate("mainPaciente");
+  //       navigation.navigate("VerExpedientePaciente");
 
   //   } else {
   //     Alert.alert("Correo o contraseña incorrectos");

@@ -161,39 +161,89 @@ export default function App() {
 
     return (
       <PatientTabs.Navigator
-        initialRouteName="mainPaciente"
+        initialRouteName="VerExpedientePaciente"
         screenOptions={{
           headerShown: false,
         }}
         >
-          <PatientTabs.Screen 
-            name="menu Principal" 
-            component={MainPatient}
-            options={{
-              title: "Inicio" , 
-              tabBarIconStyle: {width: 100},
-              tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} iconName="home" />,
-              tabBarLabel: ({ focused }) => (
-                <Animated.Text
-                  style={{
-                    color: focused ? '#000' : '#FFF',
-                    fontSize: focused ? 14 : 12,
-                    fontWeight: focused ? 'bold' : 'normal',
-                  }}
-                >
-                  Inicio
-                </Animated.Text>
-              ),
-              tabBarStyle: { backgroundColor: "#002245" },
-              tabBarBadgeStyle: { backgroundColor: "#FFFFFF" },
-              tabBarActiveBackgroundColor: "#34e1e3",  
-              tabBarLabelStyle: {
-                fontSize: 12,
-                color: "white",
-                fontWeight: "bold"         
-              }
-            }}
-          />
+          <PatientTabs.Screen
+          name="menu principal"
+          component={VerExpedientePaciente}
+          options={{ 
+            title: "Inicio",
+            tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} iconName="home" />,
+            tabBarLabel: ({ focused }) => (
+              <Animated.Text
+                style={{
+                  color: focused ? '#000' : '#FFF',
+                  fontSize: focused ? 14 : 12,
+                  fontWeight: focused ? 'bold' : 'normal',
+                }}
+              >
+                Inicio
+              </Animated.Text>
+            ),
+            tabBarStyle: { backgroundColor: "#002245" },
+            tabBarActiveBackgroundColor: "#34e1e3",  
+            tabBarLabelStyle: {
+              fontSize: 12,
+              color: "white",
+              fontWeight: "bold"         
+            }
+          }}
+        />
+        <PatientTabs.Screen
+        name= "EvaluacionImagen"
+        component={EvaluacionImagen}
+        options={{
+          title: "Evaluacion de imagen",
+          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} iconName="camera" />,
+          tabBarLabel: ({ focused }) => (
+            <Animated.Text
+              style={{
+                color: focused ? '#000' : '#FFF',
+                fontSize: focused ? 14 : 12,
+                fontWeight: focused ? 'bold' : 'normal',
+              }}
+            >
+              Imagen
+            </Animated.Text>
+          ),
+          tabBarStyle: { backgroundColor: "#002245" },
+          tabBarActiveBackgroundColor: "#34e1e3",
+          tabBarLabelStyle: {
+            fontSize: 12,
+            color: "white",
+            fontWeight: "bold"
+          }
+        }}
+      />
+      <PatientTabs.Screen
+        name="EvaluacionVideo"
+        component={EvaluacionVideo}
+        options={{
+          title: "Evaluacion de video",
+          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} iconName="video-camera" />,
+          tabBarLabel: ({ focused }) => (
+            <Animated.Text
+              style={{
+                color: focused ? '#000' : '#FFF',
+                fontSize: focused ? 14 : 12,
+                fontWeight: focused ? 'bold' : 'normal',
+              }}
+            >
+              Video
+            </Animated.Text>
+          ),
+          tabBarStyle: { backgroundColor: "#002245" },
+          tabBarActiveBackgroundColor: "#34e1e3",
+          tabBarLabelStyle: {
+            fontSize: 12,
+            color: "white",
+            fontWeight: "bold"
+          }
+        }}
+      />
           <PatientTabs.Screen
             name="PerfilPaciente"
             component={PerfilPaciente}
@@ -445,11 +495,6 @@ export default function App() {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="mainPaciente"
-          component={TabsPatient}
-          options={{ headerShown: false}}
-        />
-        <Stack.Screen
           name="EvaluacionVideo"
           component={EvaluacionVideo}
           options={{ title: "" }}
@@ -457,11 +502,6 @@ export default function App() {
         <Stack.Screen
           name="EvaluacionImagen"
           component={EvaluacionImagen}
-          options={{ title: "" }}
-        />
-        <Stack.Screen
-          name="Expediente"
-          component={VerExpedientePaciente}
           options={{ title: "" }}
         />
         <Stack.Screen
@@ -496,8 +536,8 @@ export default function App() {
         />
         <Stack.Screen
           name="VerExpedientePaciente"
-          component={VerExpedientePaciente}
-          options={{ headerShown: true, title: "" }}
+          component={TabsPatient}
+          options={{ headerShown: false, title: "" }}
         />
         <Stack.Screen
           name="ConfirmImage"

@@ -10,6 +10,7 @@ import {
   StyleSheet,
   Dimensions,
   ImageBackground,
+  RefreshControl
 } from "react-native";
 import stylesMain from "../styles/stylesMain";
 import { NavigationProp, useNavigation, useNavigationContainerRef, useRoute } from "@react-navigation/native";
@@ -52,6 +53,7 @@ export default function MainPhisio({
   const [state, setState] = React.useState({ open: false });
   const onStateChange = ({ open }: { open: boolean }) => setState({ open });
   const { open } = state;
+  const [refreshing, setRefreshing] = useState(false);
 
   const sendnotification = async () => {
     axios.get(BACKEND_URL + "/test-notificaciones");
@@ -82,6 +84,18 @@ export default function MainPhisio({
       return response.data || [];
     }
   };
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+
+    await fetchData();
+    console.log('Recargando datos...');
+    // Simula una recarga de datos
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
 
   const getUserID = async () => {
     const id = await AsyncStorage.getItem("idSesion");
@@ -150,9 +164,11 @@ export default function MainPhisio({
           style={styles.image}
           imageStyle={{ opacity: 0.5 }}
         >
-          <GestureDetector gesture={gesture}>
+          {/* <GestureDetector gesture={gesture}> */}
             <View style={{ flex: 1}}>
-              <ScrollView style={stylesMain.scrollView}>
+              <ScrollView style={stylesMain.scrollView}
+              refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }>
                 {pacientes && pacientes.length > 0 ? (
                   pacientes.map((paciente, index) => (
                     <TouchableOpacity
@@ -293,7 +309,7 @@ export default function MainPhisio({
                 />
               </Portal>
             </View>
-          </GestureDetector>
+          {/* </GestureDetector> */}
         </ImageBackground>
       </SafeAreaView>
     </PaperProvider>

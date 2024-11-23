@@ -10,7 +10,7 @@ export default function EvaluacionImagen({
   navigation: NavigationProp<any>;
 }) {
   return (
-    <View style={[stylesMain.container, { alignItems: "center" }]}>
+    <View style={[stylesMain.container, { alignItems: "center", justifyContent: "center" }]}>
       <TouchableOpacity
         style={stylesMain.opcPatient}
         onPress={() =>

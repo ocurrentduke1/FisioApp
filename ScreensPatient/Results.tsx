@@ -25,7 +25,7 @@ const Results = ({
 
   const SaveResults = () => {
     Alert.alert("Registro guardado");
-    navigation.navigate("mainPaciente");
+    navigation.navigate("VerExpedientePaciente");
   };
 
   return (
@@ -46,7 +46,7 @@ const Results = ({
       <TouchableOpacity
         style={[stylesHistorial.button, { marginTop: 0 }]}
         onPress={() => {
-          navigation.navigate("mainPaciente");
+          navigation.navigate("VerExpedientePaciente");
         }}
       >
         <Text style={stylesHistorial.buttonText}>salir</Text>
