@@ -10,10 +10,15 @@ import {
   StyleSheet,
   Dimensions,
   ImageBackground,
-  RefreshControl
+  RefreshControl,
 } from "react-native";
 import stylesMain from "../styles/stylesMain";
-import { NavigationProp, useNavigation, useNavigationContainerRef, useRoute } from "@react-navigation/native";
+import {
+  NavigationProp,
+  useNavigation,
+  useNavigationContainerRef,
+  useRoute,
+} from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Octicons from "react-native-vector-icons/Octicons";
@@ -22,13 +27,18 @@ import { BACKEND_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import * as Notifications from "expo-notifications";
-import { FAB, Portal, PaperProvider } from "react-native-paper";
+import {
+  FAB,
+  Portal,
+  PaperProvider,
+  ActivityIndicator,
+} from "react-native-paper";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { runOnJS, useSharedValue, withSpring } from "react-native-reanimated";
 
 type VerifiedIconProps = {
   display: boolean;
-}
+};
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -54,6 +64,7 @@ export default function MainPhisio({
   const onStateChange = ({ open }: { open: boolean }) => setState({ open });
   const { open } = state;
   const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const sendnotification = async () => {
     axios.get(BACKEND_URL + "/test-notificaciones");
@@ -75,13 +86,19 @@ export default function MainPhisio({
   >([]);
 
   const takePatients = async () => {
-    if (userID) {
-      const response = await axios.post(BACKEND_URL + "/obtener-pacientes", {
-        idFisio: Number(userID),
-      });
-      console.log("UserID:", userID);
-      console.log("Response data:", response.data);
-      return response.data || [];
+    try {
+      if (userID) {
+        const response = await axios.post(BACKEND_URL + "/obtener-pacientes", {
+          idFisio: Number(userID),
+        });
+        console.log("UserID:", userID);
+        console.log("Response data:", response.data);
+        return response.data || [];
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -89,13 +106,12 @@ export default function MainPhisio({
     setRefreshing(true);
 
     await fetchData();
-    console.log('Recargando datos...');
+    console.log("Recargando datos...");
     // Simula una recarga de datos
     setTimeout(() => {
       setRefreshing(false);
     }, 2000);
   }, []);
-
 
   const getUserID = async () => {
     const id = await AsyncStorage.getItem("idSesion");
@@ -133,15 +149,18 @@ export default function MainPhisio({
 
   const translateX = useSharedValue(0);
 
-  const handleGestureEnd = useCallback((event) => {
-    if (event.translationX < -50) {
-      if (navigation && navigation.navigate) {
-        navigation.navigate('metricsSelector');
+  const handleGestureEnd = useCallback(
+    (event) => {
+      if (event.translationX < -50) {
+        if (navigation && navigation.navigate) {
+          navigation.navigate("metricsSelector");
+        }
       }
-    }
 
-    translateX.value = withSpring(0, { damping: 20 });
-  }, [navigation, translateX]);
+      translateX.value = withSpring(0, { damping: 20 });
+    },
+    [navigation, translateX]
+  );
 
   const gesture = Gesture.Pan()
     .onUpdate((event) => {
@@ -155,6 +174,14 @@ export default function MainPhisio({
       }
     });
 
+  if (loading) {
+    return (
+      <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
   return (
     <PaperProvider>
       <SafeAreaView style={stylesMain.container}>
@@ -165,150 +192,168 @@ export default function MainPhisio({
           imageStyle={{ opacity: 0.5 }}
         >
           {/* <GestureDetector gesture={gesture}> */}
-            <View style={{ flex: 1}}>
-              <ScrollView style={stylesMain.scrollView}
-              refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-              }>
-                {pacientes && pacientes.length > 0 ? (
-                  pacientes.map((paciente, index) => (
-                    <TouchableOpacity
-                      key={index}
+          <View style={{ flex: 1 }}>
+            <ScrollView
+              style={stylesMain.scrollView}
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
+            >
+              {pacientes && pacientes.length > 0 ? (
+                pacientes.map((paciente, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={{
+                      ...stylesMain.datosFisio,
+                    }}
+                    onPress={() =>
+                      navigation.navigate("HistorialPaciente", { paciente })
+                    }
+                  >
+                    <View
                       style={{
-                        ...stylesMain.datosFisio,
-                      }}
-                      onPress={() =>
-                        navigation.navigate("HistorialPaciente", { paciente })
-                      }
-                    >
-                      <View style={{
                         ...stylesMain.casillaPerfilPaciente,
-                        }}>
-                        {paciente.imagenPerfil ? (
-                          <View>
-                            <VerifiedAccountIcon display={true} ></VerifiedAccountIcon>
-                            <Image
-                              source={{ uri: paciente.imagenPerfil }}
-                              style={stylesMain.imagenpaciente}
-                            />
-                          </View>
-                        ) : (
-                          <View>
-                            <VerifiedAccountIcon display={paciente.tipo == 'account'} ></VerifiedAccountIcon>
-                            <Icon
-                              name="user-circle"
-                              size={70}
-                              color="#000"
-                              style={stylesMain.imagenpaciente}
-                            />
-                          </View>
-                        )}
+                      }}
+                    >
+                      {paciente.imagenPerfil ? (
                         <View>
-                          <Text
-                            style={[
-                              stylesMain.datosPacienteMenuFisio,
-                              { fontWeight: "bold" },
-                            ]}
-                          >
-                            {paciente.nombre} {paciente.apellidos}
-                          </Text>
+                          <VerifiedAccountIcon
+                            display={true}
+                          ></VerifiedAccountIcon>
+                          <Image
+                            source={{ uri: paciente.imagenPerfil }}
+                            style={stylesMain.imagenpaciente}
+                          />
+                        </View>
+                      ) : (
+                        <View>
+                          <VerifiedAccountIcon
+                            display={paciente.tipo == "account"}
+                          ></VerifiedAccountIcon>
+                          <Icon
+                            name="user-circle"
+                            size={70}
+                            color="#000"
+                            style={stylesMain.imagenpaciente}
+                          />
+                        </View>
+                      )}
+                      <View>
+                        <Text
+                          style={[
+                            stylesMain.datosPacienteMenuFisio,
+                            { fontWeight: "bold" },
+                          ]}
+                        >
+                          {paciente.nombre} {paciente.apellidos}
+                        </Text>
 
-                          {paciente.proximaCita == "Sin cita" ? (
-                            <View />
-                          ) : (
-                            <View
-                              style={{
-                                flexDirection: "row",
-                                justifyContent: "flex-start",
-                              }}
-                            >
-                              <Icon
-                                name="calendar"
-                                size={20}
-                                color="#000"
-                                style={stylesMain.datosPacienteMenuFisio}
-                              />
-                              <Text
-                                style={{ marginLeft: 5, marginTop: 7, fontWeight: 'bold' }}
-                              >
-                                { paciente.proximaCita }
-                              </Text>
-                              <Icon
-                                name="clock-o"
-                                size={20}
-                                color="#000"
-                                style={stylesMain.datosPacienteMenuFisio}
-                              />
-                              <Text
-                                style={{ marginLeft: 5, marginTop: 7, fontWeight: 'bold' }}
-                              >
-                                { paciente.horaCita }
-                              </Text>
-                            </View>
-                          )}
-
+                        {paciente.proximaCita == "Sin cita" ? (
+                          <View />
+                        ) : (
                           <View
                             style={{
                               flexDirection: "row",
                               justifyContent: "flex-start",
-                              width: 210
                             }}
                           >
                             <Icon
-                              name="map-marker"
+                              name="calendar"
                               size={20}
                               color="#000"
                               style={stylesMain.datosPacienteMenuFisio}
                             />
                             <Text
-                              style={{ marginLeft: 5, marginTop: 7 }}
-                              ellipsizeMode="tail"
-                              numberOfLines={1}
+                              style={{
+                                marginLeft: 5,
+                                marginTop: 7,
+                                fontWeight: "bold",
+                              }}
                             >
-                              {paciente.ubicacion}
+                              {paciente.proximaCita}
+                            </Text>
+                            <Icon
+                              name="clock-o"
+                              size={20}
+                              color="#000"
+                              style={stylesMain.datosPacienteMenuFisio}
+                            />
+                            <Text
+                              style={{
+                                marginLeft: 5,
+                                marginTop: 7,
+                                fontWeight: "bold",
+                              }}
+                            >
+                              {paciente.horaCita}
                             </Text>
                           </View>
+                        )}
+
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "flex-start",
+                            width: 210,
+                          }}
+                        >
+                          <Icon
+                            name="map-marker"
+                            size={20}
+                            color="#000"
+                            style={stylesMain.datosPacienteMenuFisio}
+                          />
+                          <Text
+                            style={{ marginLeft: 5, marginTop: 7 }}
+                            ellipsizeMode="tail"
+                            numberOfLines={1}
+                          >
+                            {paciente.ubicacion}
+                          </Text>
                         </View>
                       </View>
-                    </TouchableOpacity>
-                  ))
-                ) : (
-                  <Text></Text>
-                )}
-              </ScrollView>
-              <Portal>
-                <FAB.Group
-                  open={open}
-                  visible
-                  icon={open ? "menu-down" : "account-multiple-plus"}
-                  backdropColor="rgba(0, 0, 0, 0.5)"
-                  color="#000"
-                  fabStyle={{ backgroundColor: "#FFF" }}
-                  actions={[
-                    {
-                      icon: "account-search",
-                      label: "Buscar Paciente",
-                      labelStyle: { color: "white" },
-                      style: { backgroundColor: "#FFF" },
-                      color: "#000",
-                      onPress: () => navigation.navigate("BuscarPaciente"),
-                    },
-                    {
-                      icon: "account-plus",
-                      label: "Registrar paciente",
-                      labelStyle: { color: "white" },
-                      style: { backgroundColor: "#FFF" },
-                      color: "#000",
-                      onPress: () => navigation.navigate("RegistrarNuevoPaciente"),
-                    },
-                  ]}
-                  onStateChange={onStateChange}
-                  onPress={() => {
-                    if (open) {
-                    }
-                  }}
-                />
-              </Portal>
-            </View>
+                    </View>
+                  </TouchableOpacity>
+                ))
+              ) : (
+                <Text></Text>
+              )}
+            </ScrollView>
+            <Portal>
+              <FAB.Group
+                open={open}
+                visible
+                icon={open ? "menu-down" : "account-multiple-plus"}
+                backdropColor="rgba(0, 0, 0, 0.5)"
+                color="#000"
+                fabStyle={{ backgroundColor: "#FFF" }}
+                actions={[
+                  {
+                    icon: "account-search",
+                    label: "Buscar Paciente",
+                    labelStyle: { color: "white" },
+                    style: { backgroundColor: "#FFF" },
+                    color: "#000",
+                    onPress: () => navigation.navigate("BuscarPaciente"),
+                  },
+                  {
+                    icon: "account-plus",
+                    label: "Registrar paciente",
+                    labelStyle: { color: "white" },
+                    style: { backgroundColor: "#FFF" },
+                    color: "#000",
+                    onPress: () =>
+                      navigation.navigate("RegistrarNuevoPaciente"),
+                  },
+                ]}
+                onStateChange={onStateChange}
+                onPress={() => {
+                  if (open) {
+                  }
+                }}
+              />
+            </Portal>
+          </View>
           {/* </GestureDetector> */}
         </ImageBackground>
       </SafeAreaView>
@@ -317,35 +362,34 @@ export default function MainPhisio({
 }
 
 function VerifiedAccountIcon(props: VerifiedIconProps) {
-  return (
-    props.display ? 
+  return props.display ? (
     <View>
       <Octicons
-          name="verified"
-          size={25}
-          color="#E6E605"
-          style={{
-            position: 'absolute',
-            height: 'auto',
-            marginTop: 10,
-            marginLeft: 45,
-            zIndex: 500
-          }}
+        name="verified"
+        size={25}
+        color="#E6E605"
+        style={{
+          position: "absolute",
+          height: "auto",
+          marginTop: 10,
+          marginLeft: 45,
+          zIndex: 500,
+        }}
       />
       <Octicons
-          name="verified"
-          size={25}
-          color="#000"
-          style={{
-            position: 'absolute',
-            height: 'auto',
-            marginTop: 10,
-            marginLeft: 48,
-            zIndex: 499
-          }}
+        name="verified"
+        size={25}
+        color="#000"
+        style={{
+          position: "absolute",
+          height: "auto",
+          marginTop: 10,
+          marginLeft: 48,
+          zIndex: 499,
+        }}
       />
-    </View> : null
-  )
+    </View>
+  ) : null;
 }
 
 const styles = StyleSheet.create({
@@ -387,5 +431,11 @@ const styles = StyleSheet.create({
   image: {
     flex: 1,
     justifyContent: "center",
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#002245",
   },
 });

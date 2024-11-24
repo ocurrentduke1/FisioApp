@@ -24,6 +24,7 @@ import {
   TouchableRipple,
   Searchbar,
   Button,
+  ActivityIndicator,
 } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BACKEND_URL, MAPS_API } from "@env";
@@ -72,6 +73,7 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
   const [initialLng, setInitialLng] = useState<number | undefined>(undefined);
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   const [time, setTime] = useState<string>("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -261,17 +263,23 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
   };
 
   const takeInfo = async () => {
-    if (userID) {
-      const response = await axios.get(
-        `${BACKEND_URL}/obtener-info-usuario/${userID}/${userRol}`
-      );
-
-      if (response.data.code === 500) {
-        console.log("Error en la petición");
-        return;
+    try {
+      if (userID) {
+        const response = await axios.get(
+          `${BACKEND_URL}/obtener-info-usuario/${userID}/${userRol}`
+        );
+  
+        if (response.data.code === 500) {
+          console.log("Error en la petición");
+          return;
+        }
+  
+        return response.data;
       }
-
-      return response.data;
+    }catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -301,6 +309,18 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
       }
     }, [userID, userRol])
   );
+
+  if (loading) {
+    return (
+      <View style={styles.loaderContainer}>
+        <LinearGradient
+        colors={["rgba(44,189,191,0.8)", "transparent"]}
+        style={styles.gradient}
+      />
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   const toggleLogout = () => {
     setModalLogout(!ModalLogout);
@@ -1295,6 +1315,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#002245",
   },
 });
 

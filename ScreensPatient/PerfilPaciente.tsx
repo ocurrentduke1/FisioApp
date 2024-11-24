@@ -22,7 +22,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BACKEND_URL, MAPS_API } from "@env";
 import { LinearGradient } from "expo-linear-gradient";
-import { Divider, TextInput, Searchbar } from "react-native-paper";
+import { Divider, TextInput, Searchbar, ActivityIndicator } from "react-native-paper";
 import { useFocusEffect } from "@react-navigation/native";
 import stylesMain from "../styles/stylesMain";
 import MapView, { LatLng, Marker, PROVIDER_GOOGLE } from "react-native-maps";
@@ -68,6 +68,7 @@ const PerfilPaciente = ({
   const [initialLng, setInitialLng] = useState<number | undefined>(undefined);
   const [domicilio, setDomicilio] = useState("");
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -288,17 +289,25 @@ const PerfilPaciente = ({
   };
 
   const takeInfo = async () => {
-    if (userID) {
-      const response = await axios.get(
-        `${BACKEND_URL}/obtener-info-usuario/${userID}/${userRol}`
-      );
-
-      if (response.data.code === 500) {
-        console.log("Error en la petición");
-        return;
+    try {
+      if (userID) {
+        const response = await axios.get(
+          `${BACKEND_URL}/obtener-info-usuario/${userID}/${userRol}`
+        );
+  
+        if (response.data.code === 500) {
+          console.log("Error en la petición");
+          return;
+        }
+  
+        return response.data;
       }
 
-      return response.data;
+    }catch (error) {
+      console.error(error);
+      console.log("Error al obtener la información del usuario");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -459,6 +468,18 @@ const PerfilPaciente = ({
       console.error(error);
     }
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loaderContainer}>
+        <LinearGradient
+        colors={["rgba(44,189,191,0.8)", "transparent"]}
+        style={styles.gradient}
+      />
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={stylesHistorial.container}>
@@ -1167,6 +1188,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#002245",
   },
 });
 
