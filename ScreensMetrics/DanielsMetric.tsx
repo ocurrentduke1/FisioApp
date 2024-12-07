@@ -25,6 +25,7 @@ export default function DanielsMetric({
   const [state, setState] = useState("");
   const [result, setResult] = useState("");
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const [saveButtonDisabled, setSaveButtonDisabled] = useState(true);
 
   const evaluate = () => {
     let message = "";
@@ -80,20 +81,30 @@ export default function DanielsMetric({
 
   useEffect(() => {
     setIsButtonDisabled(!allFieldsFilled());
-  }, [muscle, side, state]);
+    setSaveButtonDisabled(!canSaveResult());
+  }, [muscle, side, state, result]);
 
   const canSaveResult = () => {
     return result !== null && result.trim() !== "";
   };
 
   function saveResult() {
-    console.log("Save result");
+    if (canSaveResult()) {
+      console.log(muscle,",",  side,",", state);
+      //saveResultToDB();
+      alert("Resultado guardado");
+
+      setMuscle("");
+      setSide("");
+      setState("");
+      setResult("");
+    }
   }
   return (
     <View style={[stylesMain.container, { alignItems: "center" }]}>
       <SafeAreaView style={stylesMain.datosMetricas}>
         <ScrollView style={stylesMain.scrollMetrics}>
-          <View style={[stylesMain.ContainerInput, { height: 900 }]}>
+          <View style={[stylesMain.ContainerInput, /*{ height: 900 }*/]}>
             <TextInput
               mode="outlined"
               label="Zona a evaluar"
@@ -208,7 +219,7 @@ export default function DanielsMetric({
               style={{
                 justifyContent: "center",
                 alignSelf: "center",
-                paddingTop: 10,
+                paddingVertical: 20,
               }}
               onPress={evaluate}
               disabled={isButtonDisabled}
@@ -219,24 +230,31 @@ export default function DanielsMetric({
             </TouchableOpacity>
           </View>
           <View
-            style={[stylesMain.resultsMetrics, { height: windowHeight * 0.35 }]}
+            style={[stylesMain.resultsMetrics,/* { height: windowHeight * 0.35 }*/]}
           >
-            <Text style={{ marginBottom: 1, fontSize: 24, color: "#000" }}>
-              Resultado
-            </Text>
-            <Text style={{ marginBottom: 1, fontSize: 18, color: "#000" }}>
-              {result == null ? "" : `${result}`}
-            </Text>
-            <Text style={{ marginBottom: 1, fontSize: 24, color: "#000" }}>
-              Ejercicios Recomendados
-            </Text>
-            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
-              Ejercicio 1
-            </Text>
+            {result == null  ? (
+              <View />
+            ) : (
+              <View>
+                <Text style={{ marginBottom: 1, fontSize: 24, color: "#000" }}>
+                  Resultado
+                </Text>
+                <Text style={{ marginBottom: 1, fontSize: 18, color: "#000" }}>
+                  {result == null ? "" : `${result}`}
+                </Text>
+                <Text style={{ marginBottom: 1, fontSize: 24, color: "#000" }}>
+                  Ejercicios Recomendados
+                </Text>
+                <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
+                  Ejercicio 1
+                </Text>
+              </View>
+            )}
+
             <TouchableOpacity
-              style={{ paddingTop: 10, alignSelf: "center" }}
+              style={{ paddingVertical: 20, alignSelf: "center" }}
               onPress={saveResult}
-              disabled={!canSaveResult}
+              disabled={saveButtonDisabled}
             >
               <Text style={[stylesMain.metricTitle, { fontSize: 20 }]}>
                 Guardar Resultado

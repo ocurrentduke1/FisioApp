@@ -96,16 +96,11 @@ export default function RegistrarPersonales({
       const currentDate = selectedDate;
       setDate(currentDate);
 
-      if (Platform.OS === "android") {
         togglePicker();
         setAge(
-          currentDate.toLocaleDateString("es-ES", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-          })
+          currentDate.toISOString()
         );
-      }
+
     } else {
       togglePicker();
     }
@@ -123,7 +118,7 @@ export default function RegistrarPersonales({
     nombre: nombre,
     apellido: apellido,
     domicilio: address,
-    edad: age,
+    fechaNacimiento: age,
     genero: sex,
   };
 
@@ -229,6 +224,13 @@ export default function RegistrarPersonales({
   }
   const toggleMaps = () => {
     setModalMaps(!ModalMaps);
+  };
+
+  const saveLocation = async () => {
+    setAddress(selectedLocation ?? "");
+    setSearchQuery("");
+    console.log("domicilio: ", selectedLocation);
+    toggleMaps();
   };
 
   const searchPlaces = async () => {
@@ -471,16 +473,31 @@ export default function RegistrarPersonales({
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalViewMaps}>
-            <MapView ref={map} style={styles.map} provider={PROVIDER_GOOGLE} initialRegion={INITIAL_POSITION}>
-              {results.length ? results.map((item, i) => {
-                const coord: LatLng = {
-                  latitude: item.geometry.location.lat,
-                  longitude: item.geometry.location.lng,
-                }
-                return ( <Marker key={`search-item-${i}`} coordinate={coord} title={item.name} description="" />
-                );
-              })
-            : null}
+          <MapView
+              ref={map}
+              style={styles.map}
+              provider={PROVIDER_GOOGLE}
+              initialRegion={INITIAL_POSITION}
+            >
+              {results.length
+                ? results.map((item, i) => {
+                    const coord: LatLng = {
+                      latitude: item.geometry.location.lat,
+                      longitude: item.geometry.location.lng,
+                    };
+                    return (
+                      <Marker
+                        key={`search-item-${i}`}
+                        coordinate={coord}
+                        title={item.name}
+                        description=""
+                        onSelect={() =>
+                          setSelectedLocation(item.formatted_address)
+                        }
+                      />
+                    );
+                  })
+                : null}
             </MapView>
             <Searchbar
               placeholder="Buscar Direccion"
@@ -509,7 +526,7 @@ export default function RegistrarPersonales({
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.button, styles.btnSaveMaps]}
-              onPress={toggleMaps}
+              onPress={saveLocation}
             >
               <Text style={styles.textStyle}>Guardar</Text>
             </TouchableOpacity>

@@ -133,11 +133,17 @@ export default function AgendaCitas({
     {
       nombre: string;
       apellidos: string;
+      proximaCita: string;
+      horaCita: string;
+      ubicacion: string;
       imagenPerfil?: string;
+      numeroContacto: string;
+      tipo: string;
       id: string;
       mail: string;
     }[]
   >([]);
+  
   const [citas, setCitas] = useState<
     {
       id: string;
@@ -256,13 +262,21 @@ export default function AgendaCitas({
   };
 
   const RegistrarCita = async () => {
+
+    const date = new Date().toISOString().substring(0, 10);
+
     const response = await axios.post(BACKEND_URL + "/cita", {
       pacienteId: patient,
       fisioterapeutaId: userID,
-      fecha: selectedDate + " " + time,
+      fecha: date + " " + time,
       duracion: duration.toString(),
       ubicacion: location,
     });
+
+    if (response.data.code == 500) {
+      Alert.alert("Error al registrar cita");
+      return;
+    }
 
     console.log("cita registrada", response);
 

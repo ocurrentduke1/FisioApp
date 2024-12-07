@@ -29,10 +29,12 @@ import { MultipleSelectList } from "react-native-dropdown-select-list";
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
+
 // Define your route params structure here. This is an example.
 type RouteParams = {
   params: {
     paciente: {
+      id: string;
       nombre: string;
       imagenPerfil: string;
       apellidos: string;
@@ -42,6 +44,7 @@ type RouteParams = {
       proximaCita: string;
       numeroContacto: string;
       mail: string;
+      tipo: string;
     };
   };
 };
@@ -97,9 +100,7 @@ export default function HistorialPaciente(
   }: {
     navigation: NavigationProp<any>;
     route: RouteProp<RouteParams, "params">;
-  },
-  { text, maxWidth }
-) {
+  }) {
   const [modalSearch, setModalSearch] = useState(false);
   const [modalShare, setModalShare] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
@@ -644,7 +645,7 @@ export default function HistorialPaciente(
                 labelStyle: { color: "white" },
                 style: { backgroundColor: "#FFF" },
                 color: "#000",
-                onPress: () => navigation.navigate("CrearExpediente"),
+                onPress: () => navigation.navigate("CrearExpediente", { paciente }),
               },
               {
                 icon: "email",

@@ -11,7 +11,6 @@ import { RecoveryPass } from "./RecoveryPass";
 import Registrar from "./Registrar";
 import RegistrarPersonales from "./RegistrarPersonales";
 import RegistrarTarjeta from "./RegistrarTarjeta";
-import MainPatient from "./ScreensPatient/MainPatient";
 import CamaraImagen from "./ScreensPatient/camaraImagen";
 import CamaraVideo from "./ScreensPatient/CamaraVideo";
 import EvaluacionVideo from "./ScreensPatient/EvaluacionVideo";
