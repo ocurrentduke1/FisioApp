@@ -73,14 +73,13 @@ const CrearExpediente = ({
       const currentDate = selectedDate;
       setDate(currentDate);
 
-      if(Platform.OS === "android"){
         toggleDatePicker();
         setFechaCreacion(currentDate.toLocaleDateString('es-ES', {
           day: '2-digit',
           month: '2-digit',
           year: 'numeric',
         })); 
-      }
+
     }else{
       toggleDatePicker();
     }
@@ -91,14 +90,13 @@ const CrearExpediente = ({
       const currentDate = selectedDate;
       setDate(currentDate);
 
-      if(Platform.OS === "android"){
         toggleBirthdayPicker();
         setnacimiento(currentDate.toLocaleDateString('es-ES', {
           day: '2-digit',
           month: '2-digit',
           year: 'numeric',
         })); 
-      }
+
     }else{
       toggleBirthdayPicker();
     }

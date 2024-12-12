@@ -25,6 +25,8 @@ import { LineChart } from "react-native-chart-kit";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { FAB, Portal, PaperProvider } from "react-native-paper";
 import { MultipleSelectList } from "react-native-dropdown-select-list";
+import { BACKEND_URL } from "@env";
+import axios from "axios";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -45,6 +47,7 @@ type RouteParams = {
       numeroContacto: string;
       mail: string;
       tipo: string;
+      horaCita: string;
     };
   };
 };
@@ -70,6 +73,13 @@ const data = [
       { fecha: "2024-04-19", rango: 6 },
     ],
   },
+];
+
+const evaluaciones = [
+  { id: 1, fechaCreacion: '2023-01-01', descripcion: 'Evaluación realizada 1' },
+  { id: 2, fechaCreacion: '2023-02-01', descripcion: 'Evaluación realizada 2' },
+  { id: 3, fechaCreacion: '2023-03-01', descripcion: 'Evaluación realizada 3' },
+  // Agrega más elementos según sea necesario
 ];
 
 // Función para procesar los datos
@@ -110,6 +120,13 @@ export default function HistorialPaciente(
   const [Fecha1, setFecha1] = useState("");
   const [Fecha2, setFecha2] = useState("");
   const [selected, setSelected] = React.useState<string[]>([]);
+  const [expedientes, setExpedientes] = useState<
+  {
+    id: string;
+    date: string;
+    hour: string;
+    url: string;
+  }[]>([]);
 
   const SearchData = [
     { key: "1", value: "Mobiles", disabled: true },
@@ -139,7 +156,6 @@ export default function HistorialPaciente(
       const currentDate = selectedDate;
       setDate(currentDate);
 
-      if (Platform.OS === "android") {
         togglePicker1();
         setFecha1(
           currentDate.toLocaleDateString("es-ES", {
@@ -148,7 +164,7 @@ export default function HistorialPaciente(
             year: "numeric",
           })
         );
-      }
+
     } else {
       togglePicker1();
     }
@@ -159,7 +175,6 @@ export default function HistorialPaciente(
       const currentDate = selectedDate;
       setDate(currentDate);
 
-      if (Platform.OS === "android") {
         togglePicker2();
         setFecha2(
           currentDate.toLocaleDateString("es-ES", {
@@ -168,7 +183,7 @@ export default function HistorialPaciente(
             year: "numeric",
           })
         );
-      }
+
     } else {
       togglePicker2();
     }
@@ -183,9 +198,27 @@ export default function HistorialPaciente(
     setModalSearch(false);
   };
 
-  const handleSearch = () => {
-    // Lógica para manejar la búsqueda
-    console.log("Buscar:", Fecha1, Fecha2);
+  const handleSearch = async () => {
+
+    const response = await axios.get(`${BACKEND_URL}/expedientes/${paciente.id}/${paciente.tipo}`)
+
+    if(response.data.code == 204){
+      alert("No se encontraron expedientes");
+      return;
+    }
+    const transformedExpedientes = response.data.expedientes.map((expediente: any) => {
+      const date = expediente.createdAt.split("T");
+      return {
+        id: expediente.id,
+        date: date[0],
+        hour: date[1].substring(0, 5),
+        url: expediente.url,
+      };
+    });
+    console.log(response.data.expedientes);
+
+    setExpedientes(transformedExpedientes);
+
     closeSearch();
   };
 
@@ -245,6 +278,7 @@ export default function HistorialPaciente(
       })
     ).start();
   };
+
 
   return (
     <PaperProvider>
@@ -327,7 +361,7 @@ export default function HistorialPaciente(
                       color="#000"
                       style={{ marginLeft: 10 }}
                     />
-                    <Text> {paciente.proximaCita}</Text>
+                    <Text> {paciente.horaCita}</Text>
                   </>
                 )}
               </View>
@@ -348,7 +382,7 @@ export default function HistorialPaciente(
                 />
                 <View style={{overflow: "hidden"}}>
                   <Animated.Text
-                    style={{transform: [{ translateX: scrollX }]}}
+                    style={{transform: [{ translateX: scrollX }], width: 200}}
                     onLayout={(event) => setTextWidth(event.nativeEvent.layout.width)}
                   >
                     {paciente.ubicacion}
@@ -485,17 +519,20 @@ export default function HistorialPaciente(
                 </View>
               </View>
             </Modal>
-            <TouchableOpacity
-              style={stylesHistorial.containerPdf}
-              onPress={() => navigation.navigate("VisualizarPdf")}
-            >
-              <Icon name="file-text-o" size={50} color="#000" />
-              <View style={{ paddingLeft: 5 }}>
-                <Text>Fecha de creacion:</Text>
-                <Text>Evaluacion realizada</Text>
-              </View>
-            </TouchableOpacity>
-            {/* <TouchableOpacity style={{ flex: 1 }}> */}
+
+            {expedientes.map((expediente) => (
+        <TouchableOpacity
+          key={expediente.id}
+          style={stylesHistorial.containerPdf}
+          onPress={() => navigation.navigate('VisualizarPdf', { url: expediente.url })}
+        >
+          <Icon name="file-text-o" size={50} color="#000" />
+          <View style={{ paddingLeft: 15 }}>
+            <Text>Fecha de creación: {expediente.date + " " + expediente.hour}</Text>
+          </View>
+        </TouchableOpacity>
+      ))}
+
             {data.map((scale, index) => (
               <View key={index}>
                 <Text

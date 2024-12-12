@@ -1,30 +1,54 @@
 import React, { Component } from 'react';
-import { View, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Button, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { RouteProp } from "@react-navigation/native";
+import { NavigationProp } from "@react-navigation/native";
 
-class VisualizarPdf extends Component {
-  render() {
+type RouteParams = {
+  params: {
+    url: string
+  };
+};
 
-    const pdfUrl = 'https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf';
-    const googleDocsUrl = `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(pdfUrl)}`;
+const VisualizarPdf = ({
+  route,
+  navigation,
+}: {
+  navigation: NavigationProp<any>;
+  route: RouteProp<RouteParams, "params">;
+}) => {
 
-    return (
-        <View style={{ flex: 1 }}>
-          <WebView
-            source={{ uri: googleDocsUrl }}
-            style={{ flex: 1 }}
-          />
-          <TouchableOpacity
-            onPress={() => console.log('Download')}
-            style={styles.button}
-            >
-              <Icon name='download' size={40} color={"000"}/>
-            </TouchableOpacity>
-        </View>
-      );
-  }
-}
+  const expediente = route.params;
+
+  console.log(expediente.url);
+
+  // const url = 'https://ontheline.trincoll.edu/images/bookdown/sample-local-pdf.pdf';
+  
+
+  const googleDocsUrl = `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(expediente.url)}`;
+
+  const downloadFile = async  () => {
+    Linking.openURL(expediente.url);
+  };
+
+  return (
+    <View style={{ flex: 1 }}>
+      <WebView
+        source={{ uri: googleDocsUrl }}
+        style={{ flex: 1 }}
+      />
+      <TouchableOpacity
+        onPress={downloadFile}
+        style={styles.button}
+      >
+        <Icon name='download' size={40} color="#000" />
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+export default VisualizarPdf;
 
 const styles = StyleSheet.create({
     button: {
@@ -44,5 +68,3 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
   });
-
-export default VisualizarPdf;

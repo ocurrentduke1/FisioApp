@@ -122,6 +122,7 @@ export default function AgendaCitas({
   const [selectedDate, setSelectedDate] = useState(new Date().toDateString());
 
   const [patient, setPatient] = useState("");
+  const [patientType, setPatientType] = useState("");
   const [openPatient, setOpenPatient] = useState(false);
   const [location, setLocation] = useState("");
   const [otherLocation, setOtherLocation] = useState(false);
@@ -129,18 +130,17 @@ export default function AgendaCitas({
   const [time, setTime] = useState("");
   const [duration, setDuration] = useState(0);
   const [dataHours, setDataHours] = useState([]);
+
   const [dataPatients, setDataPatients] = useState<
     {
+      id: string;
       nombre: string;
       apellidos: string;
       proximaCita: string;
       horaCita: string;
       ubicacion: string;
       imagenPerfil?: string;
-      numeroContacto: string;
       tipo: string;
-      id: string;
-      mail: string;
     }[]
   >([]);
   
@@ -153,6 +153,9 @@ export default function AgendaCitas({
       hora: string;
       ubicacion: string;
       imagenPerfil?: string;
+      numeroContacto: string;
+      tipo: string;
+      mail: string;
     }[]
   >([]);
 
@@ -215,15 +218,22 @@ export default function AgendaCitas({
           imagenPerfil,
           hora,
           id,
+          numeroContacto,
+          tipo,
+          mail,
         } = cita;
 
         const transformedCita = {
-          name: `${nombre} ${apellido}`,
-          hora: hora,
-          location: ubicacion,
-          image: imagenPerfil,
-          date: proximaCita,
+          nombre: `${nombre}`,
+          apellidos: apellido,
+          horaCita: hora,
+          ubicacion: ubicacion,
+          imagenPerfil: imagenPerfil,
+          proximaCita: proximaCita,
           id: id,
+          numeroContacto: numeroContacto,
+          tipo: tipo,
+          mail: mail,
         };
 
         if (acc[proximaCita]) {
@@ -271,10 +281,11 @@ export default function AgendaCitas({
       fecha: date + " " + time,
       duracion: duration.toString(),
       ubicacion: location,
+      type: patientType,
     });
 
-    if (response.data.code == 500) {
-      Alert.alert("Error al registrar cita");
+    if (response.data.code == 400) {
+      Alert.alert( "Error al registrar cita", "no se puede crear una cita con un paciente que ya tiene una cita programada");
       return;
     }
 
@@ -296,7 +307,7 @@ export default function AgendaCitas({
     closeDelete();
   };
 
-  const renderRightActions = (progress, dragX, item) => {
+  const renderRightActions = (progress, dragX, paciente) => {
     const translateX = dragX.interpolate({
       inputRange: [-100, 0],
       outputRange: [0, 100],
@@ -304,18 +315,19 @@ export default function AgendaCitas({
     });
 
     return (
+      console.log("item", paciente),
       <Animated.View
         style={[styles.rightAction, { transform: [{ translateX }] }]}
       >
         <TouchableOpacity
           style={styles.removeAction}
-          onPress={() => openDelete(item)}
+          onPress={() => openDelete(paciente)}
         >
           <Icon2 name="calendar-remove" size={30} color="#FFF" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.expedientAction}
-          onPress={() => navigation.navigate("HistorialPaciente")}
+          onPress={() => navigation.navigate("HistorialPaciente", { paciente })}
         >
           <Icon3 name="page-search" size={30} color="#FFF" />
         </TouchableOpacity>
@@ -324,6 +336,14 @@ export default function AgendaCitas({
   };
 
   const { width } = useWindowDimensions();
+
+  const asignarTipoPaciente = async (patient: number, type: string) => {
+    setPatient(patient.toString());
+    setPatientType(type);
+
+    console.log("patient", patient);
+    console.log("type", type);
+  }
 
   return (
     <View style={styles.container}>
@@ -359,7 +379,7 @@ export default function AgendaCitas({
         )}
         renderItem={(
           item: {
-            name:
+            nombre:
               | string
               | React.ReactElement<
                   any,
@@ -369,7 +389,7 @@ export default function AgendaCitas({
               | React.ReactPortal
               | null
               | undefined;
-            location:
+              apellidos:
               | string
               | React.ReactElement<
                   any,
@@ -379,7 +399,17 @@ export default function AgendaCitas({
               | React.ReactPortal
               | null
               | undefined;
-            hora:
+            ubicacion:
+              | string
+              | React.ReactElement<
+                  any,
+                  string | React.JSXElementConstructor<any>
+                >
+              | Iterable<React.ReactNode>
+              | React.ReactPortal
+              | null
+              | undefined;
+            horaCita:
               | string
               | number
               | React.ReactElement<
@@ -390,7 +420,7 @@ export default function AgendaCitas({
               | React.ReactPortal
               | null
               | undefined;
-            image: any;
+            imagenPerfil: any;
             date: string;
           },
           isFirst: any
@@ -413,10 +443,10 @@ export default function AgendaCitas({
                     paddingTop: 10,
                   }}
                 >
-                  {item.image ? (
+                  {item.imagenPerfil ? (
                     <Image
                       source={{
-                        uri: item.image,
+                        uri: item.imagenPerfil,
                       }}
                       style={{ width: 50, height: 50, borderRadius: 25 }}
                     />
@@ -425,7 +455,7 @@ export default function AgendaCitas({
                   )}
                 </View>
                 <View>
-                  <Text style={{ fontWeight: "bold" }}> {item.name}</Text>
+                  <Text style={{ fontWeight: "bold" }}> {`${item.nombre ?? ''} ${item.apellidos ?? ''}`}</Text>
                   <View
                     style={{
                       flexDirection: "row",
@@ -434,7 +464,7 @@ export default function AgendaCitas({
                     }}
                   >
                     <Icon name="map-marker" size={20} color="#000" />
-                    <Text> {item.location}</Text>
+                    <Text> {item.ubicacion}</Text>
                   </View>
                   <View
                     style={{
@@ -449,7 +479,7 @@ export default function AgendaCitas({
                       color="#000"
                       style={{ marginRight: 2 }}
                     />
-                    <Text> {item.hora}</Text>
+                    <Text> {item.horaCita}</Text>
                   </View>
                 </View>
               </View>
@@ -490,7 +520,7 @@ export default function AgendaCitas({
               </Text>
             </View>
             <DropDownPicker
-              setValue={setPatient}
+              setValue={(val) => asignarTipoPaciente(Number(val), patientType)}
               value={patient}
               open={openPatient}
               placeholder="Selecciona un paciente"

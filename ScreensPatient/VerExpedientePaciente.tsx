@@ -126,7 +126,6 @@ export default function VerExpedientePaciente({
       const currentDate = selectedDate;
       setDate(currentDate);
 
-      if (Platform.OS === "android") {
         togglePicker1();
         setFecha1(
           currentDate.toLocaleDateString("es-ES", {
@@ -135,7 +134,7 @@ export default function VerExpedientePaciente({
             year: "numeric",
           })
         );
-      }
+
     } else {
       togglePicker1();
     }
@@ -146,7 +145,6 @@ export default function VerExpedientePaciente({
       const currentDate = selectedDate;
       setDate(currentDate);
 
-      if (Platform.OS === "android") {
         togglePicker2();
         setFecha2(
           currentDate.toLocaleDateString("es-ES", {
@@ -155,7 +153,7 @@ export default function VerExpedientePaciente({
             year: "numeric",
           })
         );
-      }
+
     } else {
       togglePicker2();
     }
