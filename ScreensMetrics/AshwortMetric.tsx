@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import axios from "axios";
+import { BACKEND_URL } from "@env";
 import {
   View,
   Text,
@@ -10,20 +12,80 @@ import {
 import { NavigationProp } from "@react-navigation/native";
 import stylesMain from "../styles/stylesMain";
 import { RadioButton, TextInput } from "react-native-paper";
+import { RouteProp } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
+
+// Define your route params structure here. This is an example.
+type RouteParams = {
+  params: {
+    paciente: {
+      id: string;
+      nombre: string;
+      imagenPerfil: string;
+      apellidos: string;
+      fechaNacimiento: string;
+      sexo: string;
+      ubicacion: string;
+      proximaCita: string;
+      numeroContacto: string;
+      mail: string;
+      tipo: string;
+      horaCita: string;
+    };
+  };
+};
 
 export default function AshwortMetric({
+  route,
   navigation,
 }: {
   navigation: NavigationProp<any>;
+  route: RouteProp<RouteParams, "params">;
 }) {
-  const windowWidth = Dimensions.get("window").width;
   const windowHeight = Dimensions.get("window").height;
+
+  const datapaciente = route.params.paciente;
+
+  console.log(datapaciente);
+
+  const [userID, setUserID] = useState<string | null>(null);
 
   const [muscle, setMuscle] = useState("");
   const [side, setSide] = useState("");
   const [state, setState] = useState("");
   const [result, setResult] = useState("");
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+
+  const name = "Ashwort";
+
+  const getUserID = async () => {
+    const id = await AsyncStorage.getItem("idSesion");
+    console.log("Fetched UserID:", id); // Verifica que el ID se obtenga correctamente
+    setUserID(id);
+  };
+
+  useFocusEffect(
+      useCallback(() => {
+        getUserID();
+      }, [])
+    );
+
+    const sendToServer = async () => {
+      const response = await axios.post(
+        `${BACKEND_URL}/verificar-codigo-recuperacion`,
+        {
+          id: datapaciente.id,
+          fisioId: userID,
+          escala: name,
+          valor: state,
+        }
+      );
+
+      if (response.data.code === 200) {
+        
+      }
+    };
 
   const evaluate = () => {
     let message = "";

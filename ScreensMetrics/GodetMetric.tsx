@@ -10,13 +10,42 @@ import {
 import { NavigationProp } from "@react-navigation/native";
 import stylesMain from "../styles/stylesMain";
 import { RadioButton, TextInput } from "react-native-paper";
+import { RouteProp } from "@react-navigation/native";
+
+// Define your route params structure here. This is an example.
+type RouteParams = {
+  params: {
+    paciente: {
+      id: string;
+      nombre: string;
+      imagenPerfil: string;
+      apellidos: string;
+      fechaNacimiento: string;
+      sexo: string;
+      ubicacion: string;
+      proximaCita: string;
+      numeroContacto: string;
+      mail: string;
+      tipo: string;
+      horaCita: string;
+    };
+  };
+};
 
 export default function GodetMetric({
+  route,
   navigation,
 }: {
   navigation: NavigationProp<any>;
+  route: RouteProp<RouteParams, "params">;
 }) {
   const windowHeight = Dimensions.get("window").height;
+
+  const name = "Godet";
+
+  const datapaciente = route.params.paciente;
+
+  console.log(datapaciente);
 
   const [muscle, setMuscle] = useState("");
   const [side, setSide] = useState("");

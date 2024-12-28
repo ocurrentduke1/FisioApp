@@ -138,15 +138,6 @@ export default function MainPhisio({
     }, [userID])
   );
 
-  useEffect(() => {
-    // Funcion para obtener ID de la sesion
-    const getUserID = async () => {
-      const id = await AsyncStorage.getItem("idSesion");
-      setUserID(id);
-    };
-    getUserID();
-  }, []);
-
   const translateX = useSharedValue(0);
 
   const handleGestureEnd = useCallback(

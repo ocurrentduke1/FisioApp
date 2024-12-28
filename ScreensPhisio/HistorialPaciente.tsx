@@ -674,7 +674,7 @@ export default function HistorialPaciente(
                 labelStyle: { color: "white" },
                 style: { backgroundColor: "#FFF" },
                 color: "#000",
-                onPress: () => navigation.navigate("CrearEscala"),
+                onPress: () => navigation.navigate("CrearEscala", { paciente }),
               },
               {
                 icon: "file-document-edit",
