@@ -1,54 +1,83 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import axios from "axios";
+import { BACKEND_URL } from "@env";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 import {
   View,
   Text,
   ScrollView,
   SafeAreaView,
   TouchableOpacity,
-  Dimensions,
 } from "react-native";
-import { NavigationProp } from "@react-navigation/native";
 import stylesMain from "../styles/stylesMain";
 import { TextInput } from "react-native-paper";
-import { RouteProp } from "@react-navigation/native";
 
-// Define your route params structure here. This is an example.
-type RouteParams = {
-  params: {
-    paciente: {
-      id: string;
-      nombre: string;
-      imagenPerfil: string;
-      apellidos: string;
-      fechaNacimiento: string;
-      sexo: string;
-      ubicacion: string;
-      proximaCita: string;
-      numeroContacto: string;
-      mail: string;
-      tipo: string;
-      horaCita: string;
-    };
-  };
-};
+export default function BarthelMetric() {
+  const [pacienteId, setPacienteId] = useState<string | null>(null);
+  const [pacienteTipo, setPacienteTipo] = useState<string | null>(null);
 
-export default function BarthelMetric({
-  route,
-  navigation,
-}: {
-  navigation: NavigationProp<any>;
-  route: RouteProp<RouteParams, "params">;
-}) {
   const [result, setResult] = useState<number | null>(null);
-
-  const windowWidth = Dimensions.get("window").width;
-  const windowHeight = Dimensions.get("window").height;
-
-  const datapaciente = route.params.paciente;
-
-  console.log(datapaciente);
+  const [message, setMessage] = useState<string>("");
+  const [state, setState] = useState("");
 
   const name = "Barthel";
+
+  const evaluate = async () => {
+
+    await sendSeverity();
+
+      console.log("State2:", state);
+
+    const response = await axios.post(`${BACKEND_URL}/escala`, {
+      idPaciente: pacienteId,
+      tipoPaciente: pacienteTipo,
+      name: name,
+      value: state,
+    });
+
+    console.log(response.data.info.recomendacion.sugerencias);
+
+    setMessage(
+      `nivel de valoracion: ${result} Recomendacion: ${response.data.info.recomendacion.sugerencias}`
+    );
+  };
+
+  const sendSeverity = async () => {
+
+    const sum =
+      parseFloat(fields.comer) +
+      parseFloat(fields.traslado) +
+      parseFloat(fields.aseo) +
+      parseFloat(fields.retrete) +
+      parseFloat(fields.banarse) +
+      parseFloat(fields.desplazarse) +
+      parseFloat(fields.escaleras) +
+      parseFloat(fields.vestirse) +
+      parseFloat(fields.controlHeces) +
+      parseFloat(fields.controlOrina);
+    setResult(sum);
+    console.log("Sum of values:", sum);
+
+    if (sum === null) return null;
+    if (sum >= 0 && sum <= 24) {
+      setState("1");
+    }
+    if (sum >= 25 && sum <= 49) {
+      setState("2");
+    }
+    if (sum >= 50 && sum <= 74) {
+      setState("3");
+    }
+    if (sum >= 75 && sum <= 90) {
+      setState("4");
+    }
+    if (sum >= 91 && sum <= 100) {
+      setState("5");
+    }
+
+    console.log("State:", state);
+  }
 
   const [fields, setFields] = useState({
     comer: "",
@@ -63,22 +92,6 @@ export default function BarthelMetric({
     controlOrina: "",
   });
 
-  function evaluate() {
-    const sum =
-      parseFloat(fields.comer) +
-      parseFloat(fields.traslado) +
-      parseFloat(fields.aseo) +
-      parseFloat(fields.retrete) +
-      parseFloat(fields.banarse) +
-      parseFloat(fields.desplazarse) +
-      parseFloat(fields.escaleras) +
-      parseFloat(fields.vestirse) +
-      parseFloat(fields.controlHeces) +
-      parseFloat(fields.controlOrina);
-    setResult(sum);
-    console.log("Sum of values:", sum);
-  }
-
   const allFieldsFilled = () => {
     return Object.values(fields).every((field) => field.trim() !== "");
   };
@@ -87,21 +100,34 @@ export default function BarthelMetric({
     return result !== null;
   };
 
-  function getSeverityMessage(sum: number | null): string {
-    if (sum === null) return "";
-    if (sum <= 5) return "Severidad Baja";
-    if (sum <= 10) return "Severidad Moderada";
-    return "Severidad Alta";
-  }
-
   function saveResult() {
     console.log("Save result");
   }
+
+  useFocusEffect(
+    useCallback(() => {
+      const getPacienteData = async () => {
+        try {
+          const id = await AsyncStorage.getItem("pacienteId");
+          const tipo = await AsyncStorage.getItem("pacienteTipo");
+          console.log("Fetched Paciente ID:", id);
+          console.log("Fetched Paciente Tipo:", tipo);
+          setPacienteId(id);
+          setPacienteTipo(tipo);
+        } catch (error) {
+          console.error("Error fetching paciente data", error);
+        }
+      };
+
+      getPacienteData();
+    }, [])
+  );
+
   return (
     <View style={[stylesMain.container, { alignItems: "center" }]}>
       <SafeAreaView style={stylesMain.datosMetricas}>
         <ScrollView style={stylesMain.scrollMetrics}>
-          <View style={[stylesMain.ContainerInput, { height: 1730 }]}>
+          <View style={[stylesMain.ContainerInput, { paddingBottom: 20 }]}>
             <Text style={stylesMain.metricTitle}>Actividad: Comer</Text>
             <Text style={stylesMain.metricText}>0-Incapaz</Text>
             <Text style={stylesMain.metricText}>
@@ -115,7 +141,7 @@ export default function BarthelMetric({
               mode="outlined"
               outlineColor="#c5cae9"
               activeOutlineColor="#c5cae9"
-              label="De 0 a 2"
+              label="De 0 a 10"
               value={fields.comer}
               style={stylesMain.InputMetrics}
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
@@ -140,7 +166,7 @@ export default function BarthelMetric({
               mode="outlined"
               outlineColor="#c5cae9"
               activeOutlineColor="#c5cae9"
-              label="De 0 a 3"
+              label="De 0 a 15"
               value={fields.traslado}
               style={stylesMain.InputMetrics}
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
@@ -157,7 +183,7 @@ export default function BarthelMetric({
               mode="outlined"
               outlineColor="#c5cae9"
               activeOutlineColor="#c5cae9"
-              label="De 0 a 1"
+              label="De 0 a 5"
               value={fields.aseo}
               style={stylesMain.InputMetrics}
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
@@ -178,7 +204,7 @@ export default function BarthelMetric({
               mode="outlined"
               outlineColor="#c5cae9"
               activeOutlineColor="#c5cae9"
-              label="De 0 a 2"
+              label="De 0 a 10"
               value={fields.retrete}
               style={stylesMain.InputMetrics}
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
@@ -196,7 +222,7 @@ export default function BarthelMetric({
               mode="outlined"
               outlineColor="#c5cae9"
               activeOutlineColor="#c5cae9"
-              label="De 0 a 1"
+              label="De 0 a 5"
               value={fields.banarse}
               style={stylesMain.InputMetrics}
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
@@ -219,7 +245,7 @@ export default function BarthelMetric({
               mode="outlined"
               outlineColor="#c5cae9"
               activeOutlineColor="#c5cae9"
-              label="De 0 a 3"
+              label="De 0 a 15"
               value={fields.desplazarse}
               style={stylesMain.InputMetrics}
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
@@ -243,7 +269,7 @@ export default function BarthelMetric({
               mode="outlined"
               outlineColor="#c5cae9"
               activeOutlineColor="#c5cae9"
-              label="De 0 a 2"
+              label="De 0 a 10"
               value={fields.escaleras}
               style={stylesMain.InputMetrics}
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
@@ -264,7 +290,7 @@ export default function BarthelMetric({
               mode="outlined"
               outlineColor="#c5cae9"
               activeOutlineColor="#c5cae9"
-              label="De 0 a 2"
+              label="De 0 a 10"
               value={fields.vestirse}
               style={stylesMain.InputMetrics}
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
@@ -285,7 +311,7 @@ export default function BarthelMetric({
               mode="outlined"
               outlineColor="#c5cae9"
               activeOutlineColor="#c5cae9"
-              label="De 0 a 2"
+              label="De 0 a 10"
               value={fields.controlHeces}
               style={stylesMain.InputMetrics}
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
@@ -310,7 +336,7 @@ export default function BarthelMetric({
               mode="outlined"
               outlineColor="#c5cae9"
               activeOutlineColor="#c5cae9"
-              label="De 0 a 2"
+              label="De 0 a 10"
               value={fields.controlOrina}
               style={stylesMain.InputMetrics}
               placeholderTextColor="rgba(255, 255, 255, 0.8)"
@@ -334,27 +360,18 @@ export default function BarthelMetric({
             </TouchableOpacity>
           </View>
           <View
-            style={[stylesMain.resultsMetrics, { height: windowHeight * 0.3 }]}
+            style={[stylesMain.resultsMetrics, { paddingBottom: 20 }]}
           >
             <Text style={{ marginBottom: 1, fontSize: 24, color: "#000" }}>
               Resultado
             </Text>
             <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
-              {result == null ? "" : `${result}`}
-            </Text>
-            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
-              {getSeverityMessage(result)}
-            </Text>
-            <Text style={{ marginBottom: 1, fontSize: 24, color: "#000" }}>
-              Ejercicios Recomendados
-            </Text>
-            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
-              Ejercicio 1
+              {message}
             </Text>
             <TouchableOpacity
               style={{ paddingTop: 10, alignSelf: "center" }}
               onPress={saveResult}
-              disabled={!canSaveResult}
+              disabled={!canSaveResult()}
             >
               <Text style={[stylesMain.metricTitle, { fontSize: 20 }]}>
                 Guardar Resultado

@@ -1,49 +1,22 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
+import axios from "axios";
+import { BACKEND_URL } from "@env";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 import {
   View,
   Text,
   ScrollView,
   SafeAreaView,
   TouchableOpacity,
-  Dimensions,
 } from "react-native";
-import { NavigationProp } from "@react-navigation/native";
 import stylesMain from "../styles/stylesMain";
 import { RadioButton } from "react-native-paper";
-import { RouteProp } from "@react-navigation/native";
 
-// Define your route params structure here. This is an example.
-type RouteParams = {
-  params: {
-    paciente: {
-      id: string;
-      nombre: string;
-      imagenPerfil: string;
-      apellidos: string;
-      fechaNacimiento: string;
-      sexo: string;
-      ubicacion: string;
-      proximaCita: string;
-      numeroContacto: string;
-      mail: string;
-      tipo: string;
-      horaCita: string;
-    };
-  };
-};
+export default function BradenMetric() {
 
-export default function BradenMetric({
-  route,
-  navigation,
-}: {
-  navigation: NavigationProp<any>;
-  route: RouteProp<RouteParams, "params">;
-}) {
-  const windowHeight = Dimensions.get("window").height;
-
-  const datapaciente = route.params.paciente;
-
-  console.log(datapaciente);
+  const [pacienteId, setPacienteId] = useState<string | null>(null);
+    const [pacienteTipo, setPacienteTipo] = useState<string | null>(null);
 
   const [Sensorial, setSensorial] = useState("");
   const [Humedad, setHumedad] = useState("");
@@ -55,16 +28,31 @@ export default function BradenMetric({
   const name = "Braden";
 
   const [result, setResult] = useState<number | null>(null);
+  const [state, setState] = useState("");
+  const [message, setMessage] = useState<string>("");
 
-  function getSeverityMessage(sum: number | null): string {
-    if (sum === null) return "";
-    if (sum <= 12) return "Riesgo de UPP Alto";
-    if (sum == 13 || sum == 14) return "Riesgo de UPP Moderado";
-    if (sum >= 15 && sum <= 18) return "Riesgo de UPP Leve";
-    return "";
-  }
+  const evaluate = async () => {
 
-  function evaluate() {
+    await sendSeverity();
+
+      console.log("State2:", state);
+
+    const response = await axios.post(`${BACKEND_URL}/escala`, {
+      idPaciente: pacienteId,
+      tipoPaciente: pacienteTipo,
+      name: name,
+      value: state,
+    });
+
+    console.log(response.data.info.recomendacion.sugerencias);
+
+    setMessage(
+      `nivel de valoracion: ${result} Recomendacion: ${response.data.info.recomendacion.sugerencias}`
+    );
+  };
+
+  const sendSeverity = async () => {
+
     const sum =
       parseFloat(Sensorial) +
       parseFloat(Humedad) +
@@ -74,6 +62,19 @@ export default function BradenMetric({
       parseFloat(Friccion);
     setResult(sum);
     console.log("Sum of values:", sum);
+
+    if (sum === null) return null;
+    if (sum <= 12 && sum >= 9) {
+      setState("1");
+    };
+    if (sum == 13 || sum == 14){
+      setState("2");
+    };
+    if (sum >= 15 && sum <= 18){
+      setState("3");
+    };
+
+    console.log("State:", state);
   }
 
   const allFieldsFilled = () => {
@@ -95,11 +96,30 @@ export default function BradenMetric({
     console.log("Save result");
   }
 
+  useFocusEffect(
+    useCallback(() => {
+      const getPacienteData = async () => {
+        try {
+          const id = await AsyncStorage.getItem("pacienteId");
+          const tipo = await AsyncStorage.getItem("pacienteTipo");
+          console.log("Fetched Paciente ID:", id);
+          console.log("Fetched Paciente Tipo:", tipo);
+          setPacienteId(id);
+          setPacienteTipo(tipo);
+        } catch (error) {
+          console.error("Error fetching paciente data", error);
+        }
+      };
+
+      getPacienteData();
+    }, [])
+  );
+
   return (
     <View style={[stylesMain.container, { alignItems: "center" }]}>
       <SafeAreaView style={stylesMain.datosMetricas}>
         <ScrollView style={stylesMain.scrollMetrics}>
-          <View style={[stylesMain.ContainerInput, { height: 1430 }]}>
+          <View style={[stylesMain.ContainerInput, { paddingBottom: 20 }]}>
             <Text
               style={[
                 stylesMain.metricTitle,
@@ -306,22 +326,13 @@ export default function BradenMetric({
           </View>
 
           <View
-            style={[stylesMain.resultsMetrics, { height: windowHeight * 0.3 }]}
+            style={[stylesMain.resultsMetrics, { paddingBottom: 20 }]}
           >
             <Text style={{ marginBottom: 1, fontSize: 24, color: "#000" }}>
               Resultado
             </Text>
             <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
-              {result == null ? "" : `${result}`}
-            </Text>
-            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
-              {getSeverityMessage(result)}
-            </Text>
-            <Text style={{ marginBottom: 1, fontSize: 24, color: "#000" }}>
-              Ejercicios Recomendados
-            </Text>
-            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
-              Ejercicio 1
+              {message}
             </Text>
             <TouchableOpacity
               style={{ paddingTop: 20, alignSelf: "center" }}

@@ -1,51 +1,42 @@
-import React, { Component, useEffect, useState } from "react";
+import React, { Component, useCallback, useEffect, useState } from "react";
+import axios from "axios";
+import { BACKEND_URL } from "@env";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 import {
   View,
   Text,
   ScrollView,
   SafeAreaView,
   TouchableOpacity,
-  Dimensions,
 } from "react-native";
-import { NavigationProp } from "@react-navigation/native";
 import stylesMain from "../styles/stylesMain";
 import { RadioButton, TextInput } from "react-native-paper";
-import { RouteProp } from "@react-navigation/native";
 
-// Define your route params structure here. This is an example.
-type RouteParams = {
-  params: {
-    paciente: {
-      id: string;
-      nombre: string;
-      imagenPerfil: string;
-      apellidos: string;
-      fechaNacimiento: string;
-      sexo: string;
-      ubicacion: string;
-      proximaCita: string;
-      numeroContacto: string;
-      mail: string;
-      tipo: string;
-      horaCita: string;
-    };
-  };
-};
-
-export default function GodetMetric({
-  route,
-  navigation,
-}: {
-  navigation: NavigationProp<any>;
-  route: RouteProp<RouteParams, "params">;
-}) {
-  const windowHeight = Dimensions.get("window").height;
+export default function GodetMetric() {
+      const [pacienteId, setPacienteId] = useState<string | null>(null);
+      const [pacienteTipo, setPacienteTipo] = useState<string | null>(null);
 
   const name = "Godet";
 
-  const datapaciente = route.params.paciente;
+  useFocusEffect(
+    useCallback(() => {
+      const getPacienteData = async () => {
+        try {
+          const id = await AsyncStorage.getItem("pacienteId");
+          const tipo = await AsyncStorage.getItem("pacienteTipo");
+          console.log("Fetched Paciente ID:", id);
+          console.log("Fetched Paciente Tipo:", tipo);
+          setPacienteId(id);
+          setPacienteTipo(tipo);
+        } catch (error) {
+          console.error("Error fetching paciente data", error);
+        }
+      };
 
-  console.log(datapaciente);
+      getPacienteData();
+    }, [])
+  );
 
   const [muscle, setMuscle] = useState("");
   const [side, setSide] = useState("");
@@ -53,29 +44,20 @@ export default function GodetMetric({
   const [result, setResult] = useState("");
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
-  const evaluate = () => {
-    let message = "";
-    switch (state) {
-      case "1":
-        message =
-          " Fóvea ligera, desaparece rapidamente, sin distorcion detectable.";
-        break;
-      case "2":
-        message =
-          " Fóvea mas profunda, no hay distorcion detectable, desaparece en 10 a 15 segundos.";
-        break;
-      case "3":
-        message =
-          " Fovea profunda, dura mas de 1 minuto, distorcion detectable.";
-        break;
-      case "4":
-        message =
-          " Fóvea muy profunda, dura mas de 2 minutos, distorcion marcada.";
-        break;
-    }
+  const evaluate = async () => {
+    const response = await axios.post(`${BACKEND_URL}/escala`, {
+      idPaciente: pacienteId,
+      tipoPaciente: pacienteTipo,
+      name: name,
+      value: state,
+      muscle: muscle,
+      side: side,
+    });
+
+    console.log(response.data);
 
     setResult(
-      ` ${muscle}, Lado: ${side}, Estado: ${message}, nivel de valoracion: ${state}`
+      ` ${muscle}, Lado: ${side},\n nivel de valoracion: ${state}, Recomendacion: ${response.data.info.recomendacion.sugerencias}`
     );
   };
 
@@ -98,7 +80,7 @@ export default function GodetMetric({
     <View style={[stylesMain.container, { alignItems: "center" }]}>
       <SafeAreaView style={stylesMain.datosMetricas}>
         <ScrollView style={stylesMain.scrollMetrics}>
-          <View style={[stylesMain.ContainerInput, { height: 520 }]}>
+          <View style={[stylesMain.ContainerInput, { paddingBottom: 20 }]}>
             <TextInput
               mode="outlined"
               label="Zona a evaluar"
@@ -182,24 +164,18 @@ export default function GodetMetric({
             </TouchableOpacity>
           </View>
           <View
-            style={[stylesMain.resultsMetrics, { height: windowHeight * 0.35 }]}
+            style={[stylesMain.resultsMetrics, { paddingBottom: 20 }]}
           >
             <Text style={{ marginBottom: 1, fontSize: 24, color: "#000" }}>
               Resultado
             </Text>
             <Text style={{ marginBottom: 1, fontSize: 18, color: "#000" }}>
-              {result == null ? "" : `${result}`}
-            </Text>
-            <Text style={{ marginBottom: 1, fontSize: 24, color: "#000" }}>
-              Ejercicios Recomendados
-            </Text>
-            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
-              Ejercicio 1
+              {result}
             </Text>
             <TouchableOpacity
               style={{ paddingTop: 10, alignSelf: "center" }}
               onPress={saveResult}
-              disabled={!canSaveResult}
+              disabled={!canSaveResult()}
             >
               <Text style={[stylesMain.metricTitle, { fontSize: 20 }]}>
                 Guardar Resultado

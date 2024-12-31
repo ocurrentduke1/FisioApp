@@ -1,52 +1,23 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { BACKEND_URL } from "@env";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 import {
   View,
   Text,
   ScrollView,
   SafeAreaView,
   TouchableOpacity,
-  Dimensions,
 } from "react-native";
-import { NavigationProp } from "@react-navigation/native";
 import stylesMain from "../styles/stylesMain";
 import { TextInput } from "react-native-paper";
-import { RouteProp } from "@react-navigation/native";
 
-// Define your route params structure here. This is an example.
-type RouteParams = {
-  params: {
-    paciente: {
-      id: string;
-      nombre: string;
-      imagenPerfil: string;
-      apellidos: string;
-      fechaNacimiento: string;
-      sexo: string;
-      ubicacion: string;
-      proximaCita: string;
-      numeroContacto: string;
-      mail: string;
-      tipo: string;
-      horaCita: string;
-    };
-  };
-};
-
-export default function TinettiMetric({
-  route,
-  navigation,
-}: {
-  navigation: NavigationProp<any>;
-  route: RouteProp<RouteParams, "params">;
-}) {
-  const windowWidth = Dimensions.get("window").width;
-  const windowHeight = Dimensions.get("window").height;
+export default function TinettiMetric() {
+    const [pacienteId, setPacienteId] = useState<string | null>(null);
+    const [pacienteTipo, setPacienteTipo] = useState<string | null>(null);
 
   const name = "Tinetti";
-
-  const datapaciente = route.params.paciente;
-
-  console.log(datapaciente);
 
   const [inputValues, setInputValues] = useState({
     input1: "",
@@ -69,10 +40,52 @@ export default function TinettiMetric({
     input18: "",
     input19: "",
     input20: "",
-    input21: "",
   });
 
   const [result, setResult] = useState<number | null>(null);
+    const [message, setMessage] = useState<string>("");
+    const [state, setState] = useState("");
+
+    const evaluate = async () => {
+
+      await sendSeverity();
+  
+        console.log("State2:", state);
+  
+      const response = await axios.post(`${BACKEND_URL}/escala`, {
+        idPaciente: pacienteId,
+        tipoPaciente: pacienteTipo,
+        name: name,
+        value: state,
+      });
+  
+      console.log(response.data.info.recomendacion.sugerencias);
+  
+      setMessage(
+        `nivel de valoracion: ${result} Recomendacion: ${response.data.info.recomendacion.sugerencias}`
+      );
+    };
+
+    const sendSeverity = async () => {
+      const sum = Object.values(inputValues).reduce((acc, curr) => {
+        const num = parseFloat(curr);
+        return acc + (isNaN(num) ? 0 : num);
+      }, 0);
+      setResult(sum);
+
+      if (sum === null) return null;
+    if (sum < 19) {
+      setState("1");
+    }
+    if (sum >= 19 && sum <= 24) {
+      setState("2");
+    }
+    if (sum > 24) {
+      setState("3");
+    }
+
+    console.log("State:", state);
+    }
 
   const handleInputChange = (name: string, value: string) => {
     setInputValues({
@@ -89,22 +102,6 @@ export default function TinettiMetric({
     return result !== null;
   };
 
-  const evaluate = () => {
-    const sum = Object.values(inputValues).reduce((acc, curr) => {
-      const num = parseFloat(curr);
-      return acc + (isNaN(num) ? 0 : num);
-    }, 0);
-    setResult(sum);
-  };
-
-  function getSeverityMessage(sum: number | null): string {
-    if (sum === null) return "";
-    if (sum < 19) return "Riesgo alto de caida";
-    if (sum >= 19 && sum <= 24) return "Riesgo moderado de caida";
-    if (sum > 24) return "Riesgo bajo de caida";
-    return "";
-  }
-
   function saveResult() {
     console.log("Save result");
   }
@@ -114,7 +111,7 @@ export default function TinettiMetric({
       <SafeAreaView style={stylesMain.datosMetricas}>
         <ScrollView style={stylesMain.scrollMetrics}>
           <Text style={stylesMain.exersiceTitle}>Evaluacion de equilibrio</Text>
-          <View style={[stylesMain.ContainerInput, { height: 1650 }]}>
+          <View style={[stylesMain.ContainerInput, { paddingBottom: 30 }]}>
             <Text style={stylesMain.metricTitle}>1.Equilibrio sentado</Text>
             <Text style={stylesMain.metricText}>
               0-Se recuesta o resbala de la silla
@@ -288,7 +285,7 @@ export default function TinettiMetric({
 
           <Text style={stylesMain.exersiceTitle}>Evaluacion de marcha</Text>
 
-          <View style={[stylesMain.ContainerInput, { height: 1630 }]}>
+          <View style={[stylesMain.ContainerInput, { paddingBottom: 20 }]}>
             <Text style={stylesMain.metricTitle}>1.Inicio de marcha</Text>
             <Text style={stylesMain.metricText}>
               0-Vacila o varios intentos para empezar
@@ -496,22 +493,13 @@ export default function TinettiMetric({
           </View>
 
           <View
-            style={[stylesMain.resultsMetrics, { height: windowHeight * 0.3 }]}
+            style={[stylesMain.resultsMetrics, { paddingBottom: 20 }]}
           >
             <Text style={{ marginBottom: 1, fontSize: 24, color: "#000" }}>
               Resultado
             </Text>
             <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
-              {result == null ? "" : `${result}`}
-            </Text>
-            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
-              {getSeverityMessage(result)}
-            </Text>
-            <Text style={{ marginBottom: 1, fontSize: 24, color: "#000" }}>
-              Ejercicios Recomendados
-            </Text>
-            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
-              Ejercicio 1
+              {message}
             </Text>
             <TouchableOpacity
               style={{ paddingTop: 20, alignSelf: "center" }}

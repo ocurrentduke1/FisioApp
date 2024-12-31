@@ -9,12 +9,10 @@ import {
   Linking,
   Modal,
   StyleSheet,
-  Button,
   TextInput,
-  Platform,
   Animated,
 } from "react-native";
-import { RouteProp } from "@react-navigation/native";
+import { RouteProp, useFocusEffect } from "@react-navigation/native";
 import { NavigationProp } from "@react-navigation/native";
 import stylesHistorial from "../styles/stylesHistorial";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -27,10 +25,10 @@ import { FAB, Portal, PaperProvider } from "react-native-paper";
 import { MultipleSelectList } from "react-native-dropdown-select-list";
 import { BACKEND_URL } from "@env";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
-
 
 // Define your route params structure here. This is an example.
 type RouteParams = {
@@ -73,13 +71,6 @@ const data = [
       { fecha: "2024-04-19", rango: 6 },
     ],
   },
-];
-
-const evaluaciones = [
-  { id: 1, fechaCreacion: '2023-01-01', descripcion: 'Evaluación realizada 1' },
-  { id: 2, fechaCreacion: '2023-02-01', descripcion: 'Evaluación realizada 2' },
-  { id: 3, fechaCreacion: '2023-03-01', descripcion: 'Evaluación realizada 3' },
-  // Agrega más elementos según sea necesario
 ];
 
 // Función para procesar los datos
@@ -279,6 +270,21 @@ export default function HistorialPaciente(
     ).start();
   };
 
+  useEffect(() => {
+    const savePacienteData = async () => {
+      if (paciente) {
+        try {
+          await AsyncStorage.setItem('pacienteId', paciente.id);
+          await AsyncStorage.setItem('pacienteTipo', paciente.tipo);
+          console.log('Paciente data saved');
+        } catch (error) {
+          console.error('Error saving paciente data', error);
+        }
+      }
+    };
+  
+    savePacienteData();
+  }, [paciente]);
 
   return (
     <PaperProvider>
@@ -674,7 +680,7 @@ export default function HistorialPaciente(
                 labelStyle: { color: "white" },
                 style: { backgroundColor: "#FFF" },
                 color: "#000",
-                onPress: () => navigation.navigate("CrearEscala", { paciente }),
+                onPress: () => navigation.navigate("CrearEscala"),
               },
               {
                 icon: "file-document-edit",
