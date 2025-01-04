@@ -6,11 +6,8 @@ import {
   ScrollView,
   Dimensions,
   TouchableOpacity,
-  Linking,
   Modal,
   StyleSheet,
-  Button,
-  Platform,
   Animated,
   TextInput,
 } from "react-native";
@@ -24,7 +21,6 @@ import { LineChart } from "react-native-chart-kit";
 import IconFoundation from "react-native-vector-icons/Foundation";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;

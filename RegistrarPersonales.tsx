@@ -359,7 +359,7 @@ export default function RegistrarPersonales({
               >
                 <TextInput
                   mode="outlined"
-                  label="Edad"
+                  label="fecha de nacimiento"
                   value={age}
                   onChangeText={setAge}
                   outlineColor="#c5cae9"

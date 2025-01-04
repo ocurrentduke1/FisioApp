@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -106,6 +106,25 @@ export default function TinettiMetric() {
     console.log("Save result");
   }
 
+  useFocusEffect(
+    useCallback(() => {
+      const getPacienteData = async () => {
+        try {
+          const id = await AsyncStorage.getItem("pacienteId");
+          const tipo = await AsyncStorage.getItem("pacienteTipo");
+          console.log("Fetched Paciente ID:", id);
+          console.log("Fetched Paciente Tipo:", tipo);
+          setPacienteId(id);
+          setPacienteTipo(tipo);
+        } catch (error) {
+          console.error("Error fetching paciente data", error);
+        }
+      };
+
+      getPacienteData();
+    }, [])
+  );
+  
   return (
     <View style={[stylesMain.container, { alignItems: "center" }]}>
       <SafeAreaView style={stylesMain.datosMetricas}>
@@ -501,15 +520,6 @@ export default function TinettiMetric() {
             <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
               {message}
             </Text>
-            <TouchableOpacity
-              style={{ paddingTop: 20, alignSelf: "center" }}
-              onPress={saveResult}
-              disabled={!canSaveResult()}
-            >
-              <Text style={[stylesMain.metricTitle, { fontSize: 20 }]}>
-                Guardar Resultado
-              </Text>
-            </TouchableOpacity>
           </View>
         </ScrollView>
       </SafeAreaView>

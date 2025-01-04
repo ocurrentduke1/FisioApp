@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
   StyleSheet,
   TextInput,
   Animated,
+  RefreshControl,
 } from "react-native";
 import { RouteProp, useFocusEffect } from "@react-navigation/native";
 import { NavigationProp } from "@react-navigation/native";
@@ -50,58 +51,34 @@ type RouteParams = {
   };
 };
 
-const data = [
-  {
-    name: "Escala Daniels",
-    citas: [
-      { fecha: "2024-04-15", rango: 3 },
-      { fecha: "2024-04-16", rango: 5 },
-      { fecha: "2024-04-17", rango: 7 },
-      { fecha: "2024-04-18", rango: 2 },
-      { fecha: "2024-04-19", rango: 4 },
-    ],
-  },
-  {
-    name: "Escala de dolor",
-    citas: [
-      { fecha: "2024-04-15", rango: 2 },
-      { fecha: "2024-04-16", rango: 3 },
-      { fecha: "2024-04-17", rango: 4 },
-      { fecha: "2024-04-18", rango: 5 },
-      { fecha: "2024-04-19", rango: 6 },
-    ],
-  },
-];
-
 // Función para procesar los datos
-const procesarDatosCitas = (citas: any[]) => {
+const procesarDatosCitas = (progresion: any[]) => {
   // Extraer las fechas para los labels
-  const labels = citas.map(
-    (cita) => cita.fecha.split("-")[2] + "/" + cita.fecha.split("-")[1]
-  ); // Formato DD/MM
-  // Extraer los valores para el dataset
-  const data = citas.map((cita) => cita.rango);
+  const labels = progresion.map((registro) => {
+    const date = new Date(registro.fecha);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Añadir ceros a la izquierda si es necesario
+    const day = String(date.getDate()).padStart(2, '0'); // Añadir ceros a la izquierda si es necesario
+    return `${year}/${month}/${day}`; // Formato YYYY/MM/DD
+  });
 
+  // Extraer los valores para el dataset
+  const data = progresion.map((registro) => registro.rango);
+
+  console.log(progresion);
   return {
     labels,
     datasets: [{ data }],
   };
 };
 
-const datosGrafico = data.map((item) => procesarDatosCitas(item.citas));
-const anchoGrafico =
-  datosGrafico.reduce((max, item) => Math.max(max, item.labels.length), 0) * 50;
-const screenWidth = Dimensions.get("window").width;
-const width = Math.max(screenWidth, anchoGrafico);
-
-export default function HistorialPaciente(
-  {
-    route,
-    navigation,
-  }: {
-    navigation: NavigationProp<any>;
-    route: RouteProp<RouteParams, "params">;
-  }) {
+export default function HistorialPaciente({
+  route,
+  navigation,
+}: {
+  navigation: NavigationProp<any>;
+  route: RouteProp<RouteParams, "params">;
+}) {
   const [modalSearch, setModalSearch] = useState(false);
   const [modalShare, setModalShare] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
@@ -111,13 +88,17 @@ export default function HistorialPaciente(
   const [Fecha1, setFecha1] = useState("");
   const [Fecha2, setFecha2] = useState("");
   const [selected, setSelected] = React.useState<string[]>([]);
+  const [data, setData] = useState<any[]>([]);
   const [expedientes, setExpedientes] = useState<
-  {
-    id: string;
-    date: string;
-    hour: string;
-    url: string;
-  }[]>([]);
+    {
+      id: string;
+      date: string;
+      hour: string;
+      url: string;
+    }[]
+  >([]);
+
+  const [refreshing, setRefreshing] = useState(false);
 
   const SearchData = [
     { key: "1", value: "Mobiles", disabled: true },
@@ -133,6 +114,12 @@ export default function HistorialPaciente(
   const onStateChange = ({ open }: { open: boolean }) => setState({ open });
   const { open } = state;
 
+  const [datosGrafico, setDatosGrafico] = useState<any[]>([]);
+  const [anchoGrafico, setAnchoGrafico] = useState(0);
+  const [width, setWidth] = useState(0);
+
+  const screenWidth = Dimensions.get("window").width;
+
   const paciente = route.params.paciente;
 
   const togglePicker1 = () => {
@@ -147,15 +134,14 @@ export default function HistorialPaciente(
       const currentDate = selectedDate;
       setDate(currentDate);
 
-        togglePicker1();
-        setFecha1(
-          currentDate.toLocaleDateString("es-ES", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-          })
-        );
-
+      togglePicker1();
+      setFecha1(
+        currentDate.toLocaleDateString("es-ES", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        })
+      );
     } else {
       togglePicker1();
     }
@@ -166,15 +152,14 @@ export default function HistorialPaciente(
       const currentDate = selectedDate;
       setDate(currentDate);
 
-        togglePicker2();
-        setFecha2(
-          currentDate.toLocaleDateString("es-ES", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-          })
-        );
-
+      togglePicker2();
+      setFecha2(
+        currentDate.toLocaleDateString("es-ES", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        })
+      );
     } else {
       togglePicker2();
     }
@@ -190,28 +175,64 @@ export default function HistorialPaciente(
   };
 
   const handleSearch = async () => {
+    try {
+    const response = await axios.get(
+      `${BACKEND_URL}/expedientes/${paciente.id}/${paciente.tipo}`
+    );
 
-    const response = await axios.get(`${BACKEND_URL}/expedientes/${paciente.id}/${paciente.tipo}`)
-
-    if(response.data.code == 204){
+    if (response.data.code == 204) {
       alert("No se encontraron expedientes");
       return;
     }
-    const transformedExpedientes = response.data.expedientes.map((expediente: any) => {
-      const date = expediente.createdAt.split("T");
-      return {
-        id: expediente.id,
-        date: date[0],
-        hour: date[1].substring(0, 5),
-        url: expediente.url,
-      };
-    });
+
+    if (!response.data.expedientes) {
+      alert("No se encontraron expedientes");
+      return;
+    }
+
+    const transformedExpedientes = response.data.expedientes.map(
+      (expediente: any) => {
+        const date = expediente.createdAt.split("T");
+        return {
+          id: expediente.id,
+          date: date[0],
+          hour: date[1].substring(0, 5),
+          url: expediente.url,
+        };
+      }
+    );
     console.log(response.data.expedientes);
 
     setExpedientes(transformedExpedientes);
-
+  } catch (error) {
+    console.error("Error fetching expedientes:", error);
+    alert("Ocurrió un error al buscar los expedientes");
+  } finally {
     closeSearch();
+  }
   };
+
+  const getScales = async () => {
+    try {
+      const response = await axios.get(
+        `${BACKEND_URL}/escala/${paciente.id}/${paciente.tipo}`
+      );
+  
+      console.log(response.data.resultados);
+  
+      setData(response.data.resultados);
+      setDatosGrafico(data.map((item) => procesarDatosCitas(item.progresion)));
+      setAnchoGrafico(datosGrafico.reduce((max, item) => Math.max(max, item.labels.length), 0) * 50);
+      setWidth(Math.max(screenWidth, anchoGrafico));
+    } catch (error) {
+      console.error("Error fetching scales:", error);
+      alert("Ocurrió un error al buscar las escalas");
+    }
+  };
+
+  useEffect(() => {
+    getScales();
+  }, []);
 
   //funciones para modal de compartir perfil
   const openShare = () => {
@@ -274,22 +295,38 @@ export default function HistorialPaciente(
     const savePacienteData = async () => {
       if (paciente) {
         try {
-          await AsyncStorage.setItem('pacienteId', paciente.id);
-          await AsyncStorage.setItem('pacienteTipo', paciente.tipo);
-          console.log('Paciente data saved');
+          await AsyncStorage.setItem("pacienteId", paciente.id);
+          await AsyncStorage.setItem("pacienteTipo", paciente.tipo);
+          console.log("Paciente data saved");
         } catch (error) {
-          console.error('Error saving paciente data', error);
+          console.error("Error saving paciente data", error);
         }
       }
     };
-  
+
     savePacienteData();
   }, [paciente]);
+
+  const onRefresh = useCallback(async () => {
+      setRefreshing(true);
+  
+      await getScales();
+      console.log("Recargando datos...");
+      // Simula una recarga de datos
+      setTimeout(() => {
+        setRefreshing(false);
+      }, 2000);
+    }, []);
 
   return (
     <PaperProvider>
       <SafeAreaView style={stylesHistorial.container}>
-        <View style={stylesHistorial.datosPaciente} onLayout={(event) => setContainerWidth(event.nativeEvent.layout.width)}>
+        <View
+          style={stylesHistorial.datosPaciente}
+          onLayout={(event) =>
+            setContainerWidth(event.nativeEvent.layout.width)
+          }
+        >
           <Text
             style={{
               fontWeight: "bold",
@@ -377,7 +414,7 @@ export default function HistorialPaciente(
                   flexDirection: "row",
                   justifyContent: "flex-start",
                   padding: 2,
-                  overflow: "hidden"
+                  overflow: "hidden",
                 }}
               >
                 <Icon
@@ -386,10 +423,12 @@ export default function HistorialPaciente(
                   color="#000"
                   style={{ marginRight: 5 }}
                 />
-                <View style={{overflow: "hidden"}}>
+                <View style={{ overflow: "hidden" }}>
                   <Animated.Text
-                    style={{transform: [{ translateX: scrollX }], width: 200}}
-                    onLayout={(event) => setTextWidth(event.nativeEvent.layout.width)}
+                    style={{ transform: [{ translateX: scrollX }], width: 200 }}
+                    onLayout={(event) =>
+                      setTextWidth(event.nativeEvent.layout.width)
+                    }
                   >
                     {paciente.ubicacion}
                   </Animated.Text>
@@ -449,7 +488,10 @@ export default function HistorialPaciente(
           </View>
         </View>
         <View style={stylesHistorial.menuPaciente}>
-          <ScrollView style={stylesHistorial.scrollView}>
+          <ScrollView style={stylesHistorial.scrollView}
+                        refreshControl={
+                          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                        }>
             <TouchableOpacity
               style={stylesHistorial.containerPdf}
               onPress={openSearch}
@@ -527,67 +569,82 @@ export default function HistorialPaciente(
             </Modal>
 
             {expedientes.map((expediente) => (
-        <TouchableOpacity
-          key={expediente.id}
-          style={stylesHistorial.containerPdf}
-          onPress={() => navigation.navigate('VisualizarPdf', { url: expediente.url })}
-        >
-          <Icon name="file-text-o" size={50} color="#000" />
-          <View style={{ paddingLeft: 15 }}>
-            <Text>Fecha de creación: {expediente.date + " " + expediente.hour}</Text>
-          </View>
-        </TouchableOpacity>
-      ))}
-
-            {data.map((scale, index) => (
-              <View key={index}>
-                <Text
-                  style={{
-                    fontSize: 20,
-                    textAlign: "center",
-                    marginVertical: 10,
-                  }}
-                >
-                  {scale.name}
-                </Text>
-                <ScrollView horizontal={true}>
-                  <LineChart
-                    data={{
-                      labels: scale.citas.map((cita) => cita.fecha),
-                      datasets: [
-                        {
-                          data: scale.citas.map((cita) => cita.rango),
-                        },
-                      ],
-                    }}
-                    width={width} // from react-native
-                    height={220}
-                    yAxisInterval={1} // optional, defaults to 1
-                    chartConfig={{
-                      backgroundColor: "#91FFFA",
-                      backgroundGradientFrom: "#009688",
-                      backgroundGradientTo: "#4CAF50",
-                      color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                      labelColor: (opacity = 1) =>
-                        `rgba(255, 255, 255, ${opacity})`,
-                      style: {
-                        borderRadius: 16,
-                      },
-                      propsForLabels: {
-                        fontSize: "10", // Ajusta este valor según necesites
-                      },
-                    }}
-                    bezier // optional, adds a bezier curve
-                    style={{
-                      marginRight: 10,
-                      marginVertical: 8,
-                      borderRadius: 16,
-                    }}
-                  />
-                </ScrollView>
-                {/* </TouchableOpacity> */}
-              </View>
+              <TouchableOpacity
+                key={expediente.id}
+                style={stylesHistorial.containerPdf}
+                onPress={() =>
+                  navigation.navigate("VisualizarPdf", { url: expediente.url })
+                }
+              >
+                <Icon name="file-text-o" size={50} color="#000" />
+                <View style={{ paddingLeft: 15 }}>
+                  <Text>
+                    Fecha de creación: {expediente.date + " " + expediente.hour}
+                  </Text>
+                </View>
+              </TouchableOpacity>
             ))}
+
+{data.map((scale, index) => (
+  <React.Fragment key={index}>
+    {scale.progresion.length > 0 && (
+      <View>
+        <Text
+          style={{
+            fontSize: 20,
+            textAlign: "center",
+            marginVertical: 10,
+          }}
+        >
+          {scale.name}
+        </Text>
+
+        <Text 
+        style={{
+          fontSize: 20,
+          textAlign: "center",
+          marginVertical: 10,
+        }}>
+        </Text>
+        <ScrollView horizontal={true}>
+          <LineChart
+            data={{
+              labels: scale.progresion.map((registro) => registro.fecha.substring(0, 10)),
+              datasets: [
+                {
+                  data: scale.progresion.map((registro) => registro.rango),
+                },
+              ],
+            }}
+            width={width} // from react-native
+            height={220}
+            yAxisInterval={1} // optional, defaults to 1
+            chartConfig={{
+              backgroundColor: "#91FFFA",
+              backgroundGradientFrom: "#009688",
+              backgroundGradientTo: "#4CAF50",
+              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              labelColor: (opacity = 1) =>
+                `rgba(255, 255, 255, ${opacity})`,
+              style: {
+                borderRadius: 16,
+              },
+              propsForLabels: {
+                fontSize: "10", // Ajusta este valor según necesites
+              },
+            }}
+            bezier // optional, adds a bezier curve
+            style={{
+              marginRight: 10,
+              marginVertical: 8,
+              borderRadius: 16,
+            }}
+          />
+        </ScrollView>
+      </View>
+    )}
+  </React.Fragment>
+))}
           </ScrollView>
 
           {/* Modal para compartir paciente */}
@@ -688,7 +745,8 @@ export default function HistorialPaciente(
                 labelStyle: { color: "white" },
                 style: { backgroundColor: "#FFF" },
                 color: "#000",
-                onPress: () => navigation.navigate("CrearExpediente", { paciente }),
+                onPress: () =>
+                  navigation.navigate("CrearExpediente", { paciente }),
               },
               {
                 icon: "email",

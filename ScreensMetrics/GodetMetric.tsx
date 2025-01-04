@@ -50,7 +50,7 @@ export default function GodetMetric() {
       tipoPaciente: pacienteTipo,
       name: name,
       value: state,
-      muscle: muscle,
+      muscle: muscle.trim().toLowerCase(),
       side: side,
     });
 
@@ -69,13 +69,6 @@ export default function GodetMetric() {
     setIsButtonDisabled(!allFieldsFilled());
   }, [muscle, side, state]);
 
-  const canSaveResult = () => {
-    return result !== null && result.trim() !== "";
-  };
-
-  function saveResult() {
-    console.log("Save result");
-  }
   return (
     <View style={[stylesMain.container, { alignItems: "center" }]}>
       <SafeAreaView style={stylesMain.datosMetricas}>
@@ -172,15 +165,6 @@ export default function GodetMetric() {
             <Text style={{ marginBottom: 1, fontSize: 18, color: "#000" }}>
               {result}
             </Text>
-            <TouchableOpacity
-              style={{ paddingTop: 10, alignSelf: "center" }}
-              onPress={saveResult}
-              disabled={!canSaveResult()}
-            >
-              <Text style={[stylesMain.metricTitle, { fontSize: 20 }]}>
-                Guardar Resultado
-              </Text>
-            </TouchableOpacity>
           </View>
         </ScrollView>
       </SafeAreaView>

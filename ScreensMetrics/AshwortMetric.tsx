@@ -24,7 +24,7 @@ export default function AshwortMetric() {
   const [result, setResult] = useState("");
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
-  const name = "Ashwort";
+  const name = "Ashworth";
 
   useFocusEffect(
     useCallback(() => {
@@ -51,7 +51,7 @@ export default function AshwortMetric() {
       tipoPaciente: pacienteTipo,
       name: name,
       value: state,
-      muscle: muscle,
+      muscle: muscle.trim().toLowerCase(),
       side: side,
     });
 
@@ -113,6 +113,7 @@ export default function AshwortMetric() {
               </RadioButton.Group>
             </View>
 
+
             <View>
               <Text style={[stylesMain.metricTitle, { fontSize: 18 }]}>
                 Estado del musculo o grupo evaluado
@@ -134,27 +135,27 @@ export default function AshwortMetric() {
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton value="1+" uncheckedColor="#BDBDBD" />
+                  <RadioButton value="2" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     aumento leve, resistencia minima durante el resto del rango
                     de movimiento
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton value="2" uncheckedColor="#BDBDBD" />
+                  <RadioButton value="3" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     aumento pronunciado, la parte afectada se mueve con
                     facilidad
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton value="3" uncheckedColor="#BDBDBD" />
+                  <RadioButton value="4" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     aumento considerable, el movimiento pasivo es dificil
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton value="4" uncheckedColor="#BDBDBD" />
+                  <RadioButton value="5" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     la parte afectada esta rigida, en extension y flexion
                   </Text>
@@ -185,15 +186,6 @@ export default function AshwortMetric() {
             <Text style={{ marginBottom: 1, fontSize: 18, color: "#000" }}>
               {result}
             </Text>
-            <TouchableOpacity
-              style={{ paddingTop: 10, alignSelf: "center" }}
-              onPress={saveResult}
-              disabled={!canSaveResult()}
-            >
-              <Text style={[stylesMain.metricTitle, { fontSize: 20 }]}>
-                Guardar Resultado
-              </Text>
-            </TouchableOpacity>
           </View>
         </ScrollView>
       </SafeAreaView>

@@ -18,7 +18,7 @@ export default function DanielsMetric() {
   const [pacienteId, setPacienteId] = useState<string | null>(null);
     const [pacienteTipo, setPacienteTipo] = useState<string | null>(null);
 
-  const name = "Daniels modificada";
+  const name = "Daniels modificado";
 
   const [muscle, setMuscle] = useState("");
   const [side, setSide] = useState("");
@@ -52,7 +52,7 @@ export default function DanielsMetric() {
       tipoPaciente: pacienteTipo,
       name: name,
       value: state,
-      muscle: muscle,
+      muscle: muscle.trim().toLowerCase(),
       side: side,
     });
 
@@ -123,6 +123,7 @@ export default function DanielsMetric() {
               </RadioButton.Group>
             </View>
 
+
             <View>
               <Text style={[stylesMain.metricTitle, { fontSize: 18 }]}>
                 Estado del musculo o grupo evaluado
@@ -151,28 +152,28 @@ export default function DanielsMetric() {
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton value="3-" uncheckedColor="#BDBDBD" />
+                  <RadioButton value="3" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     Contraccion regular negativa, con movimiento parcial y
                     liberacion gradual desde la posicion de prueba
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton value="3" uncheckedColor="#BDBDBD" />
+                  <RadioButton value="4" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     Contraccion regular, con movimiento parcial y con la
                     gravedad como unica resistencia
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton value="3+" uncheckedColor="#BDBDBD" />
+                  <RadioButton value="5" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     Contraccion regular positiva, con movimiento completo, pero
                     solo en contra de la gravedad
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton value="4-" uncheckedColor="#BDBDBD" />
+                  <RadioButton value="6" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     Contraccion buena negativa o regular, con movimiento
                     completo contra la gravedad y con la aplicacion de
@@ -180,21 +181,21 @@ export default function DanielsMetric() {
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton value="4" uncheckedColor="#BDBDBD" />
+                  <RadioButton value="7" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     Contraccion buena, con movimiento completo contra la
                     gravedad y con la aplicacion de resistencia Moderada
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton value="4+" uncheckedColor="#BDBDBD" />
+                  <RadioButton value="8" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     Contraccion buena positiva, con movimiento completo contra
                     la gravedad y con la aplicacion de resistencia fuerte
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton value="5" uncheckedColor="#BDBDBD" />
+                  <RadioButton value="9" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
                     Contraccion normal, con movimiento completo contra la
                     gravedad y con la aplicacion de resistencia maxima
@@ -232,16 +233,6 @@ export default function DanielsMetric() {
                 </Text>
               </View>
             )}
-
-            <TouchableOpacity
-              style={{ paddingVertical: 20, alignSelf: "center" }}
-              onPress={saveResult}
-              disabled={saveButtonDisabled}
-            >
-              <Text style={[stylesMain.metricTitle, { fontSize: 20 }]}>
-                Guardar Resultado
-              </Text>
-            </TouchableOpacity>
           </View>
         </ScrollView>
       </SafeAreaView>

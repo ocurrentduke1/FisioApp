@@ -50,7 +50,7 @@ export default function SeidelMetric() {
       tipoPaciente: pacienteTipo,
       name: name,
       value: state,
-      muscle: muscle,
+      muscle: muscle.trim().toLowerCase(),
       side: side,
     });
 
@@ -171,15 +171,6 @@ export default function SeidelMetric() {
             <Text style={{ marginBottom: 1, fontSize: 18, color: "#000" }}>
               {result}
             </Text>
-            <TouchableOpacity
-              style={{ paddingTop: 10, alignSelf: "center" }}
-              onPress={saveResult}
-              disabled={!canSaveResult()}
-            >
-              <Text style={[stylesMain.metricTitle, { fontSize: 20 }]}>
-                Guardar Resultado
-              </Text>
-            </TouchableOpacity>
           </View>
         </ScrollView>
       </SafeAreaView>

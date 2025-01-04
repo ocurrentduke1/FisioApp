@@ -368,15 +368,6 @@ export default function BarthelMetric() {
             <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
               {message}
             </Text>
-            <TouchableOpacity
-              style={{ paddingTop: 10, alignSelf: "center" }}
-              onPress={saveResult}
-              disabled={!canSaveResult()}
-            >
-              <Text style={[stylesMain.metricTitle, { fontSize: 20 }]}>
-                Guardar Resultado
-              </Text>
-            </TouchableOpacity>
           </View>
         </ScrollView>
       </SafeAreaView>
