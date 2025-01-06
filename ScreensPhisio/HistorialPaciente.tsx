@@ -52,20 +52,36 @@ type RouteParams = {
 };
 
 // Función para procesar los datos
-const procesarDatosCitas = (progresion: any[]) => {
+const procesarDatosCitas = (progresion: any, admiteMusculo: boolean) => {
   // Extraer las fechas para los labels
-  const labels = progresion.map((registro) => {
+  
+  const labels = admiteMusculo ? 
+   Object.keys(progresion).map(detalle => {
+    const info = progresion[detalle];
+    const date = new Date(info.fecha);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Añadir ceros a la izquierda si es necesario
+    const day = String(date.getDate()).padStart(2, '0'); // Añadir ceros a la izquierda si es necesario
+    return `${year}/${month}/${day}`;
+  }).flat()
+  :
+   progresion.map((registro) => {
     const date = new Date(registro.fecha);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Añadir ceros a la izquierda si es necesario
     const day = String(date.getDate()).padStart(2, '0'); // Añadir ceros a la izquierda si es necesario
     return `${year}/${month}/${day}`; // Formato YYYY/MM/DD
   });
-
   // Extraer los valores para el dataset
-  const data = progresion.map((registro) => registro.rango);
+  const data = admiteMusculo ? 
+  Object.keys(progresion).map(detalle => {
+    const info = progresion[detalle];
+    return info.map((registro) => registro.rango);
+  }).flat()
+  :
+  progresion.map((registro) => registro.rango);
 
-  console.log(progresion);
+  // console.log(progresion);
   return {
     labels,
     datasets: [{ data }],
@@ -218,10 +234,10 @@ export default function HistorialPaciente({
         `${BACKEND_URL}/escala/${paciente.id}/${paciente.tipo}`
       );
   
-      console.log(response.data.resultados);
+      // console.log(response.data.resultados);
   
       setData(response.data.resultados);
-      setDatosGrafico(data.map((item) => procesarDatosCitas(item.progresion)));
+      setDatosGrafico(data.map((item) => procesarDatosCitas(item.progresion, item.admiteMusculo)));
       setAnchoGrafico(datosGrafico.reduce((max, item) => Math.max(max, item.labels.length), 0) * 50);
       setWidth(Math.max(screenWidth, anchoGrafico));
     } catch (error) {
@@ -586,9 +602,14 @@ export default function HistorialPaciente({
             ))}
 
 {data.map((scale, index) => (
+  console.log("SCALE", Object.keys(scale.progresion).length > 0),
+  (Object.keys(scale.progresion).length > 0) || (scale.progresion.length > 0) ? 
+
   <React.Fragment key={index}>
-    {scale.progresion.length > 0 && (
-      <View>
+    {
+      scale.admiteMusculo ?
+      Object.keys(scale.progresion).map(detalle => {
+        return <View>
         <Text
           style={{
             fontSize: 20,
@@ -596,23 +617,19 @@ export default function HistorialPaciente({
             marginVertical: 10,
           }}
         >
-          {scale.name}
+          {scale.name} {detalle}
         </Text>
 
-        <Text 
-        style={{
-          fontSize: 20,
-          textAlign: "center",
-          marginVertical: 10,
-        }}>
-        </Text>
         <ScrollView horizontal={true}>
           <LineChart
             data={{
-              labels: scale.progresion.map((registro) => registro.fecha.substring(0, 10)),
+              labels: scale.progresion[detalle].map((registro) => {registro.fecha.substring(0, 10)
+                console.log("FECHA", registro.fecha);
+                return registro.fecha.substring(0, 10);
+              }),
               datasets: [
                 {
-                  data: scale.progresion.map((registro) => registro.rango),
+                  data: scale.progresion[detalle].map((registro) => registro.rango),
                 },
               ],
             }}
@@ -642,9 +659,64 @@ export default function HistorialPaciente({
           />
         </ScrollView>
       </View>
-    )}
+      })
+      :
+        <View>
+          <Text
+            style={{
+              fontSize: 20,
+              textAlign: "center",
+              marginVertical: 10,
+            }}
+          >
+            {scale.name}
+          </Text>
+  
+          <ScrollView horizontal={true}>
+            <LineChart
+              data={{
+                labels: scale.progresion.map((registro) => {registro.fecha.substring(0, 10)
+                  console.log("FECHA", registro.fecha);
+                  return registro.fecha.substring(0, 10);
+                }),
+                datasets: [
+                  {
+                    data: scale.progresion.map((registro) => registro.rango),
+                  },
+                ],
+              }}
+              width={width} // from react-native
+              height={220}
+              yAxisInterval={1} // optional, defaults to 1
+              chartConfig={{
+                backgroundColor: "#91FFFA",
+                backgroundGradientFrom: "#009688",
+                backgroundGradientTo: "#4CAF50",
+                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                labelColor: (opacity = 1) =>
+                  `rgba(255, 255, 255, ${opacity})`,
+                style: {
+                  borderRadius: 16,
+                },
+                propsForLabels: {
+                  fontSize: "10", // Ajusta este valor según necesites
+                },
+              }}
+              bezier // optional, adds a bezier curve
+              style={{
+                marginRight: 10,
+                marginVertical: 8,
+                borderRadius: 16,
+              }}
+            />
+          </ScrollView>
+        </View>
+    }
   </React.Fragment>
-))}
+  :
+  <View>
+  </View>
+  ))}
           </ScrollView>
 
           {/* Modal para compartir paciente */}
