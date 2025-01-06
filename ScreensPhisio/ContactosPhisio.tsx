@@ -9,64 +9,53 @@ import {
   ImageBackground,
 } from "react-native";
 import stylesMain from "../styles/stylesMain";
-import { NavigationProp } from "@react-navigation/native";
+import { NavigationProp, useFocusEffect} from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { FAB } from 'react-native-paper';
 import { runOnJS, useSharedValue, withSpring } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { BACKEND_URL } from "@env";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Suponiendo que este es tu componente
 const ContactosPhisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
+
+  const [userID, setUserID] = useState<string | null>(null);
+
+    const getUserID = async () => {
+      const id = await AsyncStorage.getItem("idSesion");
+      console.log("Fetched UserID:", id); // Verifica que el ID se obtenga correctamente
+      setUserID(id);
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+          getUserID();
+        }, [])
+      );
   // Estado que almacena los datos de los pacientes
-  const [pacientes, setPacientes] = useState<
+  const [contacts, setContacts] = useState<
     {
       nombre: string;
-      apellidos: string;
-      pacientesCompartidos: string;
-
       imagenPerfil?: string;
+      consultorio?: string;
     }[]
   >([]);
 
-  // Simulación de la carga de datos desde el servidor
-  useEffect(() => {
-    // Aquí deberías hacer la petición al servidor para obtener los datos de los pacientes
-    // y luego actualizar el estado `pacientes` con esos datos
-    // Por ahora, vamos a simularlo con datos de ejemplo
-    const datosDelServidor = [
-      {
-        nombre: "Juan",
-        apellidos: "Pérez",
-        pacientesCompartidos: "juan, ana, maria,",
-        imagenPerfil:
-          "https://imgs.search.brave.com/8ExXYVb8oTB9fWM1IvIH-QRrnpIM5ifHCiXrTuchK-I/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93d3cu/aXN0b2NrcGhvdG8u/Y29tL3Jlc291cmNl/cy9pbWFnZXMvSG9t/ZVBhZ2UvRm91clBh/Y2svQzItUGhvdG9z/LWlTdG9jay0xMzU2/MTk3Njk1LmpwZw",
-        rangoDaniels: 3,
-        },
-      {
-        nombre: "Ana",
-        apellidos: "Gómez",
-        pacientesCompartidos: "juan, ana, maria,",
-      },
-      {
-        nombre: "Ana",
-        apellidos: "Gómez",
-        pacientesCompartidos: "juan, ana, maria",
-      },
-      {
-        nombre: "Ana",
-        apellidos: "Gómez",
-        pacientesCompartidos: "juan, ana, maria",
-      },
-      {
-        nombre: "Ana",
-        apellidos: "Gómez",
-        pacientesCompartidos: "juan, ana, maria",
-      },
-      // Añade más pacientes según sea necesario
-    ];
+  const getContacts = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/contactos/${userID}`);
 
-    setPacientes(datosDelServidor);
+      setContacts(response.data.contactos);
+    }catch (error) {
+      console.error("Error fetching contacts:", error);
+    }
+  };
+
+  useEffect(() => {
+    getContacts();
   }, []);
 
   const translateX = useSharedValue(0);
@@ -100,16 +89,16 @@ const ContactosPhisio = ({ navigation }: { navigation: NavigationProp<any> }) =>
         <ImageBackground source={require("../assets/logo_blanco.png")} resizeMode="contain" style={styles.image} imageStyle={{opacity: 0.5}}>
         <GestureDetector gesture={gesture}>
           <ScrollView style={stylesMain.scrollView}>
-            {pacientes.map((paciente, index) => (
+            {contacts.map((contacto, index) => (
               <TouchableOpacity
                 key={index}
                 style={stylesMain.datosFisio}
-                onPress={() => navigation.navigate("PacientesCompartidos", {paciente})}
+                onPress={() => navigation.navigate("PacientesCompartidos", {contacto})}
               >
                 <View style={stylesMain.casillaPerfilPaciente}>
-                {paciente.imagenPerfil ? (
+                {contacto.imagenPerfil ? (
                     <Image
-                      source={{ uri: paciente.imagenPerfil }}
+                      source={{ uri: contacto.imagenPerfil }}
                       style={stylesMain.imagenpaciente}
                     />
                   ) : (
@@ -117,10 +106,10 @@ const ContactosPhisio = ({ navigation }: { navigation: NavigationProp<any> }) =>
                   )}
                   <View style={{flexWrap: "wrap", justifyContent: "flex-start",}}>
                     <Text style={stylesMain.datosPacienteMenuFisio}>
-                      {paciente.nombre} {paciente.apellidos}
+                      {contacto.nombre}
                     </Text>
                     <Text style={stylesMain.datosPacienteMenuFisio}>
-                      Compartidos: {paciente.pacientesCompartidos}
+                      Consultorio: {contacto.consultorio}
                     </Text>
                     {/* <Text style={stylesMain.datosPacienteMenuFisio}>
                       {paciente.}

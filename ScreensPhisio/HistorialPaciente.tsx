@@ -105,6 +105,7 @@ export default function HistorialPaciente({
   const [Fecha2, setFecha2] = useState("");
   const [selected, setSelected] = React.useState<string[]>([]);
   const [data, setData] = useState<any[]>([]);
+  const [contacts, setContacts] = useState<any[]>([]);
   const [expedientes, setExpedientes] = useState<
     {
       id: string;
@@ -115,16 +116,6 @@ export default function HistorialPaciente({
   >([]);
 
   const [refreshing, setRefreshing] = useState(false);
-
-  const SearchData = [
-    { key: "1", value: "Mobiles", disabled: true },
-    { key: "2", value: "Appliances" },
-    { key: "3", value: "Cameras" },
-    { key: "4", value: "Computers", disabled: true },
-    { key: "5", value: "Vegetables" },
-    { key: "6", value: "Diary Products" },
-    { key: "7", value: "Drinks" },
-  ];
 
   const [state, setState] = React.useState({ open: false });
   const onStateChange = ({ open }: { open: boolean }) => setState({ open });
@@ -252,6 +243,7 @@ export default function HistorialPaciente({
 
   //funciones para modal de compartir perfil
   const openShare = () => {
+    getContacts();
     setModalShare(true);
   };
 
@@ -260,6 +252,10 @@ export default function HistorialPaciente({
   };
 
   const handleShareProfile = () => {
+
+    const response = axios.post(`${BACKEND_URL}/share`, {
+      
+    });
     console.log("Compartir perfil");
     closeShare();
   };
@@ -333,6 +329,30 @@ export default function HistorialPaciente({
         setRefreshing(false);
       }, 2000);
     }, []);
+
+    const [userID, setUserID] = useState<string | null>(null);
+
+    const getUserID = async () => {
+      const id = await AsyncStorage.getItem("idSesion");
+      console.log("Fetched UserID:", id); // Verifica que el ID se obtenga correctamente
+      setUserID(id);
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+          getUserID();
+        }, [])
+      );
+
+    const getContacts = async () => {
+      try {
+        const response = await axios.get(`${BACKEND_URL}/contactos/${userID}`);
+
+        setContacts(response.data.contactos);
+      }catch (error) {
+        console.error("Error fetching contacts:", error);
+      }
+    };
 
   return (
     <PaperProvider>
@@ -742,7 +762,10 @@ export default function HistorialPaciente({
                   }}
                   placeholder="Contactos"
                   searchPlaceholder="Buscar"
-                  data={SearchData}
+                  data={contacts.map((contact) => ({
+                    label: contact.id,
+                    value: contact.nombre,
+                  }))}
                   save="value"
                   label="Compartir con:"
                 />
