@@ -541,7 +541,7 @@ export default function AgendaCitas({
                   />
                 ),
               }))}
-            ></DropDownPicker>
+            />
 
             <SelectList
               setSelected={(val: string) => {

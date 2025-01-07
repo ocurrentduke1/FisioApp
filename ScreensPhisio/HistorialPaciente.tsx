@@ -22,7 +22,12 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LineChart } from "react-native-chart-kit";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { FAB, Portal, PaperProvider, ActivityIndicator } from "react-native-paper";
+import {
+  FAB,
+  Portal,
+  PaperProvider,
+  ActivityIndicator,
+} from "react-native-paper";
 import { MultipleSelectList } from "react-native-dropdown-select-list";
 import { BACKEND_URL } from "@env";
 import axios from "axios";
@@ -378,7 +383,7 @@ export default function HistorialPaciente({
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#0000ff" />
       </View>
     );
   }
@@ -797,10 +802,10 @@ export default function HistorialPaciente({
                 </Text>
 
                 <DropDownPicker
-                  setValue={setSelected}
+                  setValue={(val) => setSelected(val)}
                   value={contacts}
                   open={openContacts}
-                  placeholder="Selecciona los contactos"
+                  placeholder="Selecciona un contacto"
                   style={{
                     marginVertical: 5,
                   }}
@@ -809,6 +814,14 @@ export default function HistorialPaciente({
                   items={contacts.map((contact) => ({
                     label: contact.nombre,
                     value: contact.id,
+                    Icon: () => (
+                      <Image
+                        style={{ width: 30, height: 30, borderRadius: 25 }}
+                        source={{
+                          uri: contact.imagenPerfil,
+                        }}
+                      />
+                    ),
                   }))}
                 />
                 <View style={styles.buttonContainer}>

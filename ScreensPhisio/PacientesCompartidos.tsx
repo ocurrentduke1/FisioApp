@@ -34,6 +34,7 @@ const PacientesCompartidos = ({ navigation }: { navigation: NavigationProp<any> 
         tipo: string;
       }[]
     >([]);
+    
 
   return (
     <SafeAreaView style={stylesMain.container}>

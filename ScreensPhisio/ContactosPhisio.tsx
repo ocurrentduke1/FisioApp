@@ -42,6 +42,7 @@ const ContactosPhisio = ({
   // Estado que almacena los datos de los pacientes
   const [contacts, setContacts] = useState<
     {
+      id: string;
       nombre: string;
       imagenPerfil?: string;
       consultorio?: string;
