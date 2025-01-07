@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -13,13 +13,35 @@ import { NavigationProp } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Octicons from "react-native-vector-icons/Octicons";
+import { RouteProp, useFocusEffect } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BACKEND_URL } from "@env";
+import axios from "axios";
+import { ActivityIndicator,} from "react-native-paper";
 
 type VerifiedIconProps = {
   display: boolean;
 };
 
+type RouteParams = {
+  params: {
+    contacto: {
+      id: string;
+      nombre: string;
+      imagenPerfil: string;
+      consultorio: string;
+    };
+  };
+};
+
 // Suponiendo que este es tu componente
-const PacientesCompartidos = ({ navigation }: { navigation: NavigationProp<any> }) => {
+const PacientesCompartidos = ({ 
+  route,
+  navigation 
+}: { 
+  navigation: NavigationProp<any>
+  route: RouteProp<RouteParams, "params">;
+}) => {
   // Estado que almacena los datos de los pacientes
   const [pacientes, setPacientes] = useState<
       {
@@ -34,7 +56,50 @@ const PacientesCompartidos = ({ navigation }: { navigation: NavigationProp<any> 
         tipo: string;
       }[]
     >([]);
+
+    const contacto = route.params.contacto;
+    const [userID, setUserID] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    const getUserID = async () => {
+      const id = await AsyncStorage.getItem("idSesion");
+      console.log("Fetched UserID:", id); // Verifica que el ID se obtenga correctamente
+      setUserID(id);
+    };
+
+    const getPacientes = async () => {
+      try {
+        const response = await axios.get(`${BACKEND_URL}/pacientes/${userID}/${contacto.id}`);
+
+
+      } catch (error) {
+        console.error("Error fetching pacientes:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+          getUserID();
+        }, [])
+      );
     
+      useFocusEffect(
+        useCallback(() => {
+          if (userID) {
+            getPacientes();
+          }
+        }, [userID])
+      );
+
+      if (loading) {
+          return (
+            <View style={styles.loaderContainer}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+          );
+        }
 
   return (
     <SafeAreaView style={stylesMain.container}>
@@ -206,6 +271,12 @@ const styles = StyleSheet.create({
   image: {
     flex: 1,
     justifyContent: "center",
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#002245",
   },
 });
 
