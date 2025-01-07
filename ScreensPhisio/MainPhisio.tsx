@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import axios from "axios";
 import {
   View,
@@ -6,7 +6,6 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-  Modal,
   StyleSheet,
   Dimensions,
   ImageBackground,
@@ -15,9 +14,6 @@ import {
 import stylesMain from "../styles/stylesMain";
 import {
   NavigationProp,
-  useNavigation,
-  useNavigationContainerRef,
-  useRoute,
 } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -33,7 +29,7 @@ import {
   PaperProvider,
   ActivityIndicator,
 } from "react-native-paper";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { Gesture } from "react-native-gesture-handler";
 import { runOnJS, useSharedValue, withSpring } from "react-native-reanimated";
 
 type VerifiedIconProps = {

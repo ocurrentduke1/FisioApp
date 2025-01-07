@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  Alert,
 } from "react-native";
 import stylesMain from "../styles/stylesMain";
 import { NavigationProp } from "@react-navigation/native";
@@ -15,12 +16,11 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import { Searchbar } from "react-native-paper";
 import { BACKEND_URL } from "@env";
 import useDebounce from "../Functions/useDebounce";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
 
-// Suponiendo que este es tu componente
 const BuscarContactos = ({
   navigation,
 }: {
@@ -30,59 +30,54 @@ const BuscarContactos = ({
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [userID, setUserID] = useState<string | null>(null);
   // Estado que almacena los datos de los pacientes
-  const [pacientes, setPacientes] = useState<
+  const [contacts, setContacts] = useState<
     {
       id: string;
       nombre: string;
-      apellidos: string;
-      proximaCita: string;
-      ubicacion: string;
       imagenPerfil?: string;
-      numeroContacto: string;
+      consultorio?: string;
     }[]
   >([]);
 
   const searchPatients = async () => {
     if (debouncedSearchQuery !== "" && debouncedSearchQuery.length > 2) {
-      const response = await axios.post(
-        BACKEND_URL +
-          "/buscar-pacientes",
-        {
-          searchQuery,
-        }
+      const response = await axios.get(
+        `${BACKEND_URL}/contactos/buscar/${debouncedSearchQuery}`
       );
-      //console.log(response.data);
-      return response.data || [];
+      console.log(response.data.fisioterapeutas);
+      return response.data.fisioterapeutas || [];
     }
   };
 
   const addPatient = async (id: any) => {
     try {
-      //console.log("ID del paciente:", id); // Verifica que el ID se pase correctamente
-      const response = await axios.post(
-        BACKEND_URL + "/vincular-paciente",
-        {
-          idFisio: Number(userID),
-          idPaciente: Number(id), // Asegúrate de que el ID sea un número
-        }
-      );
-      console.log("registrado");
-      //console.log(id);
-      navigation.navigate("mainFisio");
+      const response = await axios.post(BACKEND_URL + "/contactos", {
+        fisioterapeutaId: Number(userID),
+        contactoId: Number(id), 
+      });
+
+      if(response.data.code == 400) {
+        Alert.alert("Contacto ya existente", "El contacto ya ha sido añadido anteriormente");
+        return;
+      }
+
+      if(response.data.code == 201) {
+        Alert.alert("Contacto añadido", "El contacto ha sido añadido correctamente");
+        navigation.navigate("mainFisio");
+      }
     } catch (error) {
       console.error(error);
     }
   };
 
-  // Simulación de la carga de datos desde el servidor
   useEffect(() => {
     const fetchData = async () => {
       const datosDelServidor = await searchPatients();
-      setPacientes(datosDelServidor);
+      setContacts(datosDelServidor);
     };
 
     const getUserID = async () => {
-      const id = await AsyncStorage.getItem('idSesion');
+      const id = await AsyncStorage.getItem("idSesion");
       setUserID(id);
     };
 
@@ -112,40 +107,39 @@ const BuscarContactos = ({
         }}
       />
       <ScrollView style={stylesMain.scrollView}>
-        {pacientes && pacientes.length > 0 ? (
-          pacientes.map((paciente) => (
+        {contacts && contacts.length > 0 ? (
+          contacts.map((contacto) => (
             <TouchableOpacity
-              key={paciente.id}
-              style={[
-                stylesMain.datosFisio,
-                { height: windowHeight * 0.15, width: windowWidth * 0.9 },
-              ]}
-              onPress={() => addPatient(paciente.id)}
+              key={contacto.id}
+              style={stylesMain.datosFisio}
+              onPress={() => addPatient(contacto.id)}
             >
               <View style={stylesMain.casillaPerfilPaciente}>
-                {paciente.imagenPerfil ? (
+                {contacto.imagenPerfil ? (
                   <Image
-                    source={{ uri: paciente.imagenPerfil }}
-                    style={[stylesMain.imagenpaciente, { marginTop: 20 }]}
+                    source={{ uri: contacto.imagenPerfil }}
+                    style={stylesMain.imagenpaciente}
                   />
                 ) : (
                   <Icon
                     name="user-circle"
                     size={70}
                     color="#000"
-                    style={[stylesMain.imagenpaciente, { marginTop: 20 }]}
+                    style={stylesMain.imagenpaciente}
                   />
                 )}
-                <View>
+                <View
+                  style={{ flexWrap: "wrap", justifyContent: "flex-start" }}
+                >
                   <Text style={stylesMain.datosPacienteMenuFisio}>
-                    {paciente.nombre} {paciente.apellidos}
+                    {contacto.nombre}
                   </Text>
                   <Text style={stylesMain.datosPacienteMenuFisio}>
-                    proxima cita: {paciente.proximaCita}
+                    Consultorio: {contacto.consultorio}
                   </Text>
-                  <Text style={stylesMain.datosPacienteMenuFisio}>
-                    localidad: {paciente.ubicacion}
-                  </Text>
+                  {/* <Text style={stylesMain.datosPacienteMenuFisio}>
+                              {paciente.}
+                            </Text> */}
                 </View>
               </View>
             </TouchableOpacity>

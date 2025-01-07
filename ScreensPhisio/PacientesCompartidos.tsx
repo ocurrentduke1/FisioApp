@@ -5,112 +5,207 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  ImageBackground,
+  StyleSheet,
 } from "react-native";
 import stylesMain from "../styles/stylesMain";
 import { NavigationProp } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/FontAwesome";
+import Octicons from "react-native-vector-icons/Octicons";
+
+type VerifiedIconProps = {
+  display: boolean;
+};
 
 // Suponiendo que este es tu componente
 const PacientesCompartidos = ({ navigation }: { navigation: NavigationProp<any> }) => {
   // Estado que almacena los datos de los pacientes
   const [pacientes, setPacientes] = useState<
-    {
-      nombre: string;
-      apellidos: string;
-      proximaCita: string;
-      ubicacion: string;
-      imagenPerfil?: string;
-      numeroContacto: string;
-    }[]
-  >([]);
-
-  // Simulación de la carga de datos desde el servidor
-  useEffect(() => {
-    // Aquí deberías hacer la petición al servidor para obtener los datos de los pacientes
-    // y luego actualizar el estado `pacientes` con esos datos
-    // Por ahora, vamos a simularlo con datos de ejemplo
-    const datosDelServidor = [
       {
-        nombre: "Juan",
-        apellidos: "Pérez",
-        proximaCita: "2023-04-15",
-        ubicacion: "Ciudad Central",
-        imagenPerfil:
-          "https://imgs.search.brave.com/8ExXYVb8oTB9fWM1IvIH-QRrnpIM5ifHCiXrTuchK-I/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93d3cu/aXN0b2NrcGhvdG8u/Y29tL3Jlc291cmNl/cy9pbWFnZXMvSG9t/ZVBhZ2UvRm91clBh/Y2svQzItUGhvdG9z/LWlTdG9jay0xMzU2/MTk3Njk1LmpwZw",
-        rangoDaniels: 3,
-        numeroContacto: "3322112278",
-      },
-      {
-        nombre: "Ana",
-        apellidos: "Gómez",
-        proximaCita: "2023-04-20",
-        ubicacion: "Ciudad Norte",
-        numeroContacto: "1234567890",
-      },
-      {
-        nombre: "Ana",
-        apellidos: "Gómez",
-        proximaCita: "2023-04-20",
-        ubicacion: "Ciudad Norte",
-        numeroContacto: "0987654321",
-      },
-      {
-        nombre: "Ana",
-        apellidos: "Gómez",
-        proximaCita: "2023-04-20",
-        ubicacion: "Ciudad Norte",
-        numeroContacto: "5555555555", 
-      },
-      {
-        nombre: "Ana",
-        apellidos: "Gómez",
-        proximaCita: "2023-04-20",
-        ubicacion: "Ciudad Norte",
-        numeroContacto: "9999999999", 
-      },
-      // Add more patients as needed
-    ];
-
-    setPacientes(datosDelServidor);
-  }, []);
+        id: string;
+        nombre: string;
+        apellidos: string;
+        proximaCita: string;
+        horaCita: string;
+        ubicacion: string;
+        imagenPerfil?: string;
+        numeroContacto: string;
+        tipo: string;
+      }[]
+    >([]);
 
   return (
     <SafeAreaView style={stylesMain.container}>
+      <ImageBackground
+                source={require("../assets/logo_blanco.png")}
+                resizeMode="contain"
+                style={styles.image}
+                imageStyle={{ opacity: 0.5 }}
+              >
       <ScrollView style={stylesMain.scrollView}>
-        {pacientes.map((paciente, index) => (
-          <TouchableOpacity
-            key={index}
-            style={stylesMain.datosFisio}
-            onPress={() => navigation.navigate("HistorialPaciente", {paciente})}
-          >
-            <View style={stylesMain.casillaPerfilPaciente}>
-            {paciente.imagenPerfil ? (
-                <Image
-                  source={{ uri: paciente.imagenPerfil }}
-                  style={stylesMain.imagenpaciente}
-                />
-              ) : (
-                <Icon name="user-circle" size={70} color="#000" style={stylesMain.imagenpaciente} />
-              )}
-              <View>
-                <Text style={stylesMain.datosPacienteMenuFisio}>
-                   {paciente.nombre} {paciente.apellidos}
-                </Text>
-                <Text style={stylesMain.datosPacienteMenuFisio}>
-                  proxima cita: {paciente.proximaCita}
-                </Text>
-                <Text style={stylesMain.datosPacienteMenuFisio}>
-                  localidad: {paciente.ubicacion}
-                </Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-        ))}
+      {pacientes && pacientes.length > 0 ? (
+        pacientes.map((paciente, index) => (
+                          <TouchableOpacity
+                            key={index}
+                            style={{
+                              ...stylesMain.datosFisio,
+                            }}
+                            onPress={() =>
+                              navigation.navigate("HistorialPaciente", { paciente })
+                            }
+                          >
+                            <View
+                              style={{
+                                ...stylesMain.casillaPerfilPaciente,
+                              }}
+                            >
+                              {paciente.imagenPerfil ? (
+                                <View>
+                                  <VerifiedAccountIcon
+                                    display={true}
+                                  ></VerifiedAccountIcon>
+                                  <Image
+                                    source={{ uri: paciente.imagenPerfil }}
+                                    style={stylesMain.imagenpaciente}
+                                  />
+                                </View>
+                              ) : (
+                                <View>
+                                  <VerifiedAccountIcon
+                                    display={paciente.tipo == "account"}
+                                  ></VerifiedAccountIcon>
+                                  <Icon
+                                    name="user-circle"
+                                    size={70}
+                                    color="#000"
+                                    style={stylesMain.imagenpaciente}
+                                  />
+                                </View>
+                              )}
+                              <View>
+                                <Text
+                                  style={[
+                                    stylesMain.datosPacienteMenuFisio,
+                                    { fontWeight: "bold" },
+                                  ]}
+                                >
+                                  {paciente.nombre} {paciente.apellidos}
+                                </Text>
+        
+                                {paciente.proximaCita == "Sin cita" ? (
+                                  <View />
+                                ) : (
+                                  <View
+                                    style={{
+                                      flexDirection: "row",
+                                      justifyContent: "flex-start",
+                                    }}
+                                  >
+                                    <Icon
+                                      name="calendar"
+                                      size={20}
+                                      color="#000"
+                                      style={stylesMain.datosPacienteMenuFisio}
+                                    />
+                                    <Text
+                                      style={{
+                                        marginLeft: 5,
+                                        marginTop: 7,
+                                        fontWeight: "bold",
+                                      }}
+                                    >
+                                      {paciente.proximaCita}
+                                    </Text>
+                                    <Icon
+                                      name="clock-o"
+                                      size={20}
+                                      color="#000"
+                                      style={stylesMain.datosPacienteMenuFisio}
+                                    />
+                                    <Text
+                                      style={{
+                                        marginLeft: 5,
+                                        marginTop: 7,
+                                        fontWeight: "bold",
+                                      }}
+                                    >
+                                      {paciente.horaCita}
+                                    </Text>
+                                  </View>
+                                )}
+        
+                                <View
+                                  style={{
+                                    flexDirection: "row",
+                                    justifyContent: "flex-start",
+                                    width: 210,
+                                  }}
+                                >
+                                  <Icon
+                                    name="map-marker"
+                                    size={20}
+                                    color="#000"
+                                    style={stylesMain.datosPacienteMenuFisio}
+                                  />
+                                  <Text
+                                    style={{ marginLeft: 5, marginTop: 7 }}
+                                    ellipsizeMode="tail"
+                                    numberOfLines={1}
+                                  >
+                                    {paciente.ubicacion}
+                                  </Text>
+                                </View>
+                              </View>
+                            </View>
+                          </TouchableOpacity>
+                        ))) : (
+                        <Text></Text>
+                      )}
 
       </ScrollView>
+      </ImageBackground>
     </SafeAreaView>
   );
 };
+
+function VerifiedAccountIcon(props: VerifiedIconProps) {
+  return props.display ? (
+    <View>
+      <Octicons
+        name="verified"
+        size={25}
+        color="#E6E605"
+        style={{
+          position: "absolute",
+          height: "auto",
+          marginTop: 10,
+          marginLeft: 45,
+          zIndex: 500,
+        }}
+      />
+      <Octicons
+        name="verified"
+        size={25}
+        color="#000"
+        style={{
+          position: "absolute",
+          height: "auto",
+          marginTop: 10,
+          marginLeft: 48,
+          zIndex: 499,
+        }}
+      />
+    </View>
+  ) : null;
+}
+
+const styles = StyleSheet.create({
+  
+  image: {
+    flex: 1,
+    justifyContent: "center",
+  },
+});
 
 export default PacientesCompartidos;

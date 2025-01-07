@@ -404,7 +404,7 @@ export default function App() {
                   Agenda
                 </Animated.Text>
               ),
-              tabBarBadge: '3',
+              // tabBarBadge: '3',
               tabBarBadgeStyle: {
                 color: 'white',
                 backgroundColor: 'red',            

@@ -1,15 +1,12 @@
-import { StatusBar } from 'expo-status-bar';
 import React, { Component, useCallback, useEffect, useState } from "react";
 import { View, Text, ScrollView, SafeAreaView, Switch, Touchable, TouchableOpacity, Dimensions } from 'react-native';
 import { NavigationProp, useFocusEffect } from '@react-navigation/native';
 import stylesMain from '../styles/stylesMain';
 import stylesHistorial from '../styles/stylesHistorial';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import AshwortMetric from '../ScreensMetrics/AshwortMetric';
 import { runOnJS, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
-const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
 export default function SelectorMetricas({ navigation }: { navigation: NavigationProp<any> }){

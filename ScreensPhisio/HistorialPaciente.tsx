@@ -22,11 +22,12 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LineChart } from "react-native-chart-kit";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { FAB, Portal, PaperProvider } from "react-native-paper";
+import { FAB, Portal, PaperProvider, ActivityIndicator } from "react-native-paper";
 import { MultipleSelectList } from "react-native-dropdown-select-list";
 import { BACKEND_URL } from "@env";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import DropDownPicker from "react-native-dropdown-picker";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -54,32 +55,34 @@ type RouteParams = {
 // Función para procesar los datos
 const procesarDatosCitas = (progresion: any, admiteMusculo: boolean) => {
   // Extraer las fechas para los labels
-  
-  const labels = admiteMusculo ? 
-   Object.keys(progresion).map(detalle => {
-    const info = progresion[detalle];
-    const date = new Date(info.fecha);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Añadir ceros a la izquierda si es necesario
-    const day = String(date.getDate()).padStart(2, '0'); // Añadir ceros a la izquierda si es necesario
-    return `${year}/${month}/${day}`;
-  }).flat()
-  :
-   progresion.map((registro) => {
-    const date = new Date(registro.fecha);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Añadir ceros a la izquierda si es necesario
-    const day = String(date.getDate()).padStart(2, '0'); // Añadir ceros a la izquierda si es necesario
-    return `${year}/${month}/${day}`; // Formato YYYY/MM/DD
-  });
+
+  const labels = admiteMusculo
+    ? Object.keys(progresion)
+        .map((detalle) => {
+          const info = progresion[detalle];
+          const date = new Date(info.fecha);
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0"); // Añadir ceros a la izquierda si es necesario
+          const day = String(date.getDate()).padStart(2, "0"); // Añadir ceros a la izquierda si es necesario
+          return `${year}/${month}/${day}`;
+        })
+        .flat()
+    : progresion.map((registro) => {
+        const date = new Date(registro.fecha);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0"); // Añadir ceros a la izquierda si es necesario
+        const day = String(date.getDate()).padStart(2, "0"); // Añadir ceros a la izquierda si es necesario
+        return `${year}/${month}/${day}`; // Formato YYYY/MM/DD
+      });
   // Extraer los valores para el dataset
-  const data = admiteMusculo ? 
-  Object.keys(progresion).map(detalle => {
-    const info = progresion[detalle];
-    return info.map((registro) => registro.rango);
-  }).flat()
-  :
-  progresion.map((registro) => registro.rango);
+  const data = admiteMusculo
+    ? Object.keys(progresion)
+        .map((detalle) => {
+          const info = progresion[detalle];
+          return info.map((registro) => registro.rango);
+        })
+        .flat()
+    : progresion.map((registro) => registro.rango);
 
   // console.log(progresion);
   return {
@@ -100,6 +103,8 @@ export default function HistorialPaciente({
   const [modalDelete, setModalDelete] = useState(false);
   const [showPicker1, setShowPicker1] = useState(false);
   const [showPicker2, setShowPicker2] = useState(false);
+  const [openContacts, setOpenContacts] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [date, setDate] = useState(new Date());
   const [Fecha1, setFecha1] = useState("");
   const [Fecha2, setFecha2] = useState("");
@@ -183,40 +188,40 @@ export default function HistorialPaciente({
 
   const handleSearch = async () => {
     try {
-    const response = await axios.get(
-      `${BACKEND_URL}/expedientes/${paciente.id}/${paciente.tipo}`
-    );
+      const response = await axios.get(
+        `${BACKEND_URL}/expedientes/${paciente.id}/${paciente.tipo}`
+      );
 
-    if (response.data.code == 204) {
-      alert("No se encontraron expedientes");
-      return;
-    }
-
-    if (!response.data.expedientes) {
-      alert("No se encontraron expedientes");
-      return;
-    }
-
-    const transformedExpedientes = response.data.expedientes.map(
-      (expediente: any) => {
-        const date = expediente.createdAt.split("T");
-        return {
-          id: expediente.id,
-          date: date[0],
-          hour: date[1].substring(0, 5),
-          url: expediente.url,
-        };
+      if (response.data.code == 204) {
+        alert("No se encontraron expedientes");
+        return;
       }
-    );
-    console.log(response.data.expedientes);
 
-    setExpedientes(transformedExpedientes);
-  } catch (error) {
-    console.error("Error fetching expedientes:", error);
-    alert("Ocurrió un error al buscar los expedientes");
-  } finally {
-    closeSearch();
-  }
+      if (!response.data.expedientes) {
+        alert("No se encontraron expedientes");
+        return;
+      }
+
+      const transformedExpedientes = response.data.expedientes.map(
+        (expediente: any) => {
+          const date = expediente.createdAt.split("T");
+          return {
+            id: expediente.id,
+            date: date[0],
+            hour: date[1].substring(0, 5),
+            url: expediente.url,
+          };
+        }
+      );
+      console.log(response.data.expedientes);
+
+      setExpedientes(transformedExpedientes);
+    } catch (error) {
+      console.error("Error fetching expedientes:", error);
+      alert("Ocurrió un error al buscar los expedientes");
+    } finally {
+      closeSearch();
+    }
   };
 
   const getScales = async () => {
@@ -224,16 +229,27 @@ export default function HistorialPaciente({
       const response = await axios.get(
         `${BACKEND_URL}/escala/${paciente.id}/${paciente.tipo}`
       );
-  
+
       // console.log(response.data.resultados);
-  
+
       setData(response.data.resultados);
-      setDatosGrafico(data.map((item) => procesarDatosCitas(item.progresion, item.admiteMusculo)));
-      setAnchoGrafico(datosGrafico.reduce((max, item) => Math.max(max, item.labels.length), 0) * 50);
+      setDatosGrafico(
+        data.map((item) =>
+          procesarDatosCitas(item.progresion, item.admiteMusculo)
+        )
+      );
+      setAnchoGrafico(
+        datosGrafico.reduce(
+          (max, item) => Math.max(max, item.labels.length),
+          0
+        ) * 50
+      );
       setWidth(Math.max(screenWidth, anchoGrafico));
     } catch (error) {
       console.error("Error fetching scales:", error);
       alert("Ocurrió un error al buscar las escalas");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -251,11 +267,16 @@ export default function HistorialPaciente({
     setModalShare(false);
   };
 
-  const handleShareProfile = () => {
-
-    const response = axios.post(`${BACKEND_URL}/share`, {
-      
+  const handleShareProfile = async () => {
+    const response = await axios.post(`${BACKEND_URL}/paciente/compartir`, {
+      id: userID,
+      contactos: selected,
+      pacienteId: paciente.id,
     });
+
+    if (response.data.code == 201) {
+      alert("Paciente compartido correctamente");
+    }
     console.log("Compartir perfil");
     closeShare();
   };
@@ -320,39 +341,47 @@ export default function HistorialPaciente({
   }, [paciente]);
 
   const onRefresh = useCallback(async () => {
-      setRefreshing(true);
-  
-      await getScales();
-      console.log("Recargando datos...");
-      // Simula una recarga de datos
-      setTimeout(() => {
-        setRefreshing(false);
-      }, 2000);
-    }, []);
+    setRefreshing(true);
 
-    const [userID, setUserID] = useState<string | null>(null);
+    await getScales();
+    console.log("Recargando datos...");
+    // Simula una recarga de datos
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
 
-    const getUserID = async () => {
-      const id = await AsyncStorage.getItem("idSesion");
-      console.log("Fetched UserID:", id); // Verifica que el ID se obtenga correctamente
-      setUserID(id);
-    };
+  const [userID, setUserID] = useState<string | null>(null);
 
-    useFocusEffect(
-        useCallback(() => {
-          getUserID();
-        }, [])
-      );
+  const getUserID = async () => {
+    const id = await AsyncStorage.getItem("idSesion");
+    console.log("Fetched UserID:", id); // Verifica que el ID se obtenga correctamente
+    setUserID(id);
+  };
 
-    const getContacts = async () => {
-      try {
-        const response = await axios.get(`${BACKEND_URL}/contactos/${userID}`);
+  useFocusEffect(
+    useCallback(() => {
+      getUserID();
+    }, [])
+  );
 
-        setContacts(response.data.contactos);
-      }catch (error) {
-        console.error("Error fetching contacts:", error);
-      }
-    };
+  const getContacts = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/contactos/${userID}`);
+
+      setContacts(response.data.contactos);
+    } catch (error) {
+      console.error("Error fetching contacts:", error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   return (
     <PaperProvider>
@@ -524,10 +553,12 @@ export default function HistorialPaciente({
           </View>
         </View>
         <View style={stylesHistorial.menuPaciente}>
-          <ScrollView style={stylesHistorial.scrollView}
-                        refreshControl={
-                          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                        }>
+          <ScrollView
+            style={stylesHistorial.scrollView}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          >
             <TouchableOpacity
               style={stylesHistorial.containerPdf}
               onPress={openSearch}
@@ -621,122 +652,135 @@ export default function HistorialPaciente({
               </TouchableOpacity>
             ))}
 
-{data.map((scale, index) => (
-  console.log("SCALE", Object.keys(scale.progresion).length > 0),
-  (Object.keys(scale.progresion).length > 0) || (scale.progresion.length > 0) ? 
+            {data.map(
+              (scale, index) => (
+                console.log("SCALE", Object.keys(scale.progresion).length > 0),
+                Object.keys(scale.progresion).length > 0 ||
+                scale.progresion.length > 0 ? (
+                  <React.Fragment key={index}>
+                    {scale.admiteMusculo ? (
+                      Object.keys(scale.progresion).map((detalle) => {
+                        return (
+                          <View>
+                            <Text
+                              style={{
+                                fontSize: 20,
+                                textAlign: "center",
+                                marginVertical: 10,
+                              }}
+                            >
+                              {scale.name} {detalle}
+                            </Text>
 
-  <React.Fragment key={index}>
-    {
-      scale.admiteMusculo ?
-      Object.keys(scale.progresion).map(detalle => {
-        return <View>
-        <Text
-          style={{
-            fontSize: 20,
-            textAlign: "center",
-            marginVertical: 10,
-          }}
-        >
-          {scale.name} {detalle}
-        </Text>
+                            <ScrollView horizontal={true}>
+                              <LineChart
+                                data={{
+                                  labels: scale.progresion[detalle].map(
+                                    (registro) => {
+                                      registro.fecha.substring(0, 10);
+                                      console.log("FECHA", registro.fecha);
+                                      return registro.fecha.substring(0, 10);
+                                    }
+                                  ),
+                                  datasets: [
+                                    {
+                                      data: scale.progresion[detalle].map(
+                                        (registro) => registro.rango
+                                      ),
+                                    },
+                                  ],
+                                }}
+                                width={width} // from react-native
+                                height={220}
+                                yAxisInterval={1} // optional, defaults to 1
+                                chartConfig={{
+                                  backgroundColor: "#91FFFA",
+                                  backgroundGradientFrom: "#009688",
+                                  backgroundGradientTo: "#4CAF50",
+                                  color: (opacity = 1) =>
+                                    `rgba(255, 255, 255, ${opacity})`,
+                                  labelColor: (opacity = 1) =>
+                                    `rgba(255, 255, 255, ${opacity})`,
+                                  style: {
+                                    borderRadius: 16,
+                                  },
+                                  propsForLabels: {
+                                    fontSize: "10", // Ajusta este valor según necesites
+                                  },
+                                }}
+                                bezier // optional, adds a bezier curve
+                                style={{
+                                  marginRight: 10,
+                                  marginVertical: 8,
+                                  borderRadius: 16,
+                                }}
+                              />
+                            </ScrollView>
+                          </View>
+                        );
+                      })
+                    ) : (
+                      <View>
+                        <Text
+                          style={{
+                            fontSize: 20,
+                            textAlign: "center",
+                            marginVertical: 10,
+                          }}
+                        >
+                          {scale.name}
+                        </Text>
 
-        <ScrollView horizontal={true}>
-          <LineChart
-            data={{
-              labels: scale.progresion[detalle].map((registro) => {registro.fecha.substring(0, 10)
-                console.log("FECHA", registro.fecha);
-                return registro.fecha.substring(0, 10);
-              }),
-              datasets: [
-                {
-                  data: scale.progresion[detalle].map((registro) => registro.rango),
-                },
-              ],
-            }}
-            width={width} // from react-native
-            height={220}
-            yAxisInterval={1} // optional, defaults to 1
-            chartConfig={{
-              backgroundColor: "#91FFFA",
-              backgroundGradientFrom: "#009688",
-              backgroundGradientTo: "#4CAF50",
-              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-              labelColor: (opacity = 1) =>
-                `rgba(255, 255, 255, ${opacity})`,
-              style: {
-                borderRadius: 16,
-              },
-              propsForLabels: {
-                fontSize: "10", // Ajusta este valor según necesites
-              },
-            }}
-            bezier // optional, adds a bezier curve
-            style={{
-              marginRight: 10,
-              marginVertical: 8,
-              borderRadius: 16,
-            }}
-          />
-        </ScrollView>
-      </View>
-      })
-      :
-        <View>
-          <Text
-            style={{
-              fontSize: 20,
-              textAlign: "center",
-              marginVertical: 10,
-            }}
-          >
-            {scale.name}
-          </Text>
-  
-          <ScrollView horizontal={true}>
-            <LineChart
-              data={{
-                labels: scale.progresion.map((registro) => {registro.fecha.substring(0, 10)
-                  console.log("FECHA", registro.fecha);
-                  return registro.fecha.substring(0, 10);
-                }),
-                datasets: [
-                  {
-                    data: scale.progresion.map((registro) => registro.rango),
-                  },
-                ],
-              }}
-              width={width} // from react-native
-              height={220}
-              yAxisInterval={1} // optional, defaults to 1
-              chartConfig={{
-                backgroundColor: "#91FFFA",
-                backgroundGradientFrom: "#009688",
-                backgroundGradientTo: "#4CAF50",
-                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                labelColor: (opacity = 1) =>
-                  `rgba(255, 255, 255, ${opacity})`,
-                style: {
-                  borderRadius: 16,
-                },
-                propsForLabels: {
-                  fontSize: "10", // Ajusta este valor según necesites
-                },
-              }}
-              bezier // optional, adds a bezier curve
-              style={{
-                marginRight: 10,
-                marginVertical: 8,
-                borderRadius: 16,
-              }}
-            />
-          </ScrollView>
-        </View>
-    }
-  </React.Fragment>
-  :
-  <View>
-  </View>
-  ))}
+                        <ScrollView horizontal={true}>
+                          <LineChart
+                            data={{
+                              labels: scale.progresion.map((registro) => {
+                                registro.fecha.substring(0, 10);
+                                console.log("FECHA", registro.fecha);
+                                return registro.fecha.substring(0, 10);
+                              }),
+                              datasets: [
+                                {
+                                  data: scale.progresion.map(
+                                    (registro) => registro.rango
+                                  ),
+                                },
+                              ],
+                            }}
+                            width={width} // from react-native
+                            height={220}
+                            yAxisInterval={1} // optional, defaults to 1
+                            chartConfig={{
+                              backgroundColor: "#91FFFA",
+                              backgroundGradientFrom: "#009688",
+                              backgroundGradientTo: "#4CAF50",
+                              color: (opacity = 1) =>
+                                `rgba(255, 255, 255, ${opacity})`,
+                              labelColor: (opacity = 1) =>
+                                `rgba(255, 255, 255, ${opacity})`,
+                              style: {
+                                borderRadius: 16,
+                              },
+                              propsForLabels: {
+                                fontSize: "10", // Ajusta este valor según necesites
+                              },
+                            }}
+                            bezier // optional, adds a bezier curve
+                            style={{
+                              marginRight: 10,
+                              marginVertical: 8,
+                              borderRadius: 16,
+                            }}
+                          />
+                        </ScrollView>
+                      </View>
+                    )}
+                  </React.Fragment>
+                ) : (
+                  <View></View>
+                )
+              )
+            )}
           </ScrollView>
 
           {/* Modal para compartir paciente */}
@@ -751,23 +795,21 @@ export default function HistorialPaciente({
                 <Text style={styles.modalText}>
                   Compartir perfil del paciente
                 </Text>
-                <MultipleSelectList
-                  setSelected={(val: string[]) => setSelected(val)}
-                  boxStyles={{ borderRadius: 5, width: 250 }}
-                  dropdownStyles={{
-                    borderWidth: 1,
-                    borderColor: "black",
-                    borderRadius: 5,
-                    width: 250,
+
+                <DropDownPicker
+                  setValue={setSelected}
+                  value={contacts}
+                  open={openContacts}
+                  placeholder="Selecciona los contactos"
+                  style={{
+                    marginVertical: 5,
                   }}
-                  placeholder="Contactos"
-                  searchPlaceholder="Buscar"
-                  data={contacts.map((contact) => ({
-                    label: contact.id,
-                    value: contact.nombre,
+                  setOpen={setOpenContacts}
+                  multiple={true}
+                  items={contacts.map((contact) => ({
+                    label: contact.nombre,
+                    value: contact.id,
                   }))}
-                  save="value"
-                  label="Compartir con:"
                 />
                 <View style={styles.buttonContainer}>
                   <TouchableOpacity
@@ -942,5 +984,11 @@ const styles = StyleSheet.create({
     overflow: "hidden", // Asegura que el texto no se desborde
     height: 50, // Altura fija para la visualización
     justifyContent: "center",
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#002245",
   },
 });

@@ -565,7 +565,7 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 <Icon
                   name="user-circle"
                   size={150}
-                  color="#000000"
+                  color="#000"
                   style={{
                     width: 150,
                     height: 150,
