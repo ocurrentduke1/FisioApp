@@ -89,7 +89,6 @@ const procesarDatosCitas = (progresion: any, admiteMusculo: boolean) => {
         .flat()
     : progresion.map((registro) => registro.rango);
 
-  // console.log(progresion);
   return {
     labels,
     datasets: [{ data }],
@@ -115,7 +114,8 @@ export default function HistorialPaciente({
   const [Fecha2, setFecha2] = useState("");
   const [selected, setSelected] = React.useState<string[]>([]);
   const [data, setData] = useState<any[]>([]);
-  const [contacts, setContacts] = useState<any[]>([]);
+  const [selectedContacts, setSelectedContacts] = useState<any[]>([]);
+  const [fisioterapeutas, setFisioterapeutas] = useState<any[]>([]);
   const [expedientes, setExpedientes] = useState<
     {
       id: string;
@@ -218,7 +218,7 @@ export default function HistorialPaciente({
           };
         }
       );
-      console.log(response.data.expedientes);
+      
 
       setExpedientes(transformedExpedientes);
     } catch (error) {
@@ -235,7 +235,7 @@ export default function HistorialPaciente({
         `${BACKEND_URL}/escala/${paciente.id}/${paciente.tipo}`
       );
 
-      // console.log(response.data.resultados);
+      // 
 
       setData(response.data.resultados);
       setDatosGrafico(
@@ -274,7 +274,7 @@ export default function HistorialPaciente({
 
   const handleShareProfile = async () => {
     const response = await axios.post(`${BACKEND_URL}/paciente/compartir`, {
-      id: userID,
+      fisioterapeutaId: userID,
       contactos: selected,
       pacienteId: paciente.id,
     });
@@ -282,7 +282,7 @@ export default function HistorialPaciente({
     if (response.data.code == 201) {
       alert("Paciente compartido correctamente");
     }
-    console.log("Compartir perfil");
+    
     closeShare();
   };
 
@@ -296,7 +296,7 @@ export default function HistorialPaciente({
   };
 
   const handleDeletePatient = () => {
-    console.log("Eliminar paciente");
+    
     closeDelete();
   };
 
@@ -335,7 +335,7 @@ export default function HistorialPaciente({
         try {
           await AsyncStorage.setItem("pacienteId", paciente.id);
           await AsyncStorage.setItem("pacienteTipo", paciente.tipo);
-          console.log("Paciente data saved");
+          
         } catch (error) {
           console.error("Error saving paciente data", error);
         }
@@ -349,7 +349,7 @@ export default function HistorialPaciente({
     setRefreshing(true);
 
     await getScales();
-    console.log("Recargando datos...");
+    
     // Simula una recarga de datos
     setTimeout(() => {
       setRefreshing(false);
@@ -360,7 +360,7 @@ export default function HistorialPaciente({
 
   const getUserID = async () => {
     const id = await AsyncStorage.getItem("idSesion");
-    console.log("Fetched UserID:", id); // Verifica que el ID se obtenga correctamente
+    
     setUserID(id);
   };
 
@@ -374,7 +374,7 @@ export default function HistorialPaciente({
     try {
       const response = await axios.get(`${BACKEND_URL}/contactos/${userID}`);
 
-      setContacts(response.data.contactos);
+      setFisioterapeutas(response.data.contactos);
     } catch (error) {
       console.error("Error fetching contacts:", error);
     }
@@ -659,7 +659,7 @@ export default function HistorialPaciente({
 
             {data.map(
               (scale, index) => (
-                console.log("SCALE", Object.keys(scale.progresion).length > 0),
+                
                 Object.keys(scale.progresion).length > 0 ||
                 scale.progresion.length > 0 ? (
                   <React.Fragment key={index}>
@@ -683,7 +683,7 @@ export default function HistorialPaciente({
                                   labels: scale.progresion[detalle].map(
                                     (registro) => {
                                       registro.fecha.substring(0, 10);
-                                      console.log("FECHA", registro.fecha);
+                                      
                                       return registro.fecha.substring(0, 10);
                                     }
                                   ),
@@ -741,7 +741,7 @@ export default function HistorialPaciente({
                             data={{
                               labels: scale.progresion.map((registro) => {
                                 registro.fecha.substring(0, 10);
-                                console.log("FECHA", registro.fecha);
+                                
                                 return registro.fecha.substring(0, 10);
                               }),
                               datasets: [
@@ -802,8 +802,8 @@ export default function HistorialPaciente({
                 </Text>
 
                 <DropDownPicker
-                  setValue={(val) => setSelected(val)}
-                  value={contacts}
+                  setValue={setSelectedContacts}
+                  value={selectedContacts}
                   open={openContacts}
                   placeholder="Selecciona un contacto"
                   style={{
@@ -811,7 +811,8 @@ export default function HistorialPaciente({
                   }}
                   setOpen={setOpenContacts}
                   multiple={true}
-                  items={contacts.map((contact) => ({
+                  mode="BADGE"
+                  items={fisioterapeutas.map((contact) => ({
                     label: contact.nombre,
                     value: contact.id,
                     Icon: () => (
