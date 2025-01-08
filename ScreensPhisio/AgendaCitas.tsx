@@ -274,10 +274,9 @@ export default function AgendaCitas({
   const RegistrarCita = async () => {
 
     const date = new Date().toISOString().substring(0, 10);
-    const pacienteId = patient.substring(0, patient.length - 1);
 
     const response = await axios.post(BACKEND_URL + "/cita", {
-      pacienteId: pacienteId,
+      pacienteId: patient,
       fisioterapeutaId: userID,
       fecha: date + " " + time,
       duracion: duration.toString(),
@@ -338,12 +337,11 @@ export default function AgendaCitas({
 
   const { width } = useWindowDimensions();
 
-  const asignarTipoPaciente = async (patient: string, type: string) => {
-    setPatient(patient);
+  const asignarTipoPaciente = async (patient: string) => {
+    const pacienteId = patient.substring(0, patient.length - 1);
+    const type = patient.substring(patient.length - 2, patient.length - 1);
+    setPatient(pacienteId);
     setPatientType(type);
-
-    console.log("patient", patient);
-    console.log("type", type);
   }
 
   return (
@@ -521,7 +519,7 @@ export default function AgendaCitas({
               </Text>
             </View>
             <DropDownPicker
-              setValue={(val) => asignarTipoPaciente(val.toString(), patientType)}
+              setValue={(val) => asignarTipoPaciente(val.toString())}
               value={patient}
               open={openPatient}
               placeholder="Selecciona un paciente"
