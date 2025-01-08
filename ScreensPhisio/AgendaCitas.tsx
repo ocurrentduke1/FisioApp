@@ -274,9 +274,10 @@ export default function AgendaCitas({
   const RegistrarCita = async () => {
 
     const date = new Date().toISOString().substring(0, 10);
+    const pacienteId = patient.substring(0, patient.length - 1);
 
     const response = await axios.post(BACKEND_URL + "/cita", {
-      pacienteId: patient.substring(0, patient.length - 1),
+      pacienteId: pacienteId,
       fisioterapeutaId: userID,
       fecha: date + " " + time,
       duracion: duration.toString(),
