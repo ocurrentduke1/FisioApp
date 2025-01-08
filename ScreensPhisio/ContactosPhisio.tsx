@@ -101,7 +101,7 @@ const ContactosPhisio = ({
     if (loading) {
       return (
         <View style={styles.loaderContainer}>
-            <ActivityIndicator size="large" color="#0000ff" />
+            <ActivityIndicator size="large" color="#fff" />
         </View>
       );
     }
@@ -119,41 +119,76 @@ const ContactosPhisio = ({
             {contacts && contacts.length > 0 ? (
               contacts.map((contacto, index) => (
                 <TouchableOpacity
-                  key={index}
-                  style={stylesMain.datosFisio}
-                  onPress={() =>
-                    navigation.navigate("PacientesCompartidos", { contacto })
-                  }
+                key={index}
+                style={{
+                  ...stylesMain.datosFisio,
+                }}
+                onPress={() =>
+                  navigation.navigate("PacientesCompartidos", { contacto })
+                }
+              >
+                <View
+                  style={{
+                    ...stylesMain.casillaPerfilPaciente,
+                  }}
                 >
-                  <View style={stylesMain.casillaPerfilPaciente}>
-                    {contacto.imagenPerfil ? (
+                  {contacto.imagenPerfil ? (
+                    <View>
                       <Image
                         source={{ uri: contacto.imagenPerfil }}
                         style={stylesMain.imagenpaciente}
                       />
-                    ) : (
+                    </View>
+                  ) : (
+                    <View>
                       <Icon
                         name="user-circle"
                         size={70}
                         color="#000"
                         style={stylesMain.imagenpaciente}
                       />
-                    )}
-                    <View
-                      style={{ flexWrap: "wrap", justifyContent: "flex-start" }}
+                    </View>
+                  )}
+                  <View>
+                    <Text
+                      style={[
+                        stylesMain.datosPacienteMenuFisio,
+                        { fontWeight: "bold" },
+                      ]}
                     >
-                      <Text style={stylesMain.datosPacienteMenuFisio}>
-                        {contacto.nombre}
-                      </Text>
-                      <Text style={stylesMain.datosPacienteMenuFisio}>
-                        Consultorio: {contacto.consultorio}
-                      </Text>
-                      {/* <Text style={stylesMain.datosPacienteMenuFisio}>
-                      {paciente.}
-                    </Text> */}
+                      {contacto.nombre}
+                    </Text>
+
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "flex-start",
+                        width: 210,
+                      }}
+                    >
+                      {contacto.consultorio ? (
+                        <>
+                          <Icon
+                            name="map-marker"
+                            size={20}
+                            color="#000"
+                            style={stylesMain.datosPacienteMenuFisio}
+                          />
+                          <Text
+                            style={{ marginLeft: 5, marginTop: 7 }}
+                            ellipsizeMode="tail"
+                            numberOfLines={1}
+                          >
+                            {contacto.consultorio}
+                          </Text>
+                        </>
+                      ) : (
+                        <Text></Text>
+                      )}
                     </View>
                   </View>
-                </TouchableOpacity>
+                </View>
+              </TouchableOpacity>
               ))
             ) : (
               <Text></Text>

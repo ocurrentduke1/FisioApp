@@ -249,7 +249,7 @@ export default function HistorialPaciente({
           0
         ) * 50
       );
-      setWidth(Math.max(screenWidth, anchoGrafico));
+      setWidth(Math.max(screenWidth, anchoGrafico*1.5));
     } catch (error) {
       console.error("Error fetching scales:", error);
       alert("Ocurrió un error al buscar las escalas");
@@ -275,7 +275,7 @@ export default function HistorialPaciente({
   const handleShareProfile = async () => {
     const response = await axios.post(`${BACKEND_URL}/paciente/compartir`, {
       fisioterapeutaId: userID,
-      contactos: selected,
+      contactos: selectedContacts,
       pacienteId: paciente.id,
     });
 
@@ -383,7 +383,7 @@ export default function HistorialPaciente({
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#fff" />
       </View>
     );
   }
@@ -682,9 +682,12 @@ export default function HistorialPaciente({
                                 data={{
                                   labels: scale.progresion[detalle].map(
                                     (registro) => {
-                                      registro.fecha.substring(0, 10);
+                                      const date = new Date(registro.fecha);
+                                      const year = date.getFullYear().toString().substring(2, 4);
+                                      const month = String(date.getMonth() + 1).padStart(2, "0");
+                                      const day = String(date.getDate()).padStart(2, "0");
                                       
-                                      return registro.fecha.substring(0, 10);
+                                      return `${day}/${month}/${year}`; 
                                     }
                                   ),
                                   datasets: [
@@ -740,9 +743,12 @@ export default function HistorialPaciente({
                           <LineChart
                             data={{
                               labels: scale.progresion.map((registro) => {
-                                registro.fecha.substring(0, 10);
-                                
-                                return registro.fecha.substring(0, 10);
+                                const date = new Date(registro.fecha);
+                                      const year = date.getFullYear().toString().substring(2, 4);
+                                      const month = String(date.getMonth() + 1).padStart(2, "0");
+                                      const day = String(date.getDate()).padStart(2, "0");
+                                      
+                                      return `${day}/${month}/${year}`; 
                               }),
                               datasets: [
                                 {
@@ -802,10 +808,10 @@ export default function HistorialPaciente({
                 </Text>
 
                 <DropDownPicker
-                  setValue={setSelectedContacts}
+                  setValue={(val) => setSelectedContacts(val)}
                   value={selectedContacts}
                   open={openContacts}
-                  placeholder="Selecciona un contacto"
+                  placeholder="Selecciona los contactos"
                   style={{
                     marginVertical: 5,
                   }}

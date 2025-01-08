@@ -317,7 +317,7 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
         colors={["rgba(44,189,191,0.8)", "transparent"]}
         style={styles.gradient}
       />
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#fff" />
       </View>
     );
   }

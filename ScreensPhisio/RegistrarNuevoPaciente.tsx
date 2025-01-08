@@ -263,7 +263,7 @@ const RegistrarNuevoPaciente = ({
           <TouchableOpacity style={{ paddingTop: 5 }} onPress={togglePicker}>
             <TextInput
               mode="outlined"
-              label="Edad"
+              label="Fecha de Nacimiento"
               value={edad}
               style={stylesHistorial.TextInput}
               outlineColor="#c5cae9"

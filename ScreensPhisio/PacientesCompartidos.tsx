@@ -7,6 +7,7 @@ import {
   ScrollView,
   ImageBackground,
   StyleSheet,
+  Alert,
 } from "react-native";
 import stylesMain from "../styles/stylesMain";
 import { NavigationProp } from "@react-navigation/native";
@@ -18,6 +19,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BACKEND_URL } from "@env";
 import axios from "axios";
 import { ActivityIndicator,} from "react-native-paper";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 type VerifiedIconProps = {
   display: boolean;
@@ -58,19 +60,22 @@ const PacientesCompartidos = ({
     >([]);
 
     const contacto = route.params.contacto;
-    const [userID, setUserID] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
-
-    const getUserID = async () => {
-      const id = await AsyncStorage.getItem("idSesion");
-      console.log("Fetched UserID:", id); // Verifica que el ID se obtenga correctamente
-      setUserID(id);
-    };
+    const [userID, setUserID] = useState<string | null>(null);
 
     const getPacientes = async () => {
       try {
-        const response = await axios.get(`${BACKEND_URL}/pacientes/${userID}/${contacto.id}`);
-
+        const response = await axios.get(`${BACKEND_URL}/paciente/compartidos/${userID}/${contacto.id}`);
+        
+        console.log("Fetched UserID:", userID);
+        console.log("Fetched pacientes:", response.data.pacientes);
+        if(response.data.code == 500 ){
+          console.log("No se encontraron pacientes");
+          Alert.alert("Ocurrió un error", "intentelo de nuevo más tarde");
+          return;
+        }
+      
+        setPacientes(response.data.pacientes);
 
       } catch (error) {
         console.error("Error fetching pacientes:", error);
@@ -80,23 +85,29 @@ const PacientesCompartidos = ({
     };
 
     useFocusEffect(
-        useCallback(() => {
-          getUserID();
-        }, [])
-      );
-    
+          useCallback(() => {
+            if (userID) {
+              getPacientes();
+            }
+          }, [userID])
+        );
+
+      const getUserID = async () => {
+        const id = await AsyncStorage.getItem("idSesion");
+        console.log("Fetched UserID:", id); // Verifica que el ID se obtenga correctamente
+        setUserID(id);
+      };
+
       useFocusEffect(
-        useCallback(() => {
-          if (userID) {
-            getPacientes();
-          }
-        }, [userID])
-      );
+          useCallback(() => {
+            getUserID();
+          }, [])
+        );
 
       if (loading) {
           return (
             <View style={styles.loaderContainer}>
-                <ActivityIndicator size="large" color="#0000ff" />
+                <ActivityIndicator size="large" color="#fff" />
             </View>
           );
         }

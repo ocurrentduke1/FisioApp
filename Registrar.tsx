@@ -201,10 +201,6 @@ export default function Registrar({
     return true;
   };
 
-  const hasErrors = () => {
-    return !email.includes("@");
-  };
-
   const sendEmail = async () => {
     const response = await axios.post(
       BACKEND_URL + "/enviar-correo-verificacion",

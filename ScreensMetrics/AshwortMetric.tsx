@@ -173,7 +173,7 @@ export default function AshwortMetric() {
               disabled={isButtonDisabled}
             >
               <Text style={[stylesMain.metricTitle, { fontSize: 20 }]}>
-                Evaluar
+                Calcular
               </Text>
             </TouchableOpacity>
           </View>

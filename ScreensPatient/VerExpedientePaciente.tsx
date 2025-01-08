@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -8,70 +8,61 @@ import {
   TouchableOpacity,
   Modal,
   StyleSheet,
-  Animated,
   TextInput,
+  Animated,
+  RefreshControl,
 } from "react-native";
-import { RouteProp } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 import { NavigationProp } from "@react-navigation/native";
 import stylesHistorial from "../styles/stylesHistorial";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { Dropdown } from "react-native-element-dropdown";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { LineChart } from "react-native-chart-kit";
 import IconFoundation from "react-native-vector-icons/Foundation";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { LineChart } from "react-native-chart-kit";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import {
+  PaperProvider,
+  ActivityIndicator,
+} from "react-native-paper";
+import { BACKEND_URL } from "@env";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
-
-// type RouteParams = {
-//   params: {
-//     paciente: {
-//       nombre: string;
-//       imagenPerfil: string;
-//       apellidos: string;
-//       fechaNacimiento: string;
-//       sexo: string;
-//       ubicacion: string;
-//       proximaCita: string;
-//       numeroContacto: string;
-//     };
-//   };
-// };
-
-const data = [
-  {
-    name: "Escala Daniels",
-    citas: [
-      { fecha: "2024-04-15", rango: 3 },
-      { fecha: "2024-04-16", rango: 5 },
-      { fecha: "2024-04-17", rango: 7 },
-      { fecha: "2024-04-18", rango: 2 },
-      { fecha: "2024-04-19", rango: 4 },
-    ],
-  },
-  {
-    name: "Escala de dolor",
-    citas: [
-      { fecha: "2024-04-15", rango: 2 },
-      { fecha: "2024-04-16", rango: 3 },
-      { fecha: "2024-04-17", rango: 4 },
-      { fecha: "2024-04-18", rango: 5 },
-      { fecha: "2024-04-19", rango: 6 },
-    ],
-  },
-];
-
 // Función para procesar los datos
-const procesarDatosCitas = (citas: any[]) => {
+const procesarDatosCitas = (progresion: any, admiteMusculo: boolean) => {
   // Extraer las fechas para los labels
-  const labels = citas.map(
-    (cita) => cita.fecha.split("-")[2] + "/" + cita.fecha.split("-")[1]
-  ); // Formato DD/MM
+
+  const labels = admiteMusculo
+    ? Object.keys(progresion)
+        .map((detalle) => {
+          const info = progresion[detalle];
+          const date = new Date(info.fecha);
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0"); // Añadir ceros a la izquierda si es necesario
+          const day = String(date.getDate()).padStart(2, "0"); // Añadir ceros a la izquierda si es necesario
+          return `${year}/${month}/${day}`;
+        })
+        .flat()
+    : progresion.map((registro) => {
+        const date = new Date(registro.fecha);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0"); // Añadir ceros a la izquierda si es necesario
+        const day = String(date.getDate()).padStart(2, "0"); // Añadir ceros a la izquierda si es necesario
+        return `${year}/${month}/${day}`; // Formato YYYY/MM/DD
+      });
   // Extraer los valores para el dataset
-  const data = citas.map((cita) => cita.rango);
+  const data = admiteMusculo
+    ? Object.keys(progresion)
+        .map((detalle) => {
+          const info = progresion[detalle];
+          return info.map((registro) => registro.rango);
+        })
+        .flat()
+    : progresion.map((registro) => registro.rango);
 
   return {
     labels,
@@ -79,36 +70,60 @@ const procesarDatosCitas = (citas: any[]) => {
   };
 };
 
-const datosGrafico = data.map((item) => procesarDatosCitas(item.citas));
-const anchoGrafico =
-  datosGrafico.reduce((max, item) => Math.max(max, item.labels.length), 0) * 50;
-const screenWidth = Dimensions.get("window").width;
-const width = Math.max(screenWidth, anchoGrafico);
-
-export default function VerExpedientePaciente({
-  // route,
+export default function HistorialPaciente({
   navigation,
 }: {
   navigation: NavigationProp<any>;
-  // route: RouteProp<RouteParams, "params">;
 }) {
-
   const [modalSearch, setModalSearch] = useState(false);
   const [showPicker1, setShowPicker1] = useState(false);
   const [showPicker2, setShowPicker2] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [date, setDate] = useState(new Date());
   const [Fecha1, setFecha1] = useState("");
   const [Fecha2, setFecha2] = useState("");
+  const [data, setData] = useState<any[]>([]);
+  const [paciente, setPaciente] = useState<
+  {
+    id: string | null;
+    nombre: string | null;
+    apellidos: string | null;
+    imagenPerfil?: string | null;
+    proximaCita: string | null;
+    horaCita: string | null;
+    ubicacion: string | null;
+    numeroContacto: string | null;
+    mail: string | null;
+    tipo: string | null;
+  }
+  >({
+    id: null,
+    nombre: null,
+    apellidos: null,
+    imagenPerfil: null,
+    proximaCita: null,
+    horaCita: null,
+    ubicacion: null,
+    numeroContacto: null,
+    mail: null,
+    tipo: null,
+  });
+  const [expedientes, setExpedientes] = useState<
+    {
+      id: string;
+      date: string;
+      hour: string;
+      url: string;
+    }[]
+  >([]);
 
-  const SearchData = [
-    { key: "1", value: "Mobiles", disabled: true },
-    { key: "2", value: "Appliances" },
-    { key: "3", value: "Cameras" },
-    { key: "4", value: "Computers", disabled: true },
-    { key: "5", value: "Vegetables" },
-    { key: "6", value: "Diary Products" },
-    { key: "7", value: "Drinks" },
-  ];
+  const [refreshing, setRefreshing] = useState(false);
+
+  const [datosGrafico, setDatosGrafico] = useState<any[]>([]);
+  const [anchoGrafico, setAnchoGrafico] = useState(0);
+  const [width, setWidth] = useState(0);
+
+  const screenWidth = Dimensions.get("window").width;
 
   const togglePicker1 = () => {
     setShowPicker1(!showPicker1);
@@ -122,15 +137,14 @@ export default function VerExpedientePaciente({
       const currentDate = selectedDate;
       setDate(currentDate);
 
-        togglePicker1();
-        setFecha1(
-          currentDate.toLocaleDateString("es-ES", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-          })
-        );
-
+      togglePicker1();
+      setFecha1(
+        currentDate.toLocaleDateString("es-ES", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        })
+      );
     } else {
       togglePicker1();
     }
@@ -141,15 +155,14 @@ export default function VerExpedientePaciente({
       const currentDate = selectedDate;
       setDate(currentDate);
 
-        togglePicker2();
-        setFecha2(
-          currentDate.toLocaleDateString("es-ES", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-          })
-        );
-
+      togglePicker2();
+      setFecha2(
+        currentDate.toLocaleDateString("es-ES", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        })
+      );
     } else {
       togglePicker2();
     }
@@ -164,11 +177,78 @@ export default function VerExpedientePaciente({
     setModalSearch(false);
   };
 
-  const handleSearch = () => {
-    // Lógica para manejar la búsqueda
-    console.log("Buscar:", Fecha1, Fecha2);
-    closeSearch();
+  const handleSearch = async () => {
+    try {
+      const response = await axios.get(
+        `${BACKEND_URL}/expedientes/${paciente.id}/${paciente.tipo}`
+      );
+
+      if (response.data.code == 204) {
+        alert("No se encontraron expedientes");
+        return;
+      }
+
+      if (!response.data.expedientes) {
+        alert("No se encontraron expedientes");
+        return;
+      }
+
+      const transformedExpedientes = response.data.expedientes.map(
+        (expediente: any) => {
+          const date = expediente.createdAt.split("T");
+          return {
+            id: expediente.id,
+            date: date[0],
+            hour: date[1].substring(0, 5),
+            url: expediente.url,
+          };
+        }
+      );
+      
+      console.log("Expedientes encontrados:", paciente);
+      setExpedientes(transformedExpedientes);
+    } catch (error) {
+      console.error("Error fetching expedientes:", error);
+      alert("Ocurrió un error al buscar los expedientes");
+    } finally {
+      closeSearch();
+    }
   };
+
+  const getScales = async () => {
+    try {
+      const response = await axios.get(
+        `${BACKEND_URL}/escala/${paciente.id}/${paciente.tipo}`
+      );
+
+      setData(response.data.resultados);
+      setDatosGrafico(
+        data.map((item) =>
+          procesarDatosCitas(item.progresion, item.admiteMusculo)
+        )
+      );
+      setAnchoGrafico(
+        datosGrafico.reduce(
+          (max, item) => Math.max(max, item.labels.length),
+          0
+        ) * 50
+      );
+      setWidth(Math.max(screenWidth, anchoGrafico*1.5));
+    } catch (error) {
+      console.error("Error fetching scales:", error);
+      alert("Ocurrió un error al buscar las escalas");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      if(paciente.id) {
+      getScales();
+      }
+    }, [paciente])
+  )
 
   const [containerWidth, setContainerWidth] = useState(0); // Ancho del contenedor
   const [textWidth, setTextWidth] = useState(0); // Ancho del texto
@@ -190,9 +270,72 @@ export default function VerExpedientePaciente({
     ).start();
   };
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+
+    await getScales();
+    
+    // Simula una recarga de datos
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
+  const [userID, setUserID] = useState<string | null>(null);
+
+  const getUserID = async () => {
+    const id = await AsyncStorage.getItem("idSesion");
+    
+    setUserID(id);
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      getUserID();
+    }, [])
+  );
+
+  const getPaciente = async () => {
+  
+    try {
+      const response = await axios.get(`${BACKEND_URL}/obtener-info-usuario/${userID}/paciente`);
+
+      setPaciente(response.data.paciente);
+      console.log("Paciente encontrado:", response.data.paciente);
+
+    }catch (error) {
+      console.error("Error fetching paciente:", error);
+      alert("Ocurrió un error al buscar el usuario");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+            useCallback(() => {
+              if (userID) {
+                getPaciente();
+              }
+            }, [userID])
+          );
+
+  if (loading) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#fff" />
+      </View>
+    );
+  }
+
   return (
+    <PaperProvider>
       <SafeAreaView style={stylesHistorial.container}>
-        <View style={stylesHistorial.datosPaciente} onLayout={(event) => setContainerWidth(event.nativeEvent.layout.width)}>
+        <View
+          style={stylesHistorial.datosPaciente}
+          onLayout={(event) =>
+            setContainerWidth(event.nativeEvent.layout.width)
+          }
+        >
           <Text
             style={{
               fontWeight: "bold",
@@ -202,8 +345,7 @@ export default function VerExpedientePaciente({
             }}
           >
             {" "}
-            {/* {(paciente.nombre + " " + paciente.apellidos).toUpperCase()} */}
-            VICTOR DAVID MEDINA AMEZCUA
+            {(paciente.nombre + " " + paciente.apellidos).toUpperCase()}
           </Text>
           <View
             style={{
@@ -212,7 +354,7 @@ export default function VerExpedientePaciente({
             }}
           >
             <View style={stylesHistorial.viewpaciente}>
-              {/* {paciente.imagenPerfil ? (
+              {paciente.imagenPerfil ? (
                 <Image
                   source={{ uri: paciente.imagenPerfil }}
                   style={{
@@ -223,7 +365,7 @@ export default function VerExpedientePaciente({
                     marginLeft: 30,
                   }}
                 />
-              ) : ( */}
+              ) : (
                 <Icon
                   name="user-circle"
                   size={70}
@@ -232,14 +374,14 @@ export default function VerExpedientePaciente({
                     alignItems: "flex-end",
                     width: windowWidth * 0.19,
                     height: windowHeight * 0.095,
-                    marginLeft: 80,
+                    marginLeft: 30,
                     borderRadius: 100,
                   }}
                 />
-              {/* )} */}
+              )}
             </View>
             <View
-              style={{ alignItems: "flex-start", marginTop: 5, marginLeft: 25 }}
+              style={{ alignItems: "flex-start", marginTop: 5, marginLeft: 15 }}
             >
               <View
                 style={{
@@ -259,25 +401,21 @@ export default function VerExpedientePaciente({
                     fontWeight: "bold",
                   }}
                 >
-                  {/* {paciente.proximaCita == "Sin cita"
+                  {paciente.proximaCita == "Sin cita"
                     ? "Sin cita programada"
-                    : paciente.proximaCita} */}
-                    Sin cita programada
+                    : paciente.proximaCita}
                 </Text>
-                {/* {paciente.proximaCita == "Sin cita" ? null : ( */}
-                  {/* <>
+                {paciente.proximaCita == "Sin cita" ? null : (
+                  <>
                     <Icon
                       name="clock-o"
                       size={20}
                       color="#000"
                       style={{ marginLeft: 10 }}
                     />
-                    <Text>
-                       {paciente.proximaCita}
-                        2024-04-15
-                       </Text>
-                  </> */}
-                {/* )} */}
+                    <Text> {paciente.horaCita}</Text>
+                  </>
+                )}
               </View>
 
               <View
@@ -285,7 +423,7 @@ export default function VerExpedientePaciente({
                   flexDirection: "row",
                   justifyContent: "flex-start",
                   padding: 2,
-                  overflow: "hidden"
+                  overflow: "hidden",
                 }}
               >
                 <Icon
@@ -294,13 +432,14 @@ export default function VerExpedientePaciente({
                   color="#000"
                   style={{ marginRight: 5 }}
                 />
-                <View style={{overflow: "hidden"}}>
+                <View style={{ overflow: "hidden" }}>
                   <Animated.Text
-                    style={{transform: [{ translateX: scrollX }]}}
-                    onLayout={(event) => setTextWidth(event.nativeEvent.layout.width)}
+                    style={{ transform: [{ translateX: scrollX }], width: 200 }}
+                    onLayout={(event) =>
+                      setTextWidth(event.nativeEvent.layout.width)
+                    }
                   >
-                    {/* {paciente.ubicacion} */}
-                    Calle 5 de mayo #123, Colonia Centro, Ciudad de México
+                    {paciente.ubicacion}
                   </Animated.Text>
                 </View>
               </View>
@@ -318,11 +457,31 @@ export default function VerExpedientePaciente({
                   color="#000"
                   style={{ marginRight: 5 }}
                 />
-                <Text> 
-                  {/* {paciente.numeroContacto} */}
-                  1234567890
-                  </Text>
+                <Text> {paciente.numeroContacto}</Text>
               </View>
+              {paciente.mail == "" ? (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "flex-start",
+                    padding: 2,
+                  }}
+                >
+                  <MaterialCommunityIcons
+                    name="account-off"
+                    size={20}
+                    color="#000"
+                  />
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {" "}
+                    Usuario sin cuenta
+                  </Text>
+                </View>
+              ) : (
                 <View
                   style={{
                     flexDirection: "row",
@@ -331,16 +490,16 @@ export default function VerExpedientePaciente({
                   }}
                 >
                   <MaterialCommunityIcons name="email" size={20} color="#000" />
-                  <Text> 
-                    {/* {paciente.mail} */}
-                    email@email
-                    </Text>
+                  <Text> {paciente.mail}</Text>
                 </View>
+              )}
             </View>
           </View>
         </View>
         <View style={stylesHistorial.menuPaciente}>
-          <ScrollView style={stylesHistorial.scrollView}>
+          <ScrollView
+            style={stylesHistorial.scrollView}
+          >
             <TouchableOpacity
               style={stylesHistorial.containerPdf}
               onPress={openSearch}
@@ -416,70 +575,163 @@ export default function VerExpedientePaciente({
                 </View>
               </View>
             </Modal>
-            <TouchableOpacity
-              style={stylesHistorial.containerPdf}
-              onPress={() => navigation.navigate("VisualizarPdf")}
-            >
-              <Icon name="file-text-o" size={50} color="#000" />
-              <View style={{ paddingLeft: 5 }}>
-                <Text>Fecha de creacion:</Text>
-                <Text>Evaluacion realizada</Text>
-              </View>
-            </TouchableOpacity>
-            {/* <TouchableOpacity style={{ flex: 1 }}> */}
-            {data.map((scale, index) => (
-              <View key={index}>
-                <Text
-                  style={{
-                    fontSize: 20,
-                    textAlign: "center",
-                    marginVertical: 10,
-                  }}
-                >
-                  {scale.name}
-                </Text>
-                <ScrollView horizontal={true}>
-                  <LineChart
-                    data={{
-                      labels: scale.citas.map((cita) => cita.fecha),
-                      datasets: [
-                        {
-                          data: scale.citas.map((cita) => cita.rango),
-                        },
-                      ],
-                    }}
-                    width={width} // from react-native
-                    height={220}
-                    yAxisInterval={1} // optional, defaults to 1
-                    chartConfig={{
-                      backgroundColor: "#91FFFA",
-                      backgroundGradientFrom: "#009688",
-                      backgroundGradientTo: "#4CAF50",
-                      color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-                      labelColor: (opacity = 1) =>
-                        `rgba(255, 255, 255, ${opacity})`,
-                      style: {
-                        borderRadius: 16,
-                      },
-                      propsForLabels: {
-                        fontSize: "10", // Ajusta este valor según necesites
-                      },
-                    }}
-                    bezier // optional, adds a bezier curve
-                    style={{
-                      marginRight: 10,
-                      marginVertical: 8,
-                      borderRadius: 16,
-                    }}
-                  />
-                </ScrollView>
-                {/* </TouchableOpacity> */}
-              </View>
-            ))}
-          </ScrollView>
 
+            {expedientes.map((expediente) => (
+              <TouchableOpacity
+                key={expediente.id}
+                style={stylesHistorial.containerPdf}
+                onPress={() =>
+                  navigation.navigate("VisualizarPdf", { url: expediente.url })
+                }
+              >
+                <Icon name="file-text-o" size={50} color="#000" />
+                <View style={{ paddingLeft: 15 }}>
+                  <Text>
+                    Fecha de creación: {expediente.date + " " + expediente.hour}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+
+            {data.map(
+              (scale, index) => (
+                
+                Object.keys(scale.progresion).length > 0 ||
+                scale.progresion.length > 0 ? (
+                  <React.Fragment key={index}>
+                    {scale.admiteMusculo ? (
+                      Object.keys(scale.progresion).map((detalle) => {
+                        return (
+                          <View>
+                            <Text
+                              style={{
+                                fontSize: 20,
+                                textAlign: "center",
+                                marginVertical: 10,
+                              }}
+                            >
+                              {scale.name} {detalle}
+                            </Text>
+
+                            <ScrollView horizontal={true}>
+                              <LineChart
+                                data={{
+                                  labels: scale.progresion[detalle].map(
+                                    (registro) => {
+                                      const date = new Date(registro.fecha);
+                                      const year = date.getFullYear().toString().substring(2, 4);
+                                      const month = String(date.getMonth() + 1).padStart(2, "0");
+                                      const day = String(date.getDate()).padStart(2, "0");
+                                      
+                                      return `${day}/${month}/${year}`; 
+                                    }
+                                  ),
+                                  datasets: [
+                                    {
+                                      data: scale.progresion[detalle].map(
+                                        (registro) => registro.rango
+                                      ),
+                                    },
+                                  ],
+                                }}
+                                width={width} // from react-native
+                                height={220}
+                                yAxisInterval={1} // optional, defaults to 1
+                                chartConfig={{
+                                  backgroundColor: "#91FFFA",
+                                  backgroundGradientFrom: "#009688",
+                                  backgroundGradientTo: "#4CAF50",
+                                  color: (opacity = 1) =>
+                                    `rgba(255, 255, 255, ${opacity})`,
+                                  labelColor: (opacity = 1) =>
+                                    `rgba(255, 255, 255, ${opacity})`,
+                                  style: {
+                                    borderRadius: 16,
+                                  },
+                                  propsForLabels: {
+                                    fontSize: "10", // Ajusta este valor según necesites
+                                  },
+                                }}
+                                bezier // optional, adds a bezier curve
+                                style={{
+                                  marginRight: 10,
+                                  marginVertical: 8,
+                                  borderRadius: 16,
+                                }}
+                              />
+                            </ScrollView>
+                          </View>
+                        );
+                      })
+                    ) : (
+                      <View>
+                        <Text
+                          style={{
+                            fontSize: 20,
+                            textAlign: "center",
+                            marginVertical: 10,
+                          }}
+                        >
+                          {scale.name}
+                        </Text>
+
+                        <ScrollView horizontal={true}>
+                          <LineChart
+                            data={{
+                              labels: scale.progresion.map((registro) => {
+                                const date = new Date(registro.fecha);
+                                      const year = date.getFullYear().toString().substring(2, 4);
+                                      const month = String(date.getMonth() + 1).padStart(2, "0");
+                                      const day = String(date.getDate()).padStart(2, "0");
+                                      
+                                      return `${day}/${month}/${year}`; 
+                              }),
+                              datasets: [
+                                {
+                                  data: scale.progresion.map(
+                                    (registro) => registro.rango
+                                  ),
+                                },
+                              ],
+                            }}
+                            width={width} // from react-native
+                            height={220}
+                            yAxisInterval={1} // optional, defaults to 1
+                            chartConfig={{
+                              backgroundColor: "#91FFFA",
+                              backgroundGradientFrom: "#009688",
+                              backgroundGradientTo: "#4CAF50",
+                              color: (opacity = 1) =>
+                                `rgba(255, 255, 255, ${opacity})`,
+                              labelColor: (opacity = 1) =>
+                                `rgba(255, 255, 255, ${opacity})`,
+                              style: {
+                                borderRadius: 16,
+                              },
+                              propsForLabels: {
+                                fontSize: "10", // Ajusta este valor según necesites
+                              },
+                            }}
+                            bezier // optional, adds a bezier curve
+                            style={{
+                              marginRight: 10,
+                              marginVertical: 8,
+                              borderRadius: 16,
+                            }}
+                          />
+                        </ScrollView>
+                      </View>
+                    )}
+                  </React.Fragment>
+                ) : (
+                  <View></View>
+                )
+              )
+            )}
+          </ScrollView>
         </View>
       </SafeAreaView>
+    </PaperProvider>
   );
 }
 
@@ -545,5 +797,11 @@ const styles = StyleSheet.create({
     overflow: "hidden", // Asegura que el texto no se desborde
     height: 50, // Altura fija para la visualización
     justifyContent: "center",
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#002245",
   },
 });

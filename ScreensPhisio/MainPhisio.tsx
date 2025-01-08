@@ -164,7 +164,7 @@ export default function MainPhisio({
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#0000ff" />
+          <ActivityIndicator size="large" color="#fff" />
       </View>
     );
   }

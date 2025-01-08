@@ -136,7 +136,7 @@ export default function RegistrarPersonales({
         }
       );
 
-      navigation.navigate("login", {
+      navigation.navigate("registrarTarjeta", {
         registerDataPhisio: registerDataPhisio,
       });
     } else if (selected === "paciente") {

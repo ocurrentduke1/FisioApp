@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Platform,
   ScrollView,
   StyleSheet,
   Switch,
-} from 'react-native';
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import {
   CreditCardView,
   CreditCardInput,
@@ -12,10 +15,15 @@ import {
   CreditCardFormData,
   CreditCardFormField,
   ValidationState,
-} from 'react-native-credit-card-input';
+} from "react-native-credit-card-input";
+import stylesLogin from "./styles/stylesLogin";
+import { NavigationProp } from "@react-navigation/native";
 
-export default function RegistrarTarjeta() {
-
+export default function RegistrarTarjeta({
+  navigation,
+}: {
+  navigation: NavigationProp<any>;
+}) {
   // const [publishableKey, setPublishableKey] = useState('');
 
   // const fetchPublishableKey = async () => {
@@ -39,7 +47,8 @@ export default function RegistrarTarjeta() {
     //   merchantIdentifier="merchant.identifier" // required for Apple Pay
     //   urlScheme="your-url-scheme" // required for 3D Secure and bank redirects
     // >
-    <ScrollView contentContainerStyle={s.container}>
+    <View style={s.container}>
+    <ScrollView>
       <Switch
         style={s.switch}
         onValueChange={(v) => {
@@ -64,8 +73,11 @@ export default function RegistrarTarjeta() {
           style={s.cardInput}
           onChange={setFormData}
           onFocusField={setFocusedField}
-          placeholders={{ number: 'Número de tarjeta', expiry: 'MM/YY', cvc: 'CVC' }}
-
+          placeholders={{
+            number: "Número de tarjeta",
+            expiry: "MM/YY",
+            cvc: "CVC",
+          }}
         />
       ) : (
         <CreditCardInput
@@ -73,13 +85,38 @@ export default function RegistrarTarjeta() {
           style={s.cardInput}
           onChange={setFormData}
           onFocusField={setFocusedField}
-          labels={{ number: 'Número de tarjeta', expiry: 'MM/YY', cvc: 'CVC/CCV' }}
-          labelStyle={{ color: 'white' }}
-          placeholders={{ number: '1234 5678 1234 5678', expiry: 'MM/YY', cvc: 'CVC' }}
+          labels={{
+            number: "Número de tarjeta",
+            expiry: "MM/YY",
+            cvc: "CVC/CCV",
+          }}
+          labelStyle={{ color: "white" }}
+          placeholders={{
+            number: "1234 5678 1234 5678",
+            expiry: "MM/YY",
+            cvc: "CVC",
+          }}
         />
       )}
 
     </ScrollView>
+
+    <TouchableOpacity //boton de inicio de sesion
+        style={[stylesLogin.button, { paddingHorizontal: 115,  }]}
+        onPress={() => {
+          navigation.navigate("login");
+        }}
+      >
+        <Text style={{ color: "#FFFFFF", fontSize: 16 }}>Siguiente</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity //boton de registrar cuenta
+        style={[stylesLogin.Secondarybutton, { paddingHorizontal: 115 }]}
+        onPress={() => navigation.navigate("registrarPersonales")} // Función que se ejecuta cuando se presiona el botón
+      >
+        <Text style={{ color: "#FFFFFF", fontSize: 16 }}>Regresar</Text>
+      </TouchableOpacity>
+    </View>
     // </StripeProvider>
   );
 }
@@ -87,39 +124,36 @@ export default function RegistrarTarjeta() {
 const s = StyleSheet.create({
   container: {
     flex: 1,
-    width: '100%',
-    maxWidth: 600,
-    marginHorizontal: 'auto',
-    borderRadius: 10,
-    marginTop: 60,
-    backgroundColor: '#FFFFFF',
+    justifyContent: "center",
+    padding: 16,
+    backgroundColor: "#002245",
   },
   switch: {
-    alignSelf: 'center',
+    alignSelf: "center",
     marginTop: 20,
     marginBottom: 20,
   },
   cardView: {
-    alignSelf: 'center',
+    alignSelf: "center",
     marginTop: 15,
   },
   cardInput: {
     marginTop: 15,
-    borderColor: '#fff',
+    borderColor: "#fff",
     borderTopWidth: 1,
     borderBottomWidth: 1,
   },
   infoContainer: {
     margin: 20,
     padding: 20,
-    backgroundColor: '#dfdfdf',
+    backgroundColor: "#dfdfdf",
     borderRadius: 5,
   },
   info: {
     fontFamily: Platform.select({
-      ios: 'Courier',
-      android: 'monospace',
-      web: 'monospace',
+      ios: "Courier",
+      android: "monospace",
+      web: "monospace",
     }),
   },
 });

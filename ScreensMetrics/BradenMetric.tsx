@@ -33,7 +33,9 @@ export default function BradenMetric() {
 
   const evaluate = async () => {
 
-    await sendSeverity();
+    calcular();
+
+    if(state !== "") {
 
       console.log("State2:", state);
 
@@ -49,10 +51,11 @@ export default function BradenMetric() {
     setMessage(
       `nivel de valoracion: ${result} Recomendacion: ${response.data.info.recomendacion.sugerencias}`
     );
+  }
   };
 
-  const sendSeverity = async () => {
-
+  const calcular = async () => {
+    
     const sum =
       parseFloat(Sensorial) +
       parseFloat(Humedad) +
@@ -64,7 +67,7 @@ export default function BradenMetric() {
     console.log("Sum of values:", sum);
 
     if (sum === null) return null;
-    if (sum <= 12 && sum >= 9) {
+    if (sum <= 12) {
       setState("1");
     };
     if (sum == 13 || sum == 14){
@@ -75,7 +78,7 @@ export default function BradenMetric() {
     };
 
     console.log("State:", state);
-  }
+  };
 
   const allFieldsFilled = () => {
     return (
@@ -87,14 +90,6 @@ export default function BradenMetric() {
       Friccion.trim() !== ""
     );
   };
-
-  const canSaveResult = () => {
-    return result !== null;
-  };
-
-  function saveResult() {
-    console.log("Save result");
-  }
 
   useFocusEffect(
     useCallback(() => {
@@ -320,7 +315,7 @@ export default function BradenMetric() {
               disabled={!allFieldsFilled()}
             >
               <Text style={[stylesMain.metricTitle, { fontSize: 20 }]}>
-                Evaluar
+                Calcular
               </Text>
             </TouchableOpacity>
           </View>
