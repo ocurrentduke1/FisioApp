@@ -32,8 +32,6 @@ export default function AshwortMetric() {
         try {
           const id = await AsyncStorage.getItem("pacienteId");
           const tipo = await AsyncStorage.getItem("pacienteTipo");
-          console.log("Fetched Paciente ID:", id);
-          console.log("Fetched Paciente Tipo:", tipo);
           setPacienteId(id);
           setPacienteTipo(tipo);
         } catch (error) {
@@ -55,8 +53,6 @@ export default function AshwortMetric() {
       side: side,
     });
 
-    console.log(response.data);
-
     setResult(
       ` ${muscle}, Lado: ${side},\n nivel de valoracion: ${state}, Recomendacion: ${response.data.info.recomendacion.sugerencias}`
     );
@@ -74,9 +70,6 @@ export default function AshwortMetric() {
     return result !== null && result.trim() !== "";
   };
 
-  function saveResult() {
-    console.log("Save result");
-  }
   return (
     <View style={[stylesMain.container, { alignItems: "center" }]}>
       <SafeAreaView style={stylesMain.datosMetricas}>

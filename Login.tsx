@@ -66,7 +66,6 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
       }
     );
 
-    console.log(response.data);
 
     if (response.data.code == 404) {
       changeVerificarAuth();
@@ -98,7 +97,6 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
       }
     );
 
-    console.log("enviado");
 
     if (response.data.code == 500) {
       changeCorreoNoEnviado();
@@ -132,10 +130,7 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
   useEffect(() => {
     const checkExpiration = async () => {
       const exp = Number(await AsyncStorage.getItem("expiracion"));
-      console.log(
-        "expiracion",
-        await AsyncStorage.multiGet(["expiracion", "idSesion", "tipoUsuario"])
-      );
+
       if (exp) {
         const expDate = new Date(exp * 1000);
         if (expDate < new Date()) {
@@ -175,7 +170,6 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
         }
       );
 
-      console.log(response.data);
 
       if (response.data.code == 404 || response.data.code == 500) {
         changeCorreoIncorrecto();
@@ -188,19 +182,15 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
 
       if (response.data.code == 200) {
         const { key, token } = response.data;
-        const jwtDecode = JWT.decode(token, key);
-        await AsyncStorage.setItem("idSesion", jwtDecode.id.toString());
-        await AsyncStorage.setItem("tipoUsuario", jwtDecode.tipoUsuario);
-        const imageBuffer = jwtDecode.base64Image;
-        const uri = `data:image/${jwtDecode.extension};base64,${imageBuffer}`;
-        await AsyncStorage.setItem("photoPerfil", uri);
-        // console.log("uri", uri);
-        if (jwtDecode?.exp) {
-          await AsyncStorage.setItem("expiracion", jwtDecode.exp.toString());
-        }
-
-        // console.log("jwt local: ", JSON.stringify(jwtDecode));
-        // console.log("jwt servidor", response.data);
+const jwtDecode = JWT.decode(token, key);
+await AsyncStorage.setItem("idSesion", jwtDecode.id.toString());
+await AsyncStorage.setItem("tipoUsuario", jwtDecode.tipoUsuario);
+const imageBuffer = jwtDecode.base64Image;
+const uri = `data:image/${jwtDecode.extension};base64,${imageBuffer}`;
+await AsyncStorage.setItem("photoPerfil", uri);
+if (jwtDecode?.exp) {
+await AsyncStorage.setItem("expiracion", jwtDecode.exp.toString());
+}
 
         navigation.navigate(
           jwtDecode.tipoUsuario === "fisioterapeuta"

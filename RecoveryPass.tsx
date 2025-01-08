@@ -135,8 +135,6 @@ export function RecoveryPass({
       },
     );
 
-    console.log(response.data);
-
     if (response.data.code == 404) {
       changeVerificarAuth();
       return false;
@@ -168,8 +166,6 @@ export function RecoveryPass({
       }
     );
 
-    console.log("enviado");
-
     if (response.data.code == 500) {
       changeCorreoNoEnviado();
       return false;
@@ -192,8 +188,6 @@ export function RecoveryPass({
         destinatario: email,
       }
     );
-
-    console.log("enviado");
 
     if (response.data.code == 500) {
       changeCorreoNoEnviado();
@@ -370,17 +364,7 @@ export function RecoveryPass({
           if (!validateEmail(email)) {
             changeNoValido();
           } else {
-            // if(auth){
-            //   console.log(registerData);
-            //   navigation.navigate('registrarPersonales', { registerData: registerData });
-            //   //console.log(registerData);
-            //   }else{
-            //     setModalAuth(true);
-            //     // sendEmail();
-            //   }
-
             sendEmail();
-            // setModalAuth(true);
           }
         }}
         disabled={!validateInput()}

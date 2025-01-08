@@ -74,9 +74,6 @@ export default function RegistrarPersonales({
     text = JSON.stringify(location);
   }
 
-  console.log("Latitud: ", initialLat);
-  console.log("Longitud: ", initialLng);
-
   const ASPECT_RATIO = width / height;
   const LATITUDE_DELTA = 0.0922;
   const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
@@ -148,27 +145,14 @@ export default function RegistrarPersonales({
           headers: { "Access-Control-Allow-Origin": "*" },
         }
       );
-      console.log(response.data);
-      changeCuentaCreada();
+if (response.data.code == 400) {
+    Alert.alert("Correo ya registrado");
+    return;
+}
+Alert.alert("Cuenta creada exitosamente");
       navigation.navigate("login");
     }
   };
-
-  // const registerUser = async () => {
-  //   if (selected === "paciente") {
-  //     console.log("Registrando paciente");
-  //     console.log(registerDataPatient);
-  //     navigation.navigate("Login", {
-  //       registerDataPatient: registerDataPatient,
-  //     });
-  //   } else {
-  //     console.log("Registrando fisioterapeuta");
-  //     console.log(registerDataPhisio);
-  //     navigation.navigate("registrarTarjeta", {
-  //       registerDataPhisio: registerDataPhisio,
-  //     });
-  //   }
-  // };
 
   const data = [
     { key: "1", value: "fisioterapeuta" },
@@ -225,7 +209,6 @@ export default function RegistrarPersonales({
   const saveLocation = async () => {
     setAddress(selectedLocation ?? "");
     setSearchQuery("");
-    console.log("domicilio: ", selectedLocation);
     toggleMaps();
   };
 
@@ -240,11 +223,10 @@ export default function RegistrarPersonales({
     try{
       const response = await fetch(url);
       const json = await response.json();
-      // console.log(json);
+
       if(json && json.results){
         const coords: LatLng[] = []
         for(const item of json.results){
-          console.log(item);
           coords.push({
             latitude: item.geometry.location.lat,
             longitude: item.geometry.location.lng,

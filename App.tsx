@@ -88,7 +88,6 @@ export default function App() {
           setMetricasVisibles(JSON.parse(visible));
         }
         setVisible(visible);
-        console.log("visible", visible);
       };
       fetchVisible();
     }, []);

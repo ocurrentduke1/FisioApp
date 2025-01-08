@@ -109,8 +109,6 @@ export default function Registrar({
       }
     );
 
-    console.log(response.data);
-
     if (response.data.code == 404) {
       changeVerificarAuth();
       return false;
@@ -146,7 +144,6 @@ export default function Registrar({
       }
     );
 
-    console.log("enviado");
 
     if (response.data.code == 500) {
       changeCorreoNoEnviado();
@@ -215,8 +212,6 @@ export default function Registrar({
         destinatario: email,
       }
     );
-
-    console.log("enviado");
 
     if (response.data.code == 409) {
       changeCorreoRegistrado();

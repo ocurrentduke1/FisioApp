@@ -46,17 +46,16 @@ export default function AgendaCitas({
 
   const getUserID = async () => {
     const id = await AsyncStorage.getItem("idSesion");
-    console.log("Fetched UserID:", id); // Verifica que el ID se obtenga correctamente
     setUserID(id);
   };
 
   const fetchData = async () => {
     const pacientes = await getPatients();
     setDataPatients(pacientes);
-    // console.log("pacientes", dataPatients);
+    
     const datosDelServidor = await obtenerCitas();
     setCitas(datosDelServidor);
-    // console.log("horas", dataHours);
+    
   };
 
   const getPatients = async () => {
@@ -64,8 +63,8 @@ export default function AgendaCitas({
       const response = await axios.post(BACKEND_URL + "/obtener-pacientes", {
         idFisio: Number(userID),
       });
-      console.log("UserID:", userID);
-      // console.log("Response data:", response.data);
+
+      
       return response.data || [];
     }
   };
@@ -78,7 +77,7 @@ export default function AgendaCitas({
           .substring(0, 10)}`
       );
 
-      // console.log("Response data:", response.data);
+      
       return response.data.horarios || [];
     }
   };
@@ -122,7 +121,6 @@ export default function AgendaCitas({
   const [selectedDate, setSelectedDate] = useState(new Date().toDateString());
 
   const [patient, setPatient] = useState("");
-  const [patientType, setPatientType] = useState("");
   const [openPatient, setOpenPatient] = useState(false);
   const [location, setLocation] = useState("");
   const [otherLocation, setOtherLocation] = useState(false);
@@ -150,7 +148,8 @@ export default function AgendaCitas({
       nombre: string;
       apellido: string;
       proximaCita: string;
-      hora: string;
+      horaCita: string;
+      duracion: string;
       ubicacion: string;
       imagenPerfil?: string;
       numeroContacto: string;
@@ -200,7 +199,6 @@ export default function AgendaCitas({
   const openDelete = (item) => {
     setDateTo(item.id);
     setModalDelete(true);
-    console.log("item", item);
   };
 
   const closeDelete = () => {
@@ -216,7 +214,8 @@ export default function AgendaCitas({
           apellido,
           ubicacion,
           imagenPerfil,
-          hora,
+          horaCita,
+          duracion,
           id,
           numeroContacto,
           tipo,
@@ -226,7 +225,8 @@ export default function AgendaCitas({
         const transformedCita = {
           nombre: `${nombre}`,
           apellidos: apellido,
-          horaCita: hora,
+          horaCita: horaCita,
+          duracion: duracion,
           ubicacion: ubicacion,
           imagenPerfil: imagenPerfil,
           proximaCita: proximaCita,
@@ -272,16 +272,27 @@ export default function AgendaCitas({
   };
 
   const RegistrarCita = async () => {
+    const tiposPacientes = {
+      A: 'account',
+      N: 'NoAccount',
+    };
 
     const date = new Date().toISOString().substring(0, 10);
 
+    const idPaciente = patient.substring(0, patient.length - 1);
+    const tipoPaciente = tiposPacientes[patient[patient.length - 1]] ?? null;
+
+    if(!idPaciente && !tipoPaciente) {
+      return false;
+    }
+
     const response = await axios.post(BACKEND_URL + "/cita", {
-      pacienteId: patient,
+      pacienteId: idPaciente,
       fisioterapeutaId: userID,
       fecha: date + " " + time,
       duracion: duration.toString(),
       ubicacion: location,
-      type: patientType,
+      type: tipoPaciente,
     });
 
     if (response.data.code == 400) {
@@ -289,7 +300,6 @@ export default function AgendaCitas({
       return;
     }
 
-    console.log("cita registrada", response);
 
     closeAdd();
     fetchData();
@@ -303,7 +313,6 @@ export default function AgendaCitas({
 
     setCitas(citas.filter((cita) => cita.id !== dateTo));
 
-    console.log("cita eliminada", response);
     closeDelete();
   };
 
@@ -315,7 +324,7 @@ export default function AgendaCitas({
     });
 
     return (
-      console.log("item", paciente),
+
       <Animated.View
         style={[styles.rightAction, { transform: [{ translateX }] }]}
       >
@@ -336,13 +345,6 @@ export default function AgendaCitas({
   };
 
   const { width } = useWindowDimensions();
-
-  const asignarTipoPaciente = async (patient: string) => {
-    const pacienteId = patient.substring(0, patient.length - 1);
-    const type = patient.substring(patient.length - 2, patient.length - 1);
-    setPatient(pacienteId);
-    setPatientType(type);
-  }
 
   return (
     <View style={styles.container}>
@@ -419,6 +421,17 @@ export default function AgendaCitas({
               | React.ReactPortal
               | null
               | undefined;
+            duracion:
+              | string
+              | number
+              | React.ReactElement<
+                  any,
+                  string | React.JSXElementConstructor<any>
+                >
+              | Iterable<React.ReactNode>
+              | React.ReactPortal
+              | null
+              | undefined;
             imagenPerfil: any;
             date: string;
           },
@@ -478,7 +491,23 @@ export default function AgendaCitas({
                       color="#000"
                       style={{ marginRight: 2 }}
                     />
-                    <Text> {item.horaCita}</Text>
+                    <Text
+                      style={{ fontWeight: "bold", marginRight: 20 }}
+                    > 
+                      {item.horaCita}
+                    </Text>
+
+                    <Icon
+                      name="hourglass-1"
+                      size={14}
+                      color="#000"
+                      style={{ marginRight: 1, marginTop: 2 }}
+                    />
+                    <Text
+                      style={{ fontWeight: "bold", marginRight: 20 }}
+                    > 
+                      {item.duracion}
+                    </Text>
                   </View>
                 </View>
               </View>
@@ -519,7 +548,7 @@ export default function AgendaCitas({
               </Text>
             </View>
             <DropDownPicker
-              setValue={(val) => asignarTipoPaciente(val.toString())}
+              setValue={setPatient}
               value={patient}
               open={openPatient}
               placeholder="Selecciona un paciente"
