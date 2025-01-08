@@ -8,7 +8,6 @@ import {
   StyleSheet,
   View,
   Dimensions,
-  Alert,
 } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,7 +15,7 @@ import stylesHistorial from "../styles/stylesHistorial";
 import { printToFileAsync } from "expo-print";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { SelectList } from "react-native-dropdown-select-list";
-import { RadioButton } from 'react-native-paper';
+import { Dialog, RadioButton } from 'react-native-paper';
 import { randomUUID } from 'expo-crypto';
 import axios from "axios";
 import { BACKEND_URL } from "@env";
@@ -161,6 +160,8 @@ const CrearExpediente = ({
   const [DiagnosticoFisio, setDiagnosticoFisio] = useState("");
   const [ObjetivoG, setObjetivoG] = useState("");
   const [ObjetivoE, setObjetivoE] = useState("");
+  const [ExpedienteCreado, setExpedienteCreado] = useState(false);
+  const changeExpedienteCreado = () => setExpedienteCreado(!ExpedienteCreado);
 
   const DataPDF = {
     nombre: nombre,
@@ -493,7 +494,7 @@ const CrearExpediente = ({
 
           //navigation.goBack();
 
-          Alert.alert('Expediente creado', 'El expediente ha sido creado exitosamente',);
+          changeExpedienteCreado();
   
       } catch (error) {
           console.error('Error en generatePdf:', error);
@@ -1332,6 +1333,25 @@ const CrearExpediente = ({
       onPress={generatePdf}>
         <Text style={stylesHistorial.buttonText}>Guardar Expediente</Text>
       </TouchableOpacity>
+
+      <Dialog visible={ExpedienteCreado} onDismiss={changeExpedienteCreado}>
+          <Dialog.Icon icon="check-circle" size={50} />
+          <Dialog.Title style={styles.dialogTitle}>
+            Hecho!
+          </Dialog.Title>
+          <Dialog.Content>
+            <Text style={{ alignSelf: "center" }}>
+            El expediente ha sido creado exitosamente
+            </Text>
+            <TouchableOpacity
+              onPress={changeExpedienteCreado}
+              style={{ alignSelf: "center", paddingTop: 30 }}
+            >
+              <Text style={{ fontSize: 20 }}>Aceptar</Text>
+            </TouchableOpacity>
+          </Dialog.Content>
+        </Dialog>
+
     </SafeAreaView>
   );
 };
@@ -1365,6 +1385,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
+  },
+  dialogTitle: {
+    textAlign: "center",
   },
 });
 export default CrearExpediente;

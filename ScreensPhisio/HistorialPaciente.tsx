@@ -27,6 +27,7 @@ import {
   Portal,
   PaperProvider,
   ActivityIndicator,
+  Dialog,
 } from "react-native-paper";
 import { MultipleSelectList } from "react-native-dropdown-select-list";
 import { BACKEND_URL } from "@env";
@@ -125,6 +126,15 @@ export default function HistorialPaciente({
     }[]
   >([]);
 
+  const [sinExpedientes, setSinExpedientes] = useState(false);
+  const changeSinExpedientes = () => setSinExpedientes(!sinExpedientes);
+  const [errorExpedientes, setErrorExpedientes] = useState(false);
+  const changeErrorExpedientes = () => setErrorExpedientes(!errorExpedientes);
+  const [errorEscalas, setErrorEscalas] = useState(false);
+  const changeErrorEscalas = () => setErrorEscalas(!errorEscalas);
+  const [compartir, setCompartir] = useState(false);
+  const changeCompartir = () => setCompartir(!compartir);
+
   const [refreshing, setRefreshing] = useState(false);
 
   const [state, setState] = React.useState({ open: false });
@@ -198,12 +208,12 @@ export default function HistorialPaciente({
       );
 
       if (response.data.code == 204) {
-        alert("No se encontraron expedientes");
+        changeSinExpedientes();
         return;
       }
 
       if (!response.data.expedientes) {
-        alert("No se encontraron expedientes");
+        changeSinExpedientes();
         return;
       }
 
@@ -218,12 +228,11 @@ export default function HistorialPaciente({
           };
         }
       );
-      
 
       setExpedientes(transformedExpedientes);
     } catch (error) {
       console.error("Error fetching expedientes:", error);
-      alert("Ocurrió un error al buscar los expedientes");
+      changeErrorExpedientes();
     } finally {
       closeSearch();
     }
@@ -235,7 +244,7 @@ export default function HistorialPaciente({
         `${BACKEND_URL}/escala/${paciente.id}/${paciente.tipo}`
       );
 
-      // 
+      //
 
       setData(response.data.resultados);
       setDatosGrafico(
@@ -249,10 +258,10 @@ export default function HistorialPaciente({
           0
         ) * 50
       );
-      setWidth(Math.max(screenWidth, anchoGrafico*1.5));
+      setWidth(Math.max(screenWidth, anchoGrafico * 1.5));
     } catch (error) {
       console.error("Error fetching scales:", error);
-      alert("Ocurrió un error al buscar las escalas");
+      changeErrorEscalas();
     } finally {
       setLoading(false);
     }
@@ -280,9 +289,9 @@ export default function HistorialPaciente({
     });
 
     if (response.data.code == 201) {
-      alert("Paciente compartido correctamente");
+      changeCompartir();
     }
-    
+
     closeShare();
   };
 
@@ -296,7 +305,6 @@ export default function HistorialPaciente({
   };
 
   const handleDeletePatient = () => {
-    
     closeDelete();
   };
 
@@ -335,7 +343,6 @@ export default function HistorialPaciente({
         try {
           await AsyncStorage.setItem("pacienteId", paciente.id);
           await AsyncStorage.setItem("pacienteTipo", paciente.tipo);
-          
         } catch (error) {
           console.error("Error saving paciente data", error);
         }
@@ -349,7 +356,7 @@ export default function HistorialPaciente({
     setRefreshing(true);
 
     await getScales();
-    
+
     // Simula una recarga de datos
     setTimeout(() => {
       setRefreshing(false);
@@ -360,7 +367,7 @@ export default function HistorialPaciente({
 
   const getUserID = async () => {
     const id = await AsyncStorage.getItem("idSesion");
-    
+
     setUserID(id);
   };
 
@@ -657,139 +664,152 @@ export default function HistorialPaciente({
               </TouchableOpacity>
             ))}
 
-            {data.map(
-              (scale, index) => (
-                
-                Object.keys(scale.progresion).length > 0 ||
-                scale.progresion.length > 0 ? (
-                  <React.Fragment key={index}>
-                    {scale.admiteMusculo ? (
-                      Object.keys(scale.progresion).map((detalle) => {
-                        return (
-                          <View>
-                            <Text
-                              style={{
-                                fontSize: 20,
-                                textAlign: "center",
-                                marginVertical: 10,
-                              }}
-                            >
-                              {scale.name} {detalle}
-                            </Text>
-
-                            <ScrollView horizontal={true}>
-                              <LineChart
-                                data={{
-                                  labels: scale.progresion[detalle].map(
-                                    (registro) => {
-                                      const date = new Date(registro.fecha);
-                                      const year = date.getFullYear().toString().substring(2, 4);
-                                      const month = String(date.getMonth() + 1).padStart(2, "0");
-                                      const day = String(date.getDate()).padStart(2, "0");
-                                      
-                                      return `${day}/${month}/${year}`; 
-                                    }
-                                  ),
-                                  datasets: [
-                                    {
-                                      data: scale.progresion[detalle].map(
-                                        (registro) => registro.rango
-                                      ),
-                                    },
-                                  ],
-                                }}
-                                width={width} // from react-native
-                                height={220}
-                                yAxisInterval={1} // optional, defaults to 1
-                                chartConfig={{
-                                  backgroundColor: "#91FFFA",
-                                  backgroundGradientFrom: "#009688",
-                                  backgroundGradientTo: "#4CAF50",
-                                  color: (opacity = 1) =>
-                                    `rgba(255, 255, 255, ${opacity})`,
-                                  labelColor: (opacity = 1) =>
-                                    `rgba(255, 255, 255, ${opacity})`,
-                                  style: {
-                                    borderRadius: 16,
-                                  },
-                                  propsForLabels: {
-                                    fontSize: "10", // Ajusta este valor según necesites
-                                  },
-                                }}
-                                bezier // optional, adds a bezier curve
-                                style={{
-                                  marginRight: 10,
-                                  marginVertical: 8,
-                                  borderRadius: 16,
-                                }}
-                              />
-                            </ScrollView>
-                          </View>
-                        );
-                      })
-                    ) : (
-                      <View>
-                        <Text
-                          style={{
-                            fontSize: 20,
-                            textAlign: "center",
-                            marginVertical: 10,
-                          }}
-                        >
-                          {scale.name}
-                        </Text>
-
-                        <ScrollView horizontal={true}>
-                          <LineChart
-                            data={{
-                              labels: scale.progresion.map((registro) => {
-                                const date = new Date(registro.fecha);
-                                      const year = date.getFullYear().toString().substring(2, 4);
-                                      const month = String(date.getMonth() + 1).padStart(2, "0");
-                                      const day = String(date.getDate()).padStart(2, "0");
-                                      
-                                      return `${day}/${month}/${year}`; 
-                              }),
-                              datasets: [
-                                {
-                                  data: scale.progresion.map(
-                                    (registro) => registro.rango
-                                  ),
-                                },
-                              ],
-                            }}
-                            width={width} // from react-native
-                            height={220}
-                            yAxisInterval={1} // optional, defaults to 1
-                            chartConfig={{
-                              backgroundColor: "#91FFFA",
-                              backgroundGradientFrom: "#009688",
-                              backgroundGradientTo: "#4CAF50",
-                              color: (opacity = 1) =>
-                                `rgba(255, 255, 255, ${opacity})`,
-                              labelColor: (opacity = 1) =>
-                                `rgba(255, 255, 255, ${opacity})`,
-                              style: {
-                                borderRadius: 16,
-                              },
-                              propsForLabels: {
-                                fontSize: "10", // Ajusta este valor según necesites
-                              },
-                            }}
-                            bezier // optional, adds a bezier curve
+            {data.map((scale, index) =>
+              Object.keys(scale.progresion).length > 0 ||
+              scale.progresion.length > 0 ? (
+                <React.Fragment key={index}>
+                  {scale.admiteMusculo ? (
+                    Object.keys(scale.progresion).map((detalle) => {
+                      return (
+                        <View>
+                          <Text
                             style={{
-                              marginRight: 10,
-                              marginVertical: 8,
-                              borderRadius: 16,
+                              fontSize: 20,
+                              textAlign: "center",
+                              marginVertical: 10,
                             }}
-                          />
-                        </ScrollView>
-                      </View>
-                    )}
-                  </React.Fragment>
-                ) : (
-                  <View></View>
-                )
+                          >
+                            {scale.name} {detalle}
+                          </Text>
+
+                          <ScrollView horizontal={true}>
+                            <LineChart
+                              data={{
+                                labels: scale.progresion[detalle].map(
+                                  (registro) => {
+                                    const date = new Date(registro.fecha);
+                                    const year = date
+                                      .getFullYear()
+                                      .toString()
+                                      .substring(2, 4);
+                                    const month = String(
+                                      date.getMonth() + 1
+                                    ).padStart(2, "0");
+                                    const day = String(date.getDate()).padStart(
+                                      2,
+                                      "0"
+                                    );
+
+                                    return `${day}/${month}/${year}`;
+                                  }
+                                ),
+                                datasets: [
+                                  {
+                                    data: scale.progresion[detalle].map(
+                                      (registro) => registro.rango
+                                    ),
+                                  },
+                                ],
+                              }}
+                              width={width} // from react-native
+                              height={220}
+                              yAxisInterval={1} // optional, defaults to 1
+                              chartConfig={{
+                                backgroundColor: "#91FFFA",
+                                backgroundGradientFrom: "#009688",
+                                backgroundGradientTo: "#4CAF50",
+                                color: (opacity = 1) =>
+                                  `rgba(255, 255, 255, ${opacity})`,
+                                labelColor: (opacity = 1) =>
+                                  `rgba(255, 255, 255, ${opacity})`,
+                                style: {
+                                  borderRadius: 16,
+                                },
+                                propsForLabels: {
+                                  fontSize: "10", // Ajusta este valor según necesites
+                                },
+                              }}
+                              bezier // optional, adds a bezier curve
+                              style={{
+                                marginRight: 10,
+                                marginVertical: 8,
+                                borderRadius: 16,
+                              }}
+                            />
+                          </ScrollView>
+                        </View>
+                      );
+                    })
+                  ) : (
+                    <View>
+                      <Text
+                        style={{
+                          fontSize: 20,
+                          textAlign: "center",
+                          marginVertical: 10,
+                        }}
+                      >
+                        {scale.name}
+                      </Text>
+
+                      <ScrollView horizontal={true}>
+                        <LineChart
+                          data={{
+                            labels: scale.progresion.map((registro) => {
+                              const date = new Date(registro.fecha);
+                              const year = date
+                                .getFullYear()
+                                .toString()
+                                .substring(2, 4);
+                              const month = String(
+                                date.getMonth() + 1
+                              ).padStart(2, "0");
+                              const day = String(date.getDate()).padStart(
+                                2,
+                                "0"
+                              );
+
+                              return `${day}/${month}/${year}`;
+                            }),
+                            datasets: [
+                              {
+                                data: scale.progresion.map(
+                                  (registro) => registro.rango
+                                ),
+                              },
+                            ],
+                          }}
+                          width={width} // from react-native
+                          height={220}
+                          yAxisInterval={1} // optional, defaults to 1
+                          chartConfig={{
+                            backgroundColor: "#91FFFA",
+                            backgroundGradientFrom: "#009688",
+                            backgroundGradientTo: "#4CAF50",
+                            color: (opacity = 1) =>
+                              `rgba(255, 255, 255, ${opacity})`,
+                            labelColor: (opacity = 1) =>
+                              `rgba(255, 255, 255, ${opacity})`,
+                            style: {
+                              borderRadius: 16,
+                            },
+                            propsForLabels: {
+                              fontSize: "10", // Ajusta este valor según necesites
+                            },
+                          }}
+                          bezier // optional, adds a bezier curve
+                          style={{
+                            marginRight: 10,
+                            marginVertical: 8,
+                            borderRadius: 16,
+                          }}
+                        />
+                      </ScrollView>
+                    </View>
+                  )}
+                </React.Fragment>
+              ) : (
+                <View></View>
               )
             )}
           </ScrollView>
@@ -937,6 +957,79 @@ export default function HistorialPaciente({
             }}
           />
         </Portal>
+
+        <Dialog visible={sinExpedientes} onDismiss={changeSinExpedientes}>
+          <Dialog.Icon icon="alert" size={50} />
+          <Dialog.Title style={styles.dialogTitle}>
+            Surgio un error!
+          </Dialog.Title>
+          <Dialog.Content>
+            <Text style={{ alignSelf: "center" }}>
+              No se encontraron expedientes
+            </Text>
+            <TouchableOpacity
+              onPress={changeSinExpedientes}
+              style={{ alignSelf: "center", paddingTop: 30 }}
+            >
+              <Text style={{ fontSize: 20 }}>Aceptar</Text>
+            </TouchableOpacity>
+          </Dialog.Content>
+        </Dialog>
+
+        <Dialog visible={errorExpedientes} onDismiss={changeErrorExpedientes}>
+          <Dialog.Icon icon="alert" size={50} />
+          <Dialog.Title style={styles.dialogTitle}>
+            Surgio un error!
+          </Dialog.Title>
+          <Dialog.Content>
+            <Text style={{ alignSelf: "center" }}>
+              Ocurrió un error al buscar los expedientes
+            </Text>
+            <TouchableOpacity
+              onPress={changeErrorExpedientes}
+              style={{ alignSelf: "center", paddingTop: 30 }}
+            >
+              <Text style={{ fontSize: 20 }}>Aceptar</Text>
+            </TouchableOpacity>
+          </Dialog.Content>
+        </Dialog>
+
+        <Dialog visible={errorEscalas} onDismiss={changeErrorEscalas}>
+                  <Dialog.Icon icon="alert" size={50} />
+                  <Dialog.Title style={styles.dialogTitle}>
+                    Surgio un error!
+                  </Dialog.Title>
+                  <Dialog.Content>
+                    <Text style={{ alignSelf: "center" }}>
+                      Ocurrió un error al buscar las escalas
+                    </Text>
+                    <TouchableOpacity
+                      onPress={changeErrorEscalas}
+                      style={{ alignSelf: "center", paddingTop: 30 }}
+                    >
+                      <Text style={{ fontSize: 20 }}>Aceptar</Text>
+                    </TouchableOpacity>
+                  </Dialog.Content>
+                </Dialog>
+
+                <Dialog visible={errorEscalas} onDismiss={changeErrorEscalas}>
+                  <Dialog.Icon icon="check-circle" size={50} />
+                  <Dialog.Title style={styles.dialogTitle}>
+                    Hecho!
+                  </Dialog.Title>
+                  <Dialog.Content>
+                    <Text style={{ alignSelf: "center" }}>
+                    Paciente compartido correctamente
+                    </Text>
+                    <TouchableOpacity
+                      onPress={changeErrorEscalas}
+                      style={{ alignSelf: "center", paddingTop: 30 }}
+                    >
+                      <Text style={{ fontSize: 20 }}>Aceptar</Text>
+                    </TouchableOpacity>
+                  </Dialog.Content>
+                </Dialog>
+
       </SafeAreaView>
     </PaperProvider>
   );
@@ -1010,5 +1103,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#002245",
+  },
+  dialogTitle: {
+    textAlign: "center",
   },
 });

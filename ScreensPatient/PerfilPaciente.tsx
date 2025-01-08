@@ -1152,7 +1152,7 @@ const PerfilPaciente = ({
       </Dialog>
 
       <Dialog visible={contrasenaInvalida} onDismiss={changeContrasenaInvalida}>
-        <Dialog.Icon icon="check-circle" size={50} />
+        <Dialog.Icon icon="alert" size={50} />
         <Dialog.Title style={styles.dialogTitle}>Hecho!</Dialog.Title>
         <Dialog.Content>
           <Text style={{ alignSelf: "center" }}>

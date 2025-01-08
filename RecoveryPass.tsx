@@ -533,7 +533,7 @@ export function RecoveryPass({
               <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
               <Dialog.Content>
                 <Text style={{ alignSelf: "center" }}>
-                Correo no registrado
+                Correo no valido
                 </Text>
                 <TouchableOpacity
                   onPress={changeNoValido}

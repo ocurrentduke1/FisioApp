@@ -7,13 +7,13 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
-  Alert,
+  StyleSheet
 } from "react-native";
 import stylesMain from "../styles/stylesMain";
 import { NavigationProp } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { Searchbar } from "react-native-paper";
+import { Dialog, Searchbar } from "react-native-paper";
 import { BACKEND_URL } from "@env";
 import useDebounce from "../Functions/useDebounce";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -29,6 +29,11 @@ const BuscarContactos = ({
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [userID, setUserID] = useState<string | null>(null);
+  const [contactoExistente, setContactoExistente] = useState(false);
+  const changeContactoExistente = () => setContactoExistente(!contactoExistente);
+  const [contactoAgregado, setContactoAgregado] = useState(false);
+  const changeContactoAgregado = () => setContactoAgregado(!contactoAgregado);
+    
   // Estado que almacena los datos de los pacientes
   const [contacts, setContacts] = useState<
     {
@@ -53,16 +58,16 @@ const BuscarContactos = ({
     try {
       const response = await axios.post(BACKEND_URL + "/contactos", {
         fisioterapeutaId: Number(userID),
-        contactoId: Number(id), 
+        contactoId: Number(id),
       });
 
-      if(response.data.code == 400) {
-        Alert.alert("Contacto ya existente", "El contacto ya ha sido añadido anteriormente");
+      if (response.data.code == 400) {
+        changeContactoExistente();
         return;
       }
 
-      if(response.data.code == 201) {
-        Alert.alert("Contacto añadido", "El contacto ha sido añadido correctamente");
+      if (response.data.code == 201) {
+        changeContactoAgregado();
         navigation.navigate("mainFisio");
       }
     } catch (error) {
@@ -128,18 +133,36 @@ const BuscarContactos = ({
                     style={stylesMain.imagenpaciente}
                   />
                 )}
-                <View
-                  style={{ flexWrap: "wrap", justifyContent: "flex-start" }}
-                >
-                  <Text style={stylesMain.datosPacienteMenuFisio}>
+                <View>
+                  <Text
+                    style={[
+                      stylesMain.datosPacienteMenuFisio,
+                      { fontWeight: "bold" },
+                    ]}
+                  >
                     {contacto.nombre}
                   </Text>
-                  <Text style={stylesMain.datosPacienteMenuFisio}>
-                    Consultorio: {contacto.consultorio}
-                  </Text>
-                  {/* <Text style={stylesMain.datosPacienteMenuFisio}>
-                              {paciente.}
-                            </Text> */}
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "flex-start",
+                      width: 210,
+                    }}
+                  >
+                    <Icon
+                      name="map-marker"
+                      size={20}
+                      color="#000"
+                      style={stylesMain.datosPacienteMenuFisio}
+                    />
+                    <Text
+                      style={{ marginLeft: 5, marginTop: 7 }}
+                      ellipsizeMode="tail"
+                      numberOfLines={1}
+                    >
+                      {contacto.consultorio}
+                    </Text>
+                  </View>
                 </View>
               </View>
             </TouchableOpacity>
@@ -148,8 +171,50 @@ const BuscarContactos = ({
           <Text></Text>
         )}
       </ScrollView>
+
+      <Dialog visible={contactoExistente} onDismiss={changeContactoExistente}>
+          <Dialog.Icon icon="alert" size={50} />
+          <Dialog.Title style={styles.dialogTitle}>
+            Surgio un error!
+          </Dialog.Title>
+          <Dialog.Content>
+            <Text style={{ alignSelf: "center" }}>
+            El contacto ya ha sido añadido anteriormente
+            </Text>
+            <TouchableOpacity
+              onPress={changeContactoExistente}
+              style={{ alignSelf: "center", paddingTop: 30 }}
+            >
+              <Text style={{ fontSize: 20 }}>Aceptar</Text>
+            </TouchableOpacity>
+          </Dialog.Content>
+        </Dialog>
+
+        <Dialog visible={contactoAgregado} onDismiss={changeContactoAgregado}>
+          <Dialog.Icon icon="check-circle" size={50} />
+          <Dialog.Title style={styles.dialogTitle}>
+            Hecho!
+          </Dialog.Title>
+          <Dialog.Content>
+            <Text style={{ alignSelf: "center" }}>
+            El contacto ha sido añadido correctamente
+            </Text>
+            <TouchableOpacity
+              onPress={changeContactoAgregado}
+              style={{ alignSelf: "center", paddingTop: 30 }}
+            >
+              <Text style={{ fontSize: 20 }}>Aceptar</Text>
+            </TouchableOpacity>
+          </Dialog.Content>
+        </Dialog>
+
     </SafeAreaView>
   );
 };
 
+const styles = StyleSheet.create({
+  dialogTitle: {
+    textAlign: "center",
+  },
+});
 export default BuscarContactos;

@@ -25,6 +25,7 @@ import {
   Searchbar,
   Button,
   ActivityIndicator,
+  Dialog,
 } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BACKEND_URL, MAPS_API } from "@env";
@@ -74,6 +75,30 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
   const [time, setTime] = useState<string>("");
   const [loading, setLoading] = useState(true);
+  const [verificarAuth, setVerificarAuth] = React.useState(false);
+  const changeVerificarAuth = () => setVerificarAuth(!verificarAuth);
+  const [codigoExpirado, setCodigoExpirado] = React.useState(false);
+  const changeCodigoExpirado = () => setCodigoExpirado(!codigoExpirado);
+  const [codigoIncorrecto, setCodigoIncorrecto] = React.useState(false);
+  const changeCodigoIncorrecto = () => setCodigoIncorrecto(!codigoIncorrecto);
+  const [correoNoEnviado, setCorreoNoEnviado] = React.useState(false);
+  const changeCorreoNoEnviado = () => setCorreoNoEnviado(!correoNoEnviado);
+  const [correoIncorrecto, setCorreoIncorrecto] = React.useState(false);
+  const changeCorreoIncorrecto = () => setCorreoIncorrecto(!correoIncorrecto);
+  const [usuarioNoEncontrado, setUsuarioNoEncontrado] = React.useState(false);
+  const changeUsuarioNoEncontrado = () =>
+    setUsuarioNoEncontrado(!usuarioNoEncontrado);
+  const [errorContrasena, setErrorContrasena] = React.useState(false);
+  const changeErrorContrasena = () => setErrorContrasena(!errorContrasena);
+  const [exitoContrasena, setExitoContrasena] = React.useState(false);
+  const changeExitoContrasena = () => setExitoContrasena(!exitoContrasena);
+  const [errorGuardar, setErrorGuardar] = React.useState(false);
+  const changeErrorGuardar = () => setErrorGuardar(!errorGuardar);
+  const [exitoGuardar, setExitoGuardar] = React.useState(false);
+  const changeExitoGuardar = () => setExitoGuardar(!exitoGuardar);
+  const [contrasenaInvalida, setContrasenaInvalida] = React.useState(false);
+  const changeContrasenaInvalida = () =>
+    setContrasenaInvalida(!contrasenaInvalida);
 
   useEffect(() => {
     (async () => {
@@ -90,9 +115,7 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
     })();
   }, []);
 
-  useEffect(() => {
-
-  })
+  useEffect(() => {});
 
   const data = [
     { key: "1", value: "15 minutos" },
@@ -161,21 +184,15 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
     );
 
     if (response.data.code === 404) {
-      Alert.alert(
-        "Error",
-        "Error al verificar el código de autenticación, reenvíe el correo de verificación"
-      );
+      changeVerificarAuth();
       return false;
     }
     if (response.data.code === 403) {
-      Alert.alert(
-        "Error",
-        "El código de autenticación ha expirado, reenvíe el correo de verificación"
-      );
+      changeCodigoExpirado();
       return false;
     }
     if (response.data.code === 401) {
-      Alert.alert("Error", "Código de autenticación incorrecto");
+      changeCodigoIncorrecto();
       return false;
     }
     if (response.data.code === 200) {
@@ -202,7 +219,7 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
     );
 
     if (response.data.code === 500) {
-      Alert.alert("Error", "No se pudo enviar el correo de verificación");
+      changeCorreoNoEnviado();
       return false;
     }
 
@@ -230,11 +247,11 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
     );
 
     if (response.data.code === 500) {
-      Alert.alert("Error", "No se pudo enviar el correo de verificación");
+      changeCorreoNoEnviado();
       return false;
     }
     if (response.data.code === 404) {
-      Alert.alert("Error", "Correo no registrado");
+      changeCodigoIncorrecto();
       return false;
     }
 
@@ -268,15 +285,15 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
         const response = await axios.get(
           `${BACKEND_URL}/obtener-info-usuario/${userID}/${userRol}`
         );
-  
+
         if (response.data.code === 500) {
           console.log("Error en la petición");
           return;
         }
-  
+
         return response.data;
       }
-    }catch (error) {
+    } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
@@ -314,9 +331,9 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
     return (
       <View style={styles.loaderContainer}>
         <LinearGradient
-        colors={["rgba(44,189,191,0.8)", "transparent"]}
-        style={styles.gradient}
-      />
+          colors={["rgba(44,189,191,0.8)", "transparent"]}
+          style={styles.gradient}
+        />
         <ActivityIndicator size="large" color="#fff" />
       </View>
     );
@@ -350,15 +367,15 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
     });
 
     if (response.data.code === 404) {
-      Alert.alert("Error", "No se encontró el usuario");
+      changeUsuarioNoEncontrado();
       return false;
     }
     if (response.data.code === 500) {
-      Alert.alert("Error", "Error al cambiar la contraseña");
+      changeErrorContrasena();
       return false;
     }
     if (response.data.code === 201) {
-      Alert.alert("Éxito", "Contraseña cambiada con éxito");
+      changeExitoContrasena();
       closeModalContraseña();
       return false;
     }
@@ -440,15 +457,15 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
     });
 
     if (response.data.code === 500) {
-      Alert.alert("Error", "Error al guardar los cambios");
+      changeErrorGuardar();
       return false;
     }
     if (response.data.code === 404) {
-      Alert.alert("Error", "No se encontró el usuario");
+      changeUsuarioNoEncontrado();
       return false;
     }
     if (response.data.code === 201) {
-      Alert.alert("Éxito", "Cambios guardados con éxito");
+      changeExitoGuardar();
       navigation.goBack();
       return true;
     }
@@ -633,7 +650,7 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
               outlineColor="#002245"
               activeOutlineColor="#002245"
               readOnly={true}
-              textAlign= "left"
+              textAlign="left"
               left={
                 <TextInput.Icon style={{ marginTop: 10 }} icon="map-marker" />
               }
@@ -645,7 +662,6 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
                 />
               }
             />
-
           </View>
 
           <View style={styles.buttonsContainer}>
@@ -886,10 +902,7 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
                       if (validatePassword()) {
                         changeContraseña();
                       } else {
-                        Alert.alert(
-                          "Error",
-                          "La contraseña no cumple con los requisitos mínimos o no coinciden"
-                        );
+                        changeContrasenaInvalida();
                       }
                     }}
                   >
@@ -1097,6 +1110,184 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
           </View>
         </View>
       </Modal>
+
+      <Dialog visible={verificarAuth} onDismiss={changeVerificarAuth}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ alignSelf: "center" }}>
+            Error al verificar el código de autenticación, reenvíe el correo de
+            verificación
+          </Text>
+          <TouchableOpacity
+            onPress={changeVerificarAuth}
+            style={{ alignSelf: "center", paddingTop: 30 }}
+          >
+            <Text style={{ fontSize: 20 }}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      <Dialog visible={codigoExpirado} onDismiss={changeCodigoExpirado}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ alignSelf: "center" }}>
+            El código de autenticación ha expirado, reenvíe el correo de
+            verificación
+          </Text>
+          <TouchableOpacity
+            onPress={changeCodigoExpirado}
+            style={{ alignSelf: "center", paddingTop: 30 }}
+          >
+            <Text style={{ fontSize: 20 }}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      <Dialog visible={codigoIncorrecto} onDismiss={changeCodigoIncorrecto}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ alignSelf: "center" }}>
+            Código de autenticación incorrecto
+          </Text>
+          <TouchableOpacity
+            onPress={changeCodigoIncorrecto}
+            style={{ alignSelf: "center", paddingTop: 30 }}
+          >
+            <Text style={{ fontSize: 20 }}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      <Dialog visible={correoNoEnviado} onDismiss={changeCorreoNoEnviado}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ alignSelf: "center" }}>
+            No se pudo enviar el correo de verificación
+          </Text>
+          <TouchableOpacity
+            onPress={changeCorreoNoEnviado}
+            style={{ alignSelf: "center", paddingTop: 30 }}
+          >
+            <Text style={{ fontSize: 20 }}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      <Dialog visible={correoIncorrecto} onDismiss={changeCorreoIncorrecto}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ alignSelf: "center" }}>Correo no registrado</Text>
+          <TouchableOpacity
+            onPress={changeCorreoIncorrecto}
+            style={{ alignSelf: "center", paddingTop: 30 }}
+          >
+            <Text style={{ fontSize: 20 }}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      <Dialog
+        visible={usuarioNoEncontrado}
+        onDismiss={changeUsuarioNoEncontrado}
+      >
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ alignSelf: "center" }}>No se encontró el usuario</Text>
+          <TouchableOpacity
+            onPress={changeUsuarioNoEncontrado}
+            style={{ alignSelf: "center", paddingTop: 30 }}
+          >
+            <Text style={{ fontSize: 20 }}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      <Dialog visible={errorContrasena} onDismiss={changeErrorContrasena}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ alignSelf: "center" }}>
+            Error al cambiar la contraseña
+          </Text>
+          <TouchableOpacity
+            onPress={changeErrorContrasena}
+            style={{ alignSelf: "center", paddingTop: 30 }}
+          >
+            <Text style={{ fontSize: 20 }}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      <Dialog visible={exitoContrasena} onDismiss={changeExitoContrasena}>
+        <Dialog.Icon icon="check-circle" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Hecho!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ alignSelf: "center" }}>
+            Contraseña cambiada con éxito
+          </Text>
+          <TouchableOpacity
+            onPress={changeExitoContrasena}
+            style={{ alignSelf: "center", paddingTop: 30 }}
+          >
+            <Text style={{ fontSize: 20 }}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      <Dialog visible={errorGuardar} onDismiss={changeErrorGuardar}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ alignSelf: "center" }}>
+            Error al guardar los cambios
+          </Text>
+          <TouchableOpacity
+            onPress={changeErrorGuardar}
+            style={{ alignSelf: "center", paddingTop: 30 }}
+          >
+            <Text style={{ fontSize: 20 }}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      <Dialog visible={exitoGuardar} onDismiss={changeExitoGuardar}>
+        <Dialog.Icon icon="check-circle" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Hecho!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ alignSelf: "center" }}>
+            Cambios guardados con éxito
+          </Text>
+          <TouchableOpacity
+            onPress={changeExitoGuardar}
+            style={{ alignSelf: "center", paddingTop: 30 }}
+          >
+            <Text style={{ fontSize: 20 }}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      <Dialog visible={contrasenaInvalida} onDismiss={changeContrasenaInvalida}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Hecho!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ alignSelf: "center" }}>
+            La contraseña no cumple con los requisitos mínimos o no coinciden
+          </Text>
+          <TouchableOpacity
+            onPress={changeContrasenaInvalida}
+            style={{ alignSelf: "center", paddingTop: 30 }}
+          >
+            <Text style={{ fontSize: 20 }}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
     </SafeAreaView>
   );
 };
@@ -1321,6 +1512,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#002245",
+  },
+  dialogTitle: {
+    textAlign: "center",
   },
 });
 

@@ -15,7 +15,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import { Searchbar } from "react-native-paper";
 import { BACKEND_URL } from "@env";
 import useDebounce from "../Functions/useDebounce";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const windowHeight = Dimensions.get("window").height;
 const windowWidth = Dimensions.get("window").width;
@@ -44,13 +44,9 @@ const BuscarPacientes = ({
 
   const searchPatients = async () => {
     if (debouncedSearchQuery !== "" && debouncedSearchQuery.length > 2) {
-      const response = await axios.post(
-        BACKEND_URL +
-          "/buscar-pacientes",
-        {
-          searchQuery,
-        }
-      );
+      const response = await axios.post(BACKEND_URL + "/buscar-pacientes", {
+        searchQuery,
+      });
       //console.log(response.data);
       return response.data || [];
     }
@@ -59,13 +55,10 @@ const BuscarPacientes = ({
   const addPatient = async (id: any) => {
     try {
       //console.log("ID del paciente:", id); // Verifica que el ID se pase correctamente
-      const response = await axios.post(
-        BACKEND_URL + "/vincular-paciente",
-        {
-          idFisio: Number(userID),
-          idPaciente: Number(id), // Asegúrate de que el ID sea un número
-        }
-      );
+      const response = await axios.post(BACKEND_URL + "/vincular-paciente", {
+        idFisio: Number(userID),
+        idPaciente: Number(id), // Asegúrate de que el ID sea un número
+      });
       console.log("registrado");
       //console.log(id);
       navigation.navigate("mainFisio");
@@ -82,7 +75,7 @@ const BuscarPacientes = ({
     };
 
     const getUserID = async () => {
-      const id = await AsyncStorage.getItem('idSesion');
+      const id = await AsyncStorage.getItem("idSesion");
       setUserID(id);
     };
 
@@ -137,15 +130,63 @@ const BuscarPacientes = ({
                   />
                 )}
                 <View>
-                  <Text style={stylesMain.datosPacienteMenuFisio}>
+                  <Text
+                    style={[
+                      stylesMain.datosPacienteMenuFisio,
+                      { fontWeight: "bold" },
+                    ]}
+                  >
                     {paciente.nombre} {paciente.apellidos}
                   </Text>
-                  <Text style={stylesMain.datosPacienteMenuFisio}>
-                    proxima cita: {paciente.proximaCita}
-                  </Text>
-                  <Text style={stylesMain.datosPacienteMenuFisio}>
-                    localidad: {paciente.ubicacion}
-                  </Text>
+
+                  {paciente.proximaCita == "Sin cita" ? (
+                    <View />
+                  ) : (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "flex-start",
+                      }}
+                    >
+                      <Icon
+                        name="calendar"
+                        size={20}
+                        color="#000"
+                        style={stylesMain.datosPacienteMenuFisio}
+                      />
+                      <Text
+                        style={{
+                          marginLeft: 5,
+                          marginTop: 7,
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {paciente.proximaCita}
+                      </Text>
+                    </View>
+                  )}
+
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "flex-start",
+                      width: 210,
+                    }}
+                  >
+                    <Icon
+                      name="map-marker"
+                      size={20}
+                      color="#000"
+                      style={stylesMain.datosPacienteMenuFisio}
+                    />
+                    <Text
+                      style={{ marginLeft: 5, marginTop: 7 }}
+                      ellipsizeMode="tail"
+                      numberOfLines={1}
+                    >
+                      {paciente.ubicacion}
+                    </Text>
+                  </View>
                 </View>
               </View>
             </TouchableOpacity>

@@ -7,7 +7,6 @@ import {
   ScrollView,
   ImageBackground,
   StyleSheet,
-  Alert,
 } from "react-native";
 import stylesMain from "../styles/stylesMain";
 import { NavigationProp } from "@react-navigation/native";
@@ -18,7 +17,7 @@ import { RouteProp, useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BACKEND_URL } from "@env";
 import axios from "axios";
-import { ActivityIndicator,} from "react-native-paper";
+import { ActivityIndicator, Dialog,} from "react-native-paper";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 type VerifiedIconProps = {
@@ -62,6 +61,8 @@ const PacientesCompartidos = ({
     const contacto = route.params.contacto;
     const [loading, setLoading] = useState(true);
     const [userID, setUserID] = useState<string | null>(null);
+    const [errorPacientes, setErrorPacientes] = useState(false);
+      const changeErrorPacientes = () => setErrorPacientes(!errorPacientes);
 
     const getPacientes = async () => {
       try {
@@ -71,7 +72,7 @@ const PacientesCompartidos = ({
         console.log("Fetched pacientes:", response.data.pacientes);
         if(response.data.code == 500 ){
           console.log("No se encontraron pacientes");
-          Alert.alert("Ocurrió un error", "intentelo de nuevo más tarde");
+          changeErrorPacientes();
           return;
         }
       
@@ -242,6 +243,25 @@ const PacientesCompartidos = ({
 
       </ScrollView>
       </ImageBackground>
+
+      <Dialog visible={errorPacientes} onDismiss={changeErrorPacientes}>
+          <Dialog.Icon icon="alert" size={50} />
+          <Dialog.Title style={styles.dialogTitle}>
+            Surgio un error!
+          </Dialog.Title>
+          <Dialog.Content>
+            <Text style={{ alignSelf: "center" }}>
+            intentelo de nuevo más tarde
+            </Text>
+            <TouchableOpacity
+              onPress={changeErrorPacientes}
+              style={{ alignSelf: "center", paddingTop: 30 }}
+            >
+              <Text style={{ fontSize: 20 }}>Aceptar</Text>
+            </TouchableOpacity>
+          </Dialog.Content>
+        </Dialog>
+
     </SafeAreaView>
   );
 };
@@ -288,6 +308,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#002245",
+  },
+  dialogTitle: {
+    textAlign: "center",
   },
 });
 

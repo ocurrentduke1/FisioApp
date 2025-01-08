@@ -4,7 +4,6 @@ import {
   ScrollView,
   TouchableOpacity,
   Text,
-  Alert,
   StyleSheet,
   Dimensions,
   Keyboard,
@@ -15,7 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import stylesHistorial from "../styles/stylesHistorial";
 import { BACKEND_URL, MAPS_API } from "@env";
 import axios from "axios";
-import { RadioButton, Searchbar } from "react-native-paper";
+import { Dialog, RadioButton, Searchbar } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { TextInput } from "react-native-paper";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -49,6 +48,8 @@ const RegistrarNuevoPaciente = ({
   const [ModalMaps, setModalMaps] = useState(false);
   const [results, setResults] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [errorServidor, setErrorServidor] = useState(false);
+  const changeErrorServidor = () => setErrorServidor(!errorServidor);
 
   useEffect(() => {
     (async () => {
@@ -133,7 +134,7 @@ const RegistrarNuevoPaciente = ({
       });
 
       if (response.data.code == 500) {
-        Alert.alert("Error en el servidor, intentelo mas tarde");
+        changeErrorServidor();
         return;
       }
       navigation.navigate("mainFisio");
@@ -368,6 +369,25 @@ const RegistrarNuevoPaciente = ({
           </View>
         </View>
       </Modal>
+
+      <Dialog visible={errorServidor} onDismiss={changeErrorServidor}>
+                  <Dialog.Icon icon="alert" size={50} />
+                  <Dialog.Title style={styles.dialogTitle}>
+                  Surgio un error!
+                  </Dialog.Title>
+                  <Dialog.Content>
+                    <Text style={{ alignSelf: "center" }}>
+                    Error en el servidor, intentelo mas tarde
+                    </Text>
+                    <TouchableOpacity
+                      onPress={changeErrorServidor}
+                      style={{ alignSelf: "center", paddingTop: 30 }}
+                    >
+                      <Text style={{ fontSize: 20 }}>Aceptar</Text>
+                    </TouchableOpacity>
+                  </Dialog.Content>
+                </Dialog>
+
     </SafeAreaView>
   );
 };
@@ -431,6 +451,9 @@ const styles = StyleSheet.create({
     bottom: 20,
     right: 20,
     backgroundColor: "#2196F3",
+  },
+  dialogTitle: {
+    textAlign: "center",
   },
 });
 
