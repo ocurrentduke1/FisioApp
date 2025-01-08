@@ -8,6 +8,7 @@ import {
   Image,
   Modal,
   StyleSheet,
+  Platform,
   Keyboard,
   Dimensions,
 } from "react-native";
@@ -73,6 +74,9 @@ export default function RegistrarPersonales({
   } else if (location) {
     text = JSON.stringify(location);
   }
+
+  console.log("Latitud: ", initialLat);
+  console.log("Longitud: ", initialLng);
 
   const ASPECT_RATIO = width / height;
   const LATITUDE_DELTA = 0.0922;
@@ -145,11 +149,8 @@ export default function RegistrarPersonales({
           headers: { "Access-Control-Allow-Origin": "*" },
         }
       );
-if (response.data.code == 400) {
-    Alert.alert("Correo ya registrado");
-    return;
-}
-Alert.alert("Cuenta creada exitosamente");
+      console.log(response.data);
+      changeCuentaCreada();
       navigation.navigate("login");
     }
   };
@@ -209,6 +210,7 @@ Alert.alert("Cuenta creada exitosamente");
   const saveLocation = async () => {
     setAddress(selectedLocation ?? "");
     setSearchQuery("");
+    console.log("domicilio: ", selectedLocation);
     toggleMaps();
   };
 
@@ -223,10 +225,11 @@ Alert.alert("Cuenta creada exitosamente");
     try{
       const response = await fetch(url);
       const json = await response.json();
-
+      // console.log(json);
       if(json && json.results){
         const coords: LatLng[] = []
         for(const item of json.results){
+          console.log(item);
           coords.push({
             latitude: item.geometry.location.lat,
             longitude: item.geometry.location.lng,
@@ -514,9 +517,9 @@ Alert.alert("Cuenta creada exitosamente");
 
       <Dialog visible={cuentaCreada} onDismiss={changeCuentaCreada}>
         <Dialog.Icon icon="check-circle" size={50} />
-        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Title style={styles.dialogTitle}> Hecho!</Dialog.Title>
         <Dialog.Content>
-          <Text style={{alignSelf: "center"}}>no se encontro el usuario</Text>
+          <Text style={{alignSelf: "center"}}>Cuenta creada exitosamente</Text>
           <TouchableOpacity onPress={changeCuentaCreada} style={{alignSelf: "center", paddingTop: 30}} >
             <Text style={{fontSize: 20}}>Aceptar</Text>
           </TouchableOpacity>

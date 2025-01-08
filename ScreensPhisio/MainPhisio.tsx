@@ -161,6 +161,14 @@ export default function MainPhisio({
       }
     });
 
+    const navigate = async (paciente) =>{
+    
+        paciente.id = paciente.id.substring(0, paciente.id.length - 1);
+    
+        navigation.navigate("HistorialPaciente", { paciente })
+    
+      };
+
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
@@ -194,7 +202,7 @@ export default function MainPhisio({
                       ...stylesMain.datosFisio,
                     }}
                     onPress={() =>
-                      navigation.navigate("HistorialPaciente", { paciente })
+                      navigate(paciente)
                     }
                   >
                     <View

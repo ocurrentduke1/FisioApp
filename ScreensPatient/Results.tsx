@@ -1,12 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, {} from "react";
 import {
   View,
-  ScrollView,
-  TextInput,
   TouchableOpacity,
   Text,
   StyleSheet,
-  Alert,
 } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -23,11 +20,6 @@ const Results = ({
 }) => {
   const { results } = route.params as { results: any };
 
-  const SaveResults = () => {
-    Alert.alert("Registro guardado");
-    navigation.navigate("VerExpedientePaciente");
-  };
-
   return (
     <SafeAreaView style={stylesHistorial.container}>
       <View style={stylesHistorial.containerRegistro}>
@@ -37,19 +29,19 @@ const Results = ({
         <Text style={styles.Text}>Recomendacion de tratamiento</Text>
         <Text style={styles.Text}>{results.recomendacion}</Text>
       </View>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={[stylesHistorial.button, { marginTop: 0 }]}
         onPress={SaveResults}
       >
         <Text style={stylesHistorial.buttonText}>Guardar Registro</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <TouchableOpacity
         style={[stylesHistorial.button, { marginTop: 0 }]}
         onPress={() => {
           navigation.navigate("VerExpedientePaciente");
         }}
       >
-        <Text style={stylesHistorial.buttonText}>salir</Text>
+        <Text style={stylesHistorial.buttonText}>Regresar</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );

@@ -550,7 +550,7 @@ export function RecoveryPass({
               <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
               <Dialog.Content>
                 <Text style={{ alignSelf: "center" }}>
-                Correo no registrado
+                La contraseña no cumple con los requisitos mínimos o no coinciden
                 </Text>
                 <TouchableOpacity
                   onPress={changeContrasenaInvalida}
