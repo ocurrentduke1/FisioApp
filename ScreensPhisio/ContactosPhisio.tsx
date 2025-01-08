@@ -52,7 +52,6 @@ const ContactosPhisio = ({
   const getContacts = async () => {
     try {
       const response = await axios.get(`${BACKEND_URL}/contactos/${userID}`);
-      console.log("Fetched contacts:", response.data.contactos);
       setContacts(response.data.contactos);
     } catch (error) {
       console.error("Error fetching contacts:", error);

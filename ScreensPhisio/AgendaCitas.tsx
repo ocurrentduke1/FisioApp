@@ -51,12 +51,18 @@ export default function AgendaCitas({
 
   const fetchData = async () => {
     const pacientes = await getPatients();
+
     setDataPatients(pacientes);
     
     const datosDelServidor = await obtenerCitas();
     setCitas(datosDelServidor);
     
   };
+
+  function convertToISO(dateStr: string) {
+    const [day, month, year] = dateStr.split('/');  // Suponiendo el formato DD/MM/YYYY
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  }
 
   const getPatients = async () => {
     if (userID) {
@@ -118,7 +124,7 @@ export default function AgendaCitas({
   const [modalAdd, setModalAdd] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
   const [dateTo, setDateTo] = useState("");
-  const [selectedDate, setSelectedDate] = useState(new Date().toDateString());
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   const [patient, setPatient] = useState("");
   const [openPatient, setOpenPatient] = useState(false);
@@ -128,6 +134,7 @@ export default function AgendaCitas({
   const [time, setTime] = useState("");
   const [duration, setDuration] = useState(0);
   const [dataHours, setDataHours] = useState([]);
+  const [fechaFormateada, setFechaFormateada] = useState("");
 
   const [dataPatients, setDataPatients] = useState<
     {
@@ -300,7 +307,6 @@ export default function AgendaCitas({
       return;
     }
 
-
     closeAdd();
     fetchData();
     setLocation("");
@@ -345,6 +351,30 @@ export default function AgendaCitas({
   };
 
   const { width } = useWindowDimensions();
+
+  const convertirFecha = () => {
+    const days = [
+      "Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"
+    ];
+    const months = [
+      "enero", "febrero", "marzo", "abril", "mayo", "junio",
+      "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+    ];
+
+    const date = new Date(selectedDate);
+    const diaSemana = days[date.getDay() + 1]; // Día de la semana
+    const diaMes = date.getDate() + 1; // Día del mes
+    const mes = months[date.getMonth()]; // Nombre del mes
+    const anio = date.getFullYear(); // Año
+
+    // Actualiza el estado de la fecha formateada
+    setFechaFormateada(`${diaSemana} ${diaMes} de ${mes} del ${anio}`);
+  };
+
+  useEffect(() => {
+    convertirFecha(); 
+  }, [selectedDate, fechaFormateada]); 
+
 
   return (
     <View style={styles.container}>
@@ -544,7 +574,7 @@ export default function AgendaCitas({
               <Icon name="calendar" size={20} color="#000" />
               <Text>
                 {" "}
-                {new Date(selectedDate).toISOString().substring(0, 10)}
+                { fechaFormateada }
               </Text>
             </View>
             <DropDownPicker
@@ -557,7 +587,12 @@ export default function AgendaCitas({
               }}
               setOpen={setOpenPatient}
               multiple={false}
-              items={dataPatients.map((patient) => ({
+              items={dataPatients.filter((paciente) => {
+                if(paciente.proximaCita === 'Sin cita') {
+                  return true;
+                }
+                return new Date(convertToISO(paciente.proximaCita)).toLocaleDateString() > new Date(selectedDate).toLocaleDateString()
+              }).map((patient) => ({
                 label: patient.nombre + " " + patient.apellidos,
                 value: patient.id,
                 Icon: () => (
