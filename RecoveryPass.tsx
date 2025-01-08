@@ -6,7 +6,6 @@ import {
   View,
   TouchableOpacity,
   Image,
-  Alert,
   Modal,
   StyleSheet,
   Dimensions,
@@ -14,7 +13,7 @@ import {
 } from "react-native";
 import stylesLogin from "./styles/stylesLogin";
 import { NavigationProp } from "@react-navigation/native";
-import { TextInput } from "react-native-paper";
+import { Dialog, TextInput } from "react-native-paper";
 import { BACKEND_URL } from "@env";
 import stylesMain from "./styles/stylesMain";
 import { LinearGradient } from "expo-linear-gradient";
@@ -38,6 +37,24 @@ export function RecoveryPass({
   const [timeLeft, setTimeLeft] = useState(60);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [showEmailRequirements, setShowEmailRequirements] = useState(false);
+  const [sinUsuario, setSinUsuario] = React.useState(false);
+  const changeSinUsuario = () => setSinUsuario(!sinUsuario);
+  const [cambiarContrasena, setCambiarContrasena] = React.useState(false);
+  const changeCambiarContrasena = () => setCambiarContrasena(!cambiarContrasena);
+  const [verificarAuth, setVerificarAuth] = React.useState(false);
+  const changeVerificarAuth = () => setVerificarAuth(!verificarAuth);
+  const [codigoExpirado, setCodigoExpirado] = React.useState(false);
+  const changeCodigoExpirado = () => setCodigoExpirado(!codigoExpirado);
+  const [codigoIncorrecto, setCodigoIncorrecto] = React.useState(false);
+  const changeCodigoIncorrecto = () => setCodigoIncorrecto(!codigoIncorrecto);
+  const [correoNoEnviado, setCorreoNoEnviado] = React.useState(false);
+  const changeCorreoNoEnviado = () => setCorreoNoEnviado(!correoNoEnviado);
+  const [correoNoRegistrado, setCorreoNoRegistrado] = React.useState(false);
+  const changeNoRegistrado = () => setCorreoNoRegistrado(!correoNoRegistrado);
+  const [correoNoValido, setCorreoNoValido] = React.useState(false);
+  const changeNoValido = () => setCorreoNoValido(!correoNoValido);
+  const [contrasenaInvalida, setContrasenaInvalida] = React.useState(false);
+  const changeContrasenaInvalida = () => setContrasenaInvalida(!contrasenaInvalida);
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -68,11 +85,11 @@ export function RecoveryPass({
     });
 
     if (response.data.code == 404) {
-      Alert.alert("Error", "no se encontro el usuario");
+      changeSinUsuario();
       return false;
     }
     if (response.data.code == 500) {
-      Alert.alert("Error", "Error al cambiar la contraseña");
+      changeCambiarContrasena();
       return false;
     }
     if (response.data.code == 201) {
@@ -121,21 +138,15 @@ export function RecoveryPass({
     console.log(response.data);
 
     if (response.data.code == 404) {
-      Alert.alert(
-        "Error",
-        "Error al verificar el código de autenticación, reenvíe el correo de verificación"
-      );
+      changeVerificarAuth();
       return false;
     }
     if (response.data.code == 403) {
-      Alert.alert(
-        "Error",
-        "El código de autenticación ha expirado, reenvíe el correo de verificación"
-      );
+      changeCodigoExpirado();
       return false;
     }
     if (response.data.code == 401) {
-      Alert.alert("Error", "Codigo de autenticación incorrecto");
+      changeCodigoIncorrecto();
       return false;
     }
     if (response.data.code == 200) {
@@ -160,11 +171,11 @@ export function RecoveryPass({
     console.log("enviado");
 
     if (response.data.code == 500) {
-      Alert.alert("Error", "No se pudo enviar el correo de verificación");
+      changeCorreoNoEnviado();
       return false;
     }
     if (response.data.code == 404) {
-      Alert.alert("Error", "Correo no registrado");
+      changeNoRegistrado();
       return false;
     }
 
@@ -185,7 +196,7 @@ export function RecoveryPass({
     console.log("enviado");
 
     if (response.data.code == 500) {
-      Alert.alert("Error", "No se pudo enviar el correo de verificación");
+      changeCorreoNoEnviado();
       return false;
     }
 
@@ -357,7 +368,7 @@ export function RecoveryPass({
         style={[stylesLogin.button, { paddingHorizontal: 70 }]}
         onPress={() => {
           if (!validateEmail(email)) {
-            Alert.alert("Error", "Correo electrónico no válido");
+            changeNoValido();
           } else {
             // if(auth){
             //   console.log(registerData);
@@ -425,10 +436,7 @@ export function RecoveryPass({
                 style={[styles.button, styles.buttonSearch]}
                 onPress={() => {
                   if (!validatePassword()) {
-                    Alert.alert(
-                      "Error",
-                      "Error al cambiar la contraseña, verifique que las contraseñas coincidan y cumplan con los requisitos"
-                    );
+                    changeContrasenaInvalida();
                   } else {
                     changeContraseña();
                   }
@@ -440,6 +448,134 @@ export function RecoveryPass({
           </View>
         </View>
       </Modal>
+
+      {/* Dialogo de codigo incorrecto */}
+      <Dialog visible={sinUsuario} onDismiss={changeSinUsuario}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{alignSelf: "center"}}>no se encontro el usuario</Text>
+          <TouchableOpacity onPress={changeSinUsuario} style={{alignSelf: "center", paddingTop: 30}} >
+            <Text style={{fontSize: 20}}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      {/* Dialogo de codigo incorrecto */}
+      <Dialog visible={cambiarContrasena} onDismiss={changeCambiarContrasena}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{alignSelf: "center"}}>Error al cambiar la contraseña</Text>
+          <TouchableOpacity onPress={changeCambiarContrasena} style={{alignSelf: "center", paddingTop: 30}} >
+            <Text style={{fontSize: 20}}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      {/* Dialogo de error al verificar*/}
+      <Dialog visible={verificarAuth} onDismiss={changeVerificarAuth}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{alignSelf: "center"}}>Error al verificar el código de autenticación, reenvíe el correo de verificación</Text>
+          <TouchableOpacity onPress={changeVerificarAuth} style={{alignSelf: "center", paddingTop: 30}} >
+            <Text style={{fontSize: 20}}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      {/* Dialogo de codigo expirado*/}
+      <Dialog visible={codigoExpirado} onDismiss={changeCodigoExpirado}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{alignSelf: "center"}}>El código de autenticación ha expirado, reenvíe el correo de verificación</Text>
+          <TouchableOpacity onPress={changeCodigoExpirado} style={{alignSelf: "center", paddingTop: 30}} >
+            <Text style={{fontSize: 20}}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      {/* Dialogo de codigo incorrecto */}
+      <Dialog visible={codigoIncorrecto} onDismiss={changeCodigoIncorrecto}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{alignSelf: "center"}}>Codigo de autenticación incorrecto</Text>
+          <TouchableOpacity onPress={changeCodigoIncorrecto} style={{alignSelf: "center", paddingTop: 30}} >
+            <Text style={{fontSize: 20}}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      {/* Dialogo de codigo incorrecto */}
+            <Dialog visible={correoNoEnviado} onDismiss={changeCorreoNoEnviado}>
+              <Dialog.Icon icon="alert" size={50} />
+              <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+              <Dialog.Content>
+                <Text style={{ alignSelf: "center" }}>
+                  No se pudo enviar el correo de verificación
+                </Text>
+                <TouchableOpacity
+                  onPress={changeCorreoNoEnviado}
+                  style={{ alignSelf: "center", paddingTop: 30 }}
+                >
+                  <Text style={{ fontSize: 20 }}>Aceptar</Text>
+                </TouchableOpacity>
+              </Dialog.Content>
+            </Dialog>
+
+            {/* Dialogo de codigo incorrecto */}
+            <Dialog visible={correoNoRegistrado} onDismiss={changeNoRegistrado}>
+              <Dialog.Icon icon="alert" size={50} />
+              <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+              <Dialog.Content>
+                <Text style={{ alignSelf: "center" }}>
+                Correo no registrado
+                </Text>
+                <TouchableOpacity
+                  onPress={changeNoRegistrado}
+                  style={{ alignSelf: "center", paddingTop: 30 }}
+                >
+                  <Text style={{ fontSize: 20 }}>Aceptar</Text>
+                </TouchableOpacity>
+              </Dialog.Content>
+            </Dialog>
+
+            {/* Dialogo de codigo incorrecto */}
+            <Dialog visible={correoNoValido} onDismiss={changeNoValido}>
+              <Dialog.Icon icon="alert" size={50} />
+              <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+              <Dialog.Content>
+                <Text style={{ alignSelf: "center" }}>
+                Correo no registrado
+                </Text>
+                <TouchableOpacity
+                  onPress={changeNoValido}
+                  style={{ alignSelf: "center", paddingTop: 30 }}
+                >
+                  <Text style={{ fontSize: 20 }}>Aceptar</Text>
+                </TouchableOpacity>
+              </Dialog.Content>
+            </Dialog>
+
+            {/* Dialogo de codigo incorrecto */}
+            <Dialog visible={contrasenaInvalida} onDismiss={changeContrasenaInvalida}>
+              <Dialog.Icon icon="alert" size={50} />
+              <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+              <Dialog.Content>
+                <Text style={{ alignSelf: "center" }}>
+                Correo no registrado
+                </Text>
+                <TouchableOpacity
+                  onPress={changeContrasenaInvalida}
+                  style={{ alignSelf: "center", paddingTop: 30 }}
+                >
+                  <Text style={{ fontSize: 20 }}>Aceptar</Text>
+                </TouchableOpacity>
+              </Dialog.Content>
+            </Dialog>
 
       <StatusBar style="auto" />
     </View>
@@ -577,5 +713,8 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     height: 200
+  },
+  dialogTitle: {
+    textAlign: 'center',
   },
 });

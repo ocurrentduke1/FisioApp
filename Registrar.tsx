@@ -6,7 +6,6 @@ import {
   View,
   TouchableOpacity,
   Image,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Dimensions,
@@ -16,7 +15,7 @@ import {
 } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import stylesLogin from "./styles/stylesLogin";
-import { TextInput } from "react-native-paper";
+import { Dialog, TextInput } from "react-native-paper";
 import { BACKEND_URL } from "@env";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -43,6 +42,20 @@ export default function Registrar({
   const [ShowRequirements, setShowRequirements] = useState(false);
   const [showConfirmRequirements, setShowConfirmRequirements] = useState(false);
   const [showEmailRequirements, setShowEmailRequirements] = useState(false);
+  const [verificarAuth, setVerificarAuth] = React.useState(false);
+  const changeVerificarAuth = () => setVerificarAuth(!verificarAuth);
+  const [codigoExpirado, setCodigoExpirado] = React.useState(false);
+  const changeCodigoExpirado = () => setCodigoExpirado(!codigoExpirado);
+  const [codigoIncorrecto, setCodigoIncorrecto] = React.useState(false);
+  const changeCodigoIncorrecto = () => setCodigoIncorrecto(!codigoIncorrecto);
+  const [correoNoEnviado, setCorreoNoEnviado] = React.useState(false);
+  const changeCorreoNoEnviado = () => setCorreoNoEnviado(!correoNoEnviado);
+  const [correoRegistrado, setCorreoRegistrado] = React.useState(false);
+  const changeCorreoRegistrado = () => setCorreoRegistrado(!correoRegistrado);
+  const [correoIncorrecto, setCorreoIncorrecto] = React.useState(false);
+  const changeCorreoIncorrecto = () => setCorreoIncorrecto(!correoIncorrecto);
+  const [contrasenasNoCoinciden, setContrasenasNoCoinciden] = React.useState(false);
+  const changeContrasenasNoCoinciden = () => setContrasenasNoCoinciden(!contrasenasNoCoinciden);
 
   const requirements = [
     {
@@ -99,21 +112,15 @@ export default function Registrar({
     console.log(response.data);
 
     if (response.data.code == 404) {
-      Alert.alert(
-        "Error",
-        "Error al verificar el código de autenticación, reenvíe el correo de verificación"
-      );
+      changeVerificarAuth();
       return false;
     }
     if (response.data.code == 403) {
-      Alert.alert(
-        "Error",
-        "El código de autenticación ha expirado, reenvíe el correo de verificación"
-      );
+      changeCodigoExpirado();
       return false;
     }
     if (response.data.code == 401) {
-      Alert.alert("Error", "Codigo de autenticación incorrecto");
+      changeCodigoIncorrecto();
       return false;
     }
 
@@ -142,7 +149,7 @@ export default function Registrar({
     console.log("enviado");
 
     if (response.data.code == 500) {
-      Alert.alert("Error", "No se pudo enviar el correo de verificación");
+      changeCorreoNoEnviado();
       return false;
     }
 
@@ -212,11 +219,11 @@ export default function Registrar({
     console.log("enviado");
 
     if (response.data.code == 409) {
-      Alert.alert("Error", "Correo ya registrado");
+      changeCorreoRegistrado();
       return false;
     }
     if (response.data.code == 500) {
-      Alert.alert("Error", "No se pudo enviar el correo de verificación");
+      changeCorreoNoEnviado();
       return false;
     }
 
@@ -473,16 +480,13 @@ export default function Registrar({
           onPress={() => {
             if (validatePassword()) {
               if (!validateEmail(email)) {
-                Alert.alert("Error", "Correo electrónico no válido");
+                changeCorreoIncorrecto();
               } else {
                 sendEmail();
                 setModalAuth(true);
               }
             } else {
-              Alert.alert(
-                "Error",
-                "La contraseña no cumple con los requisitos minimos o no coinciden"
-              );
+              changeContrasenasNoCoinciden();
             }
           }}
           disabled={!validateData()}
@@ -498,6 +502,126 @@ export default function Registrar({
         </TouchableOpacity>
         <StatusBar style="auto" />
       </KeyboardAvoidingView>
+
+      {/* Dialogo de correo incorrecto*/}
+      <Dialog visible={correoIncorrecto} onDismiss={changeCorreoIncorrecto}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ alignSelf: "center" }}>
+            Correo o contraseña incorrectos
+          </Text>
+          <TouchableOpacity
+            onPress={changeCorreoIncorrecto}
+            style={{ alignSelf: "center", paddingTop: 30 }}
+          >
+            <Text style={{ fontSize: 20 }}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      {/* Dialogo de correo incorrecto*/}
+      <Dialog visible={verificarAuth} onDismiss={changeVerificarAuth}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ alignSelf: "center" }}>
+          Error al verificar el código de autenticación, reenvíe el correo de verificación
+          </Text>
+          <TouchableOpacity
+            onPress={changeVerificarAuth}
+            style={{ alignSelf: "center", paddingTop: 30 }}
+          >
+            <Text style={{ fontSize: 20 }}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      {/* Dialogo de correo incorrecto*/}
+      <Dialog visible={codigoExpirado} onDismiss={changeCodigoExpirado}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ alignSelf: "center" }}>
+          El código de autenticación ha expirado, reenvíe el correo de verificación
+          </Text>
+          <TouchableOpacity
+            onPress={changeCodigoExpirado}
+            style={{ alignSelf: "center", paddingTop: 30 }}
+          >
+            <Text style={{ fontSize: 20 }}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      {/* Dialogo de correo incorrecto*/}
+      <Dialog visible={correoNoEnviado} onDismiss={changeCorreoNoEnviado}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ alignSelf: "center" }}>
+          No se pudo enviar el correo de verificación
+          </Text>
+          <TouchableOpacity
+            onPress={changeCorreoNoEnviado}
+            style={{ alignSelf: "center", paddingTop: 30 }}
+          >
+            <Text style={{ fontSize: 20 }}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      {/* Dialogo de correo incorrecto*/}
+      <Dialog visible={codigoIncorrecto} onDismiss={changeCodigoIncorrecto}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ alignSelf: "center" }}>
+          Codigo de autenticación incorrecto
+          </Text>
+          <TouchableOpacity
+            onPress={changeCodigoIncorrecto}
+            style={{ alignSelf: "center", paddingTop: 30 }}
+          >
+            <Text style={{ fontSize: 20 }}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      {/* Dialogo de correo incorrecto*/}
+      <Dialog visible={correoRegistrado} onDismiss={changeCorreoRegistrado}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ alignSelf: "center" }}>
+          Correo ya registrado
+          </Text>
+          <TouchableOpacity
+            onPress={changeCorreoRegistrado}
+            style={{ alignSelf: "center", paddingTop: 30 }}
+          >
+            <Text style={{ fontSize: 20 }}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      {/* Dialogo de correo incorrecto*/}
+      <Dialog visible={contrasenasNoCoinciden} onDismiss={changeContrasenasNoCoinciden}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ alignSelf: "center" }}>
+          La contraseña no cumple con los requisitos minimos o no coinciden
+          </Text>
+          <TouchableOpacity
+            onPress={changeContrasenasNoCoinciden}
+            style={{ alignSelf: "center", paddingTop: 30 }}
+          >
+            <Text style={{ fontSize: 20 }}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
     </SafeAreaView>
   );
 }
@@ -610,5 +734,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#c5cae9', 
     marginRight: 5,
     marginTop: 3,
+  },
+  dialogTitle: {
+    textAlign: "center",
   },
 });

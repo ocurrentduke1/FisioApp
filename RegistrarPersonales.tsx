@@ -6,10 +6,8 @@ import {
   View,
   TouchableOpacity,
   Image,
-  Alert,
   Modal,
   StyleSheet,
-  Platform,
   Keyboard,
   Dimensions,
 } from "react-native";
@@ -18,7 +16,7 @@ import { RouteProp } from "@react-navigation/native";
 import { SelectList } from "react-native-dropdown-select-list";
 import { BACKEND_URL, MAPS_API } from "@env";
 import stylesLogin from "./styles/stylesLogin";
-import { Searchbar, TextInput } from "react-native-paper";
+import { Dialog, Searchbar, TextInput } from "react-native-paper";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import MapView, { LatLng, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from 'expo-location';
@@ -50,6 +48,8 @@ export default function RegistrarPersonales({
   const [initialLat, setInitialLat] = useState<number | undefined>(undefined);
   const [initialLng, setInitialLng] = useState<number | undefined>(undefined);
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+  const [cuentaCreada, setCuentaCreada] = React.useState(false);
+    const changeCuentaCreada = () => setCuentaCreada(!cuentaCreada);
 
   useEffect(() => {
     (async () => {
@@ -136,6 +136,7 @@ export default function RegistrarPersonales({
         }
       );
 
+      changeCuentaCreada();
       navigation.navigate("registrarTarjeta", {
         registerDataPhisio: registerDataPhisio,
       });
@@ -147,13 +148,8 @@ export default function RegistrarPersonales({
           headers: { "Access-Control-Allow-Origin": "*" },
         }
       );
-      if (response.data.code == 400) {
-        console.log(response.data);
-        Alert.alert("Correo ya registrado");
-        return;
-      }
       console.log(response.data);
-      Alert.alert("Cuenta creada exitosamente");
+      changeCuentaCreada();
       navigation.navigate("login");
     }
   };
@@ -533,6 +529,18 @@ export default function RegistrarPersonales({
           </View>
         </View>
       </Modal>
+
+      <Dialog visible={cuentaCreada} onDismiss={changeCuentaCreada}>
+        <Dialog.Icon icon="check-circle" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{alignSelf: "center"}}>no se encontro el usuario</Text>
+          <TouchableOpacity onPress={changeCuentaCreada} style={{alignSelf: "center", paddingTop: 30}} >
+            <Text style={{fontSize: 20}}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
     </View>
   );
 }
@@ -626,5 +634,8 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     textAlign: "center",
+  },
+  dialogTitle: {
+    textAlign: 'center',
   },
 });

@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   Text,
   StyleSheet,
-  Alert,
 } from "react-native";
 import { NavigationProp, RouteProp } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";

@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   Text,
   StyleSheet,
-  Alert,
 } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import { RouteProp } from "@react-navigation/native";

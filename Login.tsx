@@ -6,18 +6,16 @@ import {
   View,
   TouchableOpacity,
   Image,
-  Alert,
   Platform,
   Modal,
   StyleSheet,
-  Button,
 } from "react-native";
 import stylesLogin from "./styles/stylesLogin";
 import { NavigationProp } from "@react-navigation/native";
 import { BACKEND_URL } from "@env";
 import JWT, { SupportedAlgorithms } from "expo-jwt";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { TextInput } from "react-native-paper";
+import { Dialog, TextInput } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
 
 export function Login({ navigation }: { navigation: NavigationProp<any> }) {
@@ -31,6 +29,17 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
   const [timeLeft, setTimeLeft] = useState(60);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  const [correoIncorrecto, setCorreoIncorrecto] = React.useState(false);
+  const changeCorreoIncorrecto = () => setCorreoIncorrecto(!correoIncorrecto);
+  const [verificarAuth, setVerificarAuth] = React.useState(false);
+  const changeVerificarAuth = () => setVerificarAuth(!verificarAuth);
+  const [codigoExpirado, setCodigoExpirado] = React.useState(false);
+  const changeCodigoExpirado = () => setCodigoExpirado(!codigoExpirado);
+  const [codigoIncorrecto, setCodigoIncorrecto] = React.useState(false);
+  const changeCodigoIncorrecto = () => setCodigoIncorrecto(!codigoIncorrecto);
+  const [correoNoEnviado, setCorreoNoEnviado] = React.useState(false);
+  const changeCorreoNoEnviado = () => setCorreoNoEnviado(!correoNoEnviado);
+
   const handleAuthCodeChange = (index: number, value: string) => {
     const newAuthCode = [...authCode];
     newAuthCode[index] = value;
@@ -41,49 +50,58 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
     }
   };
 
-  {/* Función para verificar el código de autenticación */}
+  {
+    /* Función para verificar el código de autenticación */
+  }
   const verifyAuthCode = async () => {
     const enteredCode = authCode.join("");
-    const response = await axios.post(BACKEND_URL + "/verificar-login-codigo", {
-      codigo: enteredCode,
-      destinatario: email,
-    },
-    {
-      headers: { "User-Agent": Platform.OS + "/" + Platform.Version },
-    }
-  );
+    const response = await axios.post(
+      BACKEND_URL + "/verificar-login-codigo",
+      {
+        codigo: enteredCode,
+        destinatario: email,
+      },
+      {
+        headers: { "User-Agent": Platform.OS + "/" + Platform.Version },
+      }
+    );
 
     console.log(response.data);
 
     if (response.data.code == 404) {
-      Alert.alert("Error", "Error al verificar el código de autenticación, reenvíe el correo de verificación");
+      changeVerificarAuth();
       return false;
     }
     if (response.data.code == 403) {
-      Alert.alert("Error", "El código de autenticación ha expirado, reenvíe el correo de verificación");
+      changeCodigoExpirado();
       return false;
     }
     if (response.data.code == 401) {
-      Alert.alert("Error", "Codigo de autenticación incorrecto");
+      changeCodigoIncorrecto();
       return false;
     }
-    if(response.data.code == 200){
+    if (response.data.code == 200) {
       loggin();
       setModalAuth(false);
       setAuthCode(["", "", "", "", ""]);
     }
   };
 
-  {/* Reenviar correo de verificación */}
+  {
+    /* Reenviar correo de verificación */
+  }
   const reSendEmail = async () => {
-    const response = await axios.post(BACKEND_URL + "/enviar-correo-verificacion", {
-      destinatario: email,
-    });
+    const response = await axios.post(
+      BACKEND_URL + "/enviar-correo-verificacion",
+      {
+        destinatario: email,
+      }
+    );
 
     console.log("enviado");
 
     if (response.data.code == 500) {
-      Alert.alert("Error", "No se pudo enviar el correo de verificación");
+      changeCorreoNoEnviado();
       return false;
     }
 
@@ -101,8 +119,7 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
         return prevTime - 1;
       });
     }, 1000);
-
-  }
+  };
 
   useEffect(() => {
     return () => {
@@ -130,7 +147,9 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
         }
         const tipoUsuario = await AsyncStorage.getItem("tipoUsuario");
         navigation.navigate(
-          tipoUsuario === "fisioterapeuta" ? "mainFisio" : "VerExpedientePaciente"
+          tipoUsuario === "fisioterapeuta"
+            ? "mainFisio"
+            : "VerExpedientePaciente"
         );
       }
     };
@@ -156,10 +175,10 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
         }
       );
 
-       console.log(response.data);
+      console.log(response.data);
 
       if (response.data.code == 404 || response.data.code == 500) {
-        Alert.alert("Correo o contraseña incorrectos");
+        changeCorreoIncorrecto();
         return;
       }
 
@@ -169,27 +188,26 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
 
       if (response.data.code == 200) {
         const { key, token } = response.data;
-      const jwtDecode = JWT.decode(token, key);
-      await AsyncStorage.setItem("idSesion", jwtDecode.id.toString());
-      await AsyncStorage.setItem("tipoUsuario", jwtDecode.tipoUsuario);
-      const imageBuffer = jwtDecode.base64Image;
-      const uri = `data:image/${jwtDecode.extension};base64,${imageBuffer}`;
-      await AsyncStorage.setItem("photoPerfil", uri);
-      // console.log("uri", uri);
-      if (jwtDecode?.exp) {
-        await AsyncStorage.setItem("expiracion", jwtDecode.exp.toString());
-      }
+        const jwtDecode = JWT.decode(token, key);
+        await AsyncStorage.setItem("idSesion", jwtDecode.id.toString());
+        await AsyncStorage.setItem("tipoUsuario", jwtDecode.tipoUsuario);
+        const imageBuffer = jwtDecode.base64Image;
+        const uri = `data:image/${jwtDecode.extension};base64,${imageBuffer}`;
+        await AsyncStorage.setItem("photoPerfil", uri);
+        // console.log("uri", uri);
+        if (jwtDecode?.exp) {
+          await AsyncStorage.setItem("expiracion", jwtDecode.exp.toString());
+        }
 
-      // console.log("jwt local: ", JSON.stringify(jwtDecode));
-      // console.log("jwt servidor", response.data);
+        // console.log("jwt local: ", JSON.stringify(jwtDecode));
+        // console.log("jwt servidor", response.data);
 
-      navigation.navigate(
-        jwtDecode.tipoUsuario === "fisioterapeuta"
-          ? "mainFisio"
-          : "VerExpedientePaciente"
-      );
+        navigation.navigate(
+          jwtDecode.tipoUsuario === "fisioterapeuta"
+            ? "mainFisio"
+            : "VerExpedientePaciente"
+        );
       }
-      
     } catch (error) {
       console.error(error);
     }
@@ -215,21 +233,24 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
         source={require("./assets/logoFisioApp.png")}
       />
       <LinearGradient
-        colors={['rgba(44,189,191,0.8)', 'transparent']}
+        colors={["rgba(44,189,191,0.8)", "transparent"]}
         start={{ x: 0, y: 1 }}
         end={{ x: 0, y: 0 }}
         style={styles.gradient}
       />
       <View style={stylesLogin.datos}>
-        
-        <Text style={{
-          color: '#FFF',
-          height: 50,
-          textShadowColor: '#000',
-          textShadowRadius: 20,
-          fontSize: 30,
-          fontWeight: 'bold'
-          }}>{'Bienvenido de nuevo'}</Text>
+        <Text
+          style={{
+            color: "#FFF",
+            height: 50,
+            textShadowColor: "#000",
+            textShadowRadius: 20,
+            fontSize: 30,
+            fontWeight: "bold",
+          }}
+        >
+          {"Bienvenido de nuevo"}
+        </Text>
         <TextInput
           mode="outlined"
           label="Correo Electrónico"
@@ -239,9 +260,7 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
           activeOutlineColor="#c5cae9"
           keyboardType="email-address"
           style={stylesLogin.TextInput}
-          left={<TextInput.Icon
-            style={{ marginTop: 30 }} 
-            icon="email" />}
+          left={<TextInput.Icon style={{ marginTop: 30 }} icon="email" />}
         />
         <TextInput //textbox ingresar Contraseña
           mode="outlined"
@@ -252,12 +271,10 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
           activeOutlineColor="#c5cae9"
           style={stylesLogin.TextInput}
           secureTextEntry={!showPassword}
-          left={<TextInput.Icon
-            style={{ marginTop: 30 }} 
-            icon="lock" />}
+          left={<TextInput.Icon style={{ marginTop: 30 }} icon="lock" />}
           right={
             <TextInput.Icon
-              style= {{
+              style={{
                 marginTop: 20,
               }}
               icon={showPassword ? "eye-off" : "eye"}
@@ -277,8 +294,8 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
             color: "#FFFFFF",
             fontSize: 17,
             fontWeight: "bold",
-            textShadowColor: '#D0680E',
-            textShadowRadius: 20,  
+            textShadowColor: "#D0680E",
+            textShadowRadius: 20,
           }}
         >
           {" "}
@@ -320,10 +337,7 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
                 />
               ))}
             </View>
-            <TouchableOpacity
-              onPress={reSendEmail}
-              disabled={isButtonDisabled}
-            >
+            <TouchableOpacity onPress={reSendEmail} disabled={isButtonDisabled}>
               <Text
                 style={
                   isButtonDisabled ? styles.disabledtext : styles.resendtext
@@ -358,12 +372,11 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
         style={stylesLogin.button}
         onPress={() => {
           if (validateData()) {
-            if(!validateEmail(email)){
-              Alert.alert("Error", "Correo electrónico no válido");
+            if (!validateEmail(email)) {
+              changeCorreoIncorrecto();
               return false;
             }
             loggin();
-
           } else {
             alert("Datos incompletos");
           }
@@ -379,6 +392,94 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
       >
         <Text style={{ color: "#FFFFFF", fontSize: 16 }}>Registrar</Text>
       </TouchableOpacity>
+
+      {/* Dialogo de correo incorrecto*/}
+      <Dialog visible={correoIncorrecto} onDismiss={changeCorreoIncorrecto}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ alignSelf: "center" }}>
+            Correo o contraseña incorrectos
+          </Text>
+          <TouchableOpacity
+            onPress={changeCorreoIncorrecto}
+            style={{ alignSelf: "center", paddingTop: 30 }}
+          >
+            <Text style={{ fontSize: 20 }}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      {/* Dialogo de error al verificar*/}
+      <Dialog visible={verificarAuth} onDismiss={changeVerificarAuth}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ alignSelf: "center" }}>
+            Error al verificar el código de autenticación, reenvíe el correo de
+            verificación
+          </Text>
+          <TouchableOpacity
+            onPress={changeVerificarAuth}
+            style={{ alignSelf: "center", paddingTop: 30 }}
+          >
+            <Text style={{ fontSize: 20 }}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      {/* Dialogo de codigo expirado*/}
+      <Dialog visible={codigoExpirado} onDismiss={changeCodigoExpirado}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ alignSelf: "center" }}>
+            El código de autenticación ha expirado, reenvíe el correo de
+            verificación
+          </Text>
+          <TouchableOpacity
+            onPress={changeCodigoExpirado}
+            style={{ alignSelf: "center", paddingTop: 30 }}
+          >
+            <Text style={{ fontSize: 20 }}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      {/* Dialogo de codigo incorrecto */}
+      <Dialog visible={codigoIncorrecto} onDismiss={changeCodigoIncorrecto}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ alignSelf: "center" }}>
+            Codigo de autenticación incorrecto
+          </Text>
+          <TouchableOpacity
+            onPress={changeCodigoIncorrecto}
+            style={{ alignSelf: "center", paddingTop: 30 }}
+          >
+            <Text style={{ fontSize: 20 }}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      {/* Dialogo de codigo incorrecto */}
+      <Dialog visible={correoNoEnviado} onDismiss={changeCorreoNoEnviado}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ alignSelf: "center" }}>
+            No se pudo enviar el correo de verificación
+          </Text>
+          <TouchableOpacity
+            onPress={changeCorreoNoEnviado}
+            style={{ alignSelf: "center", paddingTop: 30 }}
+          >
+            <Text style={{ fontSize: 20 }}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
       <StatusBar style="auto" />
     </View>
   );
@@ -446,10 +547,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   gradient: {
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     right: 0,
     bottom: 0,
-    height: 200
+    height: 200,
+  },
+  dialogTitle: {
+    textAlign: "center",
   },
 });

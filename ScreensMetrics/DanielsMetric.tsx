@@ -76,18 +76,6 @@ export default function DanielsMetric() {
     return result !== null && result.trim() !== "";
   };
 
-  function saveResult() {
-    if (canSaveResult()) {
-      console.log(muscle,",",  side,",", state);
-      //saveResultToDB();
-      alert("Resultado guardado");
-
-      setMuscle("");
-      setSide("");
-      setState("");
-      setResult("");
-    }
-  }
   return (
     <View style={[stylesMain.container, { alignItems: "center" }]}>
       <SafeAreaView style={stylesMain.datosMetricas}>
