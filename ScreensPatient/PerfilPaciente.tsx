@@ -333,7 +333,7 @@ const PerfilPaciente = ({
       setApellido(datosDelServidor.paciente.apellidos);
       setEmail(datosDelServidor.paciente.mail);
       setTel(datosDelServidor.paciente.numeroContacto);
-      setEdad(datosDelServidor.paciente.edad);
+      setEdad(datosDelServidor.paciente.fechaNacimiento);
       setSexo(datosDelServidor.paciente.genero);
       setDomicilio(datosDelServidor.paciente.ubicacion);
       setImage(await AsyncStorage.getItem("photoPerfil"));
@@ -613,7 +613,7 @@ const PerfilPaciente = ({
 
             <TextInput
               mode="outlined"
-              label="Edad"
+              label="Fecha de nacimiento"
               style={styles.input}
               value={edad}
               onChangeText={setEdad}

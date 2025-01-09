@@ -59,7 +59,7 @@ export default function DanielsMetric() {
     console.log(response.data);
 
     setResult(
-      ` ${muscle}, Lado: ${side},\n nivel de valoracion: ${state}, Recomendacion: ${response.data.info.recomendacion.sugerencias}`
+      `${muscle}, Lado: ${side}\nNivel de valoración: ${state}\nRecomendación: ${response.data.info.recomendacion.sugerencias}`
     );
   };
 
@@ -213,10 +213,10 @@ export default function DanielsMetric() {
               <View />
             ) : (
               <View>
-                <Text style={{ marginBottom: 1, fontSize: 24, color: "#000" }}>
-                  Resultado
-                </Text>
-                <Text style={{ marginBottom: 1, fontSize: 18, color: "#000" }}>
+                <Text style={{ marginBottom: 1, fontSize: 24, color: "#000", paddingTop: 20, paddingLeft: 10 }}>
+                              Resultado
+                            </Text>
+                <Text style={{ marginBottom: 1, fontSize: 18, color: "#000", paddingLeft: 10 }}>
                   {result}
                 </Text>
               </View>

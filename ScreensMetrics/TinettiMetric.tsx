@@ -62,7 +62,7 @@ export default function TinettiMetric() {
       console.log(response.data.info.recomendacion.sugerencias);
   
       setMessage(
-        `nivel de valoracion: ${result} Recomendacion: ${response.data.info.recomendacion.sugerencias}`
+        `Nivel de valoración: ${result}\nRecomendación: ${response.data.info.recomendacion.sugerencias}`
       );
     };
 
@@ -97,14 +97,6 @@ export default function TinettiMetric() {
   const allFieldsFilled = () => {
     return Object.values(inputValues).every((value) => value.trim() !== "");
   };
-
-  const canSaveResult = () => {
-    return result !== null;
-  };
-
-  function saveResult() {
-    console.log("Save result");
-  }
 
   useFocusEffect(
     useCallback(() => {
@@ -514,10 +506,10 @@ export default function TinettiMetric() {
           <View
             style={[stylesMain.resultsMetrics, { paddingBottom: 20 }]}
           >
-            <Text style={{ marginBottom: 1, fontSize: 24, color: "#000" }}>
-              Resultado
-            </Text>
-            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
+            <Text style={{ marginBottom: 1, fontSize: 24, color: "#000", paddingTop: 20, paddingLeft: 10 }}>
+                          Resultado
+                        </Text>
+            <Text style={{ marginBottom: 1, fontSize: 18, color: "#000", paddingLeft: 10 }}>
               {message}
             </Text>
           </View>

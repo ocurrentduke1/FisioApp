@@ -54,7 +54,7 @@ export default function AshwortMetric() {
     });
 
     setResult(
-      ` ${muscle}, Lado: ${side},\n nivel de valoracion: ${state}, Recomendacion: ${response.data.info.recomendacion.sugerencias}`
+      `${muscle}, Lado: ${side}\nNivel de valoración: ${state}\nRecomendación: ${response.data.info.recomendacion.sugerencias}`
     );
   };
 
@@ -65,10 +65,6 @@ export default function AshwortMetric() {
   useEffect(() => {
     setIsButtonDisabled(!allFieldsFilled());
   }, [muscle, side, state]);
-
-  const canSaveResult = () => {
-    return result !== null && result.trim() !== "";
-  };
 
   return (
     <View style={[stylesMain.container, { alignItems: "center" }]}>
@@ -89,7 +85,7 @@ export default function AshwortMetric() {
 
             <View>
               <Text style={[stylesMain.metricTitle, { fontSize: 18 }]}>
-                ¿Que lado se va a evaluar?
+              ¿Qué lado se va a evaluar?
               </Text>
               <RadioButton.Group
                 onValueChange={(newValue) => setSide(newValue)}
@@ -109,7 +105,7 @@ export default function AshwortMetric() {
 
             <View>
               <Text style={[stylesMain.metricTitle, { fontSize: 18 }]}>
-                Estado del musculo o grupo evaluado
+              Estado del músculo o grupo evaluado
               </Text>
               <RadioButton.Group
                 onValueChange={(newValue) => setState(newValue)}
@@ -118,39 +114,37 @@ export default function AshwortMetric() {
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton value="0" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
-                    sin aumento en tono muscular
+                  Sin aumento en tono muscular
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton value="1" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
-                    aumento leve, resistencia minima al final del rango
+                  Aumento leve, resistencia mínima al final del rango
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton value="2" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
-                    aumento leve, resistencia minima durante el resto del rango
-                    de movimiento
+                  Aumento leve, resistencia mínima durante el resto del rango de movimiento
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton value="3" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
-                    aumento pronunciado, la parte afectada se mueve con
-                    facilidad
+                  Aumento pronunciado, la parte afectada se mueve con facilidad
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton value="4" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
-                    aumento considerable, el movimiento pasivo es dificil
+                  Aumento considerable, el movimiento pasivo es difícil.
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton value="5" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
-                    la parte afectada esta rigida, en extension y flexion
+                  La parte afectada está rígida, en extensión y flexión.
                   </Text>
                 </View>
               </RadioButton.Group>
@@ -173,10 +167,10 @@ export default function AshwortMetric() {
           <View
             style={[stylesMain.resultsMetrics, { paddingBottom: 20 }]}
           >
-            <Text style={{ marginBottom: 1, fontSize: 24, color: "#000" }}>
+            <Text style={{ marginBottom: 1, fontSize: 24, color: "#000", paddingTop: 20, paddingLeft: 10 }}>
               Resultado
             </Text>
-            <Text style={{ marginBottom: 1, fontSize: 18, color: "#000" }}>
+            <Text style={{ marginBottom: 1, fontSize: 18, color: "#000", paddingLeft: 10 }}>
               {result}
             </Text>
           </View>

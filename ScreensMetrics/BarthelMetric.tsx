@@ -39,8 +39,9 @@ export default function BarthelMetric() {
     console.log(response.data.info.recomendacion.sugerencias);
 
     setMessage(
-      `nivel de valoracion: ${result} Recomendacion: ${response.data.info.recomendacion.sugerencias}`
+      `Nivel de valoración: ${result}\nRecomendación: ${response.data.info.recomendacion.sugerencias}`
     );
+    
   };
 
   const sendSeverity = async () => {
@@ -59,7 +60,6 @@ export default function BarthelMetric() {
     setResult(sum);
     console.log("Sum of values:", sum);
 
-    if (sum === null) return null;
     if (sum >= 0 && sum <= 24) {
       setState("1");
     }
@@ -96,14 +96,6 @@ export default function BarthelMetric() {
     return Object.values(fields).every((field) => field.trim() !== "");
   };
 
-  const canSaveResult = () => {
-    return result !== null;
-  };
-
-  function saveResult() {
-    console.log("Save result");
-  }
-
   useFocusEffect(
     useCallback(() => {
       const getPacienteData = async () => {
@@ -131,11 +123,10 @@ export default function BarthelMetric() {
             <Text style={stylesMain.metricTitle}>Actividad: Comer</Text>
             <Text style={stylesMain.metricText}>0-Incapaz</Text>
             <Text style={stylesMain.metricText}>
-              1-Necesita ayuda para cortar, extender mantequilla, usar
-              condimentos, etc.
+            1. Necesita ayuda para cortar, extender mantequilla, usar condimentos, etc.
             </Text>
             <Text style={stylesMain.metricText}>
-              2-Independiente(la comida al alcance de la mano)
+            2. Independiente (la comida al alcance de la mano).
             </Text>
             <TextInput
               mode="outlined"
@@ -152,14 +143,13 @@ export default function BarthelMetric() {
               Actividad: Trasladarse entre la silla y la cama
             </Text>
             <Text style={stylesMain.metricText}>
-              0-Incapaz, no se mantiene sentado
+            0. Incapaz, no se mantiene sentado.
             </Text>
             <Text style={stylesMain.metricText}>
-              1-Necesita ayuda importante (1 persona entrenada o 2 personas),
-              puede estar sentado
+            1. Necesita ayuda importante (1 persona entrenada o 2 personas), puede estar sentado.
             </Text>
             <Text style={stylesMain.metricText}>
-              2-Necesita algo de ayuda (pequeña ayuda fisica o verbal)
+            2. Necesita algo de ayuda (pequeña ayuda física o verbal).
             </Text>
             <Text style={stylesMain.metricText}>3-Independiente</Text>
             <TextInput
@@ -174,10 +164,9 @@ export default function BarthelMetric() {
               onChangeText={(text) => setFields({ ...fields, traslado: text })}
             />
             <Text style={stylesMain.metricTitle}>Actividad: Aseo personal</Text>
-            <Text style={stylesMain.metricText}>0-Necesita ayuda</Text>
+            <Text style={stylesMain.metricText}>0. Necesita ayuda</Text>
             <Text style={stylesMain.metricText}>
-              1-Independiente para lavarse cara, manos, dientes, peinarse y
-              afeitarse
+            1. Independiente para lavarse la cara, las manos, los dientes, peinarse y afeitarse.
             </Text>
             <TextInput
               mode="outlined"
@@ -193,12 +182,12 @@ export default function BarthelMetric() {
             <Text style={stylesMain.metricTitle}>
               Actividad: Uso del retrete
             </Text>
-            <Text style={stylesMain.metricText}>0-Dependiente</Text>
+            <Text style={stylesMain.metricText}>0. Dependiente</Text>
             <Text style={stylesMain.metricText}>
-              1-Necesita poca ayuda, pero puede hacer algo solo
+              1. Necesita poca ayuda, pero puede hacer algo solo
             </Text>
             <Text style={stylesMain.metricText}>
-              2-Independiente (entrar, salir, limpiarse, vestirse)
+              2. Independiente (entrar, salir, limpiarse, vestirse)
             </Text>
             <TextInput
               mode="outlined"
@@ -214,9 +203,9 @@ export default function BarthelMetric() {
             <Text style={stylesMain.metricTitle}>
               Actividad: Bañarse o ducharse
             </Text>
-            <Text style={stylesMain.metricText}>0-Dependiente</Text>
+            <Text style={stylesMain.metricText}>0. Dependiente</Text>
             <Text style={stylesMain.metricText}>
-              1-Independiente para bañarse o ducharse
+              1. Independiente para bañarse o ducharse
             </Text>
             <TextInput
               mode="outlined"
@@ -230,16 +219,15 @@ export default function BarthelMetric() {
               onChangeText={(text) => setFields({ ...fields, banarse: text })}
             />
             <Text style={stylesMain.metricTitle}>Actividad: Desplazarse</Text>
-            <Text style={stylesMain.metricText}>0-Inmovil</Text>
+            <Text style={stylesMain.metricText}>0. Inmovil</Text>
             <Text style={stylesMain.metricText}>
-              1-Independiente en silla de ruedas en 50m o menos
+            1. Independiente en silla de ruedas en 50 m o menos.
             </Text>
             <Text style={stylesMain.metricText}>
-              2-Anda con pequeña ayuda de una persona(Fisica o verbal)
+            2. Anda con pequeña ayuda de una persona (física o verbal).
             </Text>
             <Text style={stylesMain.metricText}>
-              3-Independiente al menos 50m, con cualquier tipo de muleta,
-              excepto andador
+            3. Independiente al menos 50 m, con cualquier tipo de muleta, excepto andador.
             </Text>
             <TextInput
               mode="outlined"
@@ -257,13 +245,12 @@ export default function BarthelMetric() {
             <Text style={stylesMain.metricTitle}>
               Actividad: Subir y bajar escaleras
             </Text>
-            <Text style={stylesMain.metricText}>0-Incapaz</Text>
+            <Text style={stylesMain.metricText}>0. Incapaz</Text>
             <Text style={stylesMain.metricText}>
-              1-Necesita ayuda fisica o verbal, puede llevar cualquier tipo de
-              muleta
+            1. Necesita ayuda física o verbal, puede llevar cualquier tipo de muleta.
             </Text>
             <Text style={stylesMain.metricText}>
-              2-Independiente para subir y bajar
+              2. Independiente para subir y bajar
             </Text>
             <TextInput
               mode="outlined"
@@ -279,12 +266,12 @@ export default function BarthelMetric() {
             <Text style={stylesMain.metricTitle}>
               Actividad: vestirse y desvestirse
             </Text>
-            <Text style={stylesMain.metricText}>0-Dependiente</Text>
+            <Text style={stylesMain.metricText}>0. Dependiente</Text>
             <Text style={stylesMain.metricText}>
-              1-Necesita ayuda, puede hacer aproximadamente la mitad, sin ayuda
+              1. Necesita ayuda, puede hacer aproximadamente la mitad, sin ayuda
             </Text>
             <Text style={stylesMain.metricText}>
-              2-Independiente, incluyendo botones, cremalleras, cordones, etc.
+              2. Independiente, incluyendo botones, cremalleras, cordones, etc.
             </Text>
             <TextInput
               mode="outlined"
@@ -362,10 +349,10 @@ export default function BarthelMetric() {
           <View
             style={[stylesMain.resultsMetrics, { paddingBottom: 20 }]}
           >
-            <Text style={{ marginBottom: 1, fontSize: 24, color: "#000" }}>
-              Resultado
-            </Text>
-            <Text style={{ marginBottom: 1, fontSize: 20, color: "#000" }}>
+            <Text style={{ marginBottom: 1, fontSize: 24, color: "#000", paddingTop: 20, paddingLeft: 10 }}>
+                          Resultado
+                        </Text>
+           <Text style={{ marginBottom: 1, fontSize: 18, color: "#000", paddingLeft: 10 }}>
               {message}
             </Text>
           </View>
