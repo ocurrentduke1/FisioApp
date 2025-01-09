@@ -6,10 +6,11 @@ import {
   Modal,
   TouchableOpacity,
   Image,
+  Alert,
 } from "react-native";
 import { NavigationProp, useFocusEffect } from "@react-navigation/native";
 import { Agenda } from "react-native-calendars";
-import { Dialog, FAB } from "react-native-paper";
+import { FAB } from "react-native-paper";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Icon2 from "react-native-vector-icons/MaterialCommunityIcons";
 import Icon3 from "react-native-vector-icons/Foundation";
@@ -50,26 +51,30 @@ export default function AgendaCitas({
 
   const getUserID = async () => {
     const id = await AsyncStorage.getItem("idSesion");
-    console.log("Fetched UserID:", id); // Verifica que el ID se obtenga correctamente
     setUserID(id);
   };
 
   const fetchData = async () => {
     const pacientes = await getPatients();
+
     setDataPatients(pacientes);
-    // console.log("pacientes", dataPatients);
+    
     const datosDelServidor = await obtenerCitas();
     setCitas(datosDelServidor);
-    // console.log("horas", dataHours);
+    
   };
+
+  function convertToISO(dateStr: string) {
+    const [day, month, year] = dateStr.split('/');  // Suponiendo el formato DD/MM/YYYY
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  }
 
   const getPatients = async () => {
     if (userID) {
       const response = await axios.post(BACKEND_URL + "/obtener-pacientes", {
         idFisio: Number(userID),
       });
-      console.log("UserID:", userID);
-      // console.log("Response data:", response.data);
+
       return response.data || [];
     }
   };
@@ -82,7 +87,7 @@ export default function AgendaCitas({
           .substring(0, 10)}`
       );
 
-      // console.log("Response data:", response.data);
+      
       return response.data.horarios || [];
     }
   };
@@ -126,7 +131,6 @@ export default function AgendaCitas({
   const [selectedDate, setSelectedDate] = useState(new Date().toDateString());
 
   const [patient, setPatient] = useState("");
-  const [patientType, setPatientType] = useState("");
   const [openPatient, setOpenPatient] = useState(false);
   const [location, setLocation] = useState("");
   const [otherLocation, setOtherLocation] = useState(false);
@@ -134,6 +138,7 @@ export default function AgendaCitas({
   const [time, setTime] = useState("");
   const [duration, setDuration] = useState(0);
   const [dataHours, setDataHours] = useState([]);
+  const [fechaFormateada, setFechaFormateada] = useState("");
 
   const [dataPatients, setDataPatients] = useState<
     {
@@ -154,7 +159,8 @@ export default function AgendaCitas({
       nombre: string;
       apellido: string;
       proximaCita: string;
-      hora: string;
+      horaCita: string;
+      duracion: string;
       ubicacion: string;
       imagenPerfil?: string;
       numeroContacto: string;
@@ -204,7 +210,6 @@ export default function AgendaCitas({
   const openDelete = (item) => {
     setDateTo(item.id);
     setModalDelete(true);
-    console.log("item", item);
   };
 
   const closeDelete = () => {
@@ -220,7 +225,8 @@ export default function AgendaCitas({
           apellido,
           ubicacion,
           imagenPerfil,
-          hora,
+          horaCita,
+          duracion,
           id,
           numeroContacto,
           tipo,
@@ -230,7 +236,8 @@ export default function AgendaCitas({
         const transformedCita = {
           nombre: `${nombre}`,
           apellidos: apellido,
-          horaCita: hora,
+          horaCita: horaCita,
+          duracion: duracion,
           ubicacion: ubicacion,
           imagenPerfil: imagenPerfil,
           proximaCita: proximaCita,
@@ -276,24 +283,33 @@ export default function AgendaCitas({
   };
 
   const RegistrarCita = async () => {
+    const tiposPacientes = {
+      A: 'account',
+      N: 'NoAccount',
+    };
 
     const date = new Date().toISOString().substring(0, 10);
 
+    const idPaciente = patient.substring(0, patient.length - 1);
+    const tipoPaciente = tiposPacientes[patient[patient.length - 1]] ?? null;
+
+    if(!idPaciente && !tipoPaciente) {
+      return false;
+    }
+
     const response = await axios.post(BACKEND_URL + "/cita", {
-      pacienteId: patient,
+      pacienteId: idPaciente,
       fisioterapeutaId: userID,
       fecha: date + " " + time,
       duracion: duration.toString(),
       ubicacion: location,
-      type: patientType,
+      type: tipoPaciente,
     });
 
     if (response.data.code == 400) {
       changeErrorRegistrarCita();
       return;
     }
-
-    console.log("cita registrada", response);
 
     closeAdd();
     fetchData();
@@ -307,7 +323,6 @@ export default function AgendaCitas({
 
     setCitas(citas.filter((cita) => cita.id !== dateTo));
 
-    console.log("cita eliminada", response);
     closeDelete();
   };
 
@@ -319,7 +334,7 @@ export default function AgendaCitas({
     });
 
     return (
-      console.log("item", paciente),
+
       <Animated.View
         style={[styles.rightAction, { transform: [{ translateX }] }]}
       >
@@ -341,18 +356,38 @@ export default function AgendaCitas({
 
   const { width } = useWindowDimensions();
 
-  const asignarTipoPaciente = async (patient: string) => {
-    const pacienteId = patient.substring(0, patient.length - 1);
-    const type = patient.substring(patient.length - 2, patient.length - 1);
-    setPatient(pacienteId);
-    setPatientType(type);
-  }
+  const convertirFecha = () => {
+    const days = [
+      "Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"
+    ];
+  
+    const months = [
+      "enero", "febrero", "marzo", "abril", "mayo", "junio",
+      "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+    ];
+  
+    const date = new Date(selectedDate);
+    
+    const diaSemana = days[date.getUTCDay()];
+    const diaMes = date.getUTCDate();
+    const mes = months[date.getUTCMonth()];
+    const anio = date.getUTCFullYear();
+      
+    setFechaFormateada(`${diaSemana} ${diaMes} de ${mes} del ${anio}`);
+  };
+  
+
+  useEffect(() => {
+    convertirFecha(); 
+  }, [selectedDate, fechaFormateada]); 
+
 
   return (
     <View style={styles.container}>
       <Agenda
         items={transformarDatosParaAgenda()}
         selected={selectedDate}
+        minDate={selectedDate} 
         renderEmptyData={() => (
           <Animated.View
             style={{
@@ -423,10 +458,20 @@ export default function AgendaCitas({
               | React.ReactPortal
               | null
               | undefined;
+            duracion:
+              | string
+              | number
+              | React.ReactElement<
+                  any,
+                  string | React.JSXElementConstructor<any>
+                >
+              | Iterable<React.ReactNode>
+              | React.ReactPortal
+              | null
+              | undefined;
             imagenPerfil: any;
             date: string;
           },
-          isFirst: any
         ) => (
           <GestureHandlerRootView>
             <Swipeable
@@ -482,7 +527,23 @@ export default function AgendaCitas({
                       color="#000"
                       style={{ marginRight: 2 }}
                     />
-                    <Text> {item.horaCita}</Text>
+                    <Text
+                      style={{ fontWeight: "bold", marginRight: 20 }}
+                    > 
+                      {item.horaCita}
+                    </Text>
+
+                    <Icon
+                      name="hourglass-1"
+                      size={14}
+                      color="#000"
+                      style={{ marginRight: 1, marginTop: 2 }}
+                    />
+                    <Text
+                      style={{ fontWeight: "bold", marginRight: 20 }}
+                    > 
+                      {item.duracion}
+                    </Text>
                   </View>
                 </View>
               </View>
@@ -519,11 +580,11 @@ export default function AgendaCitas({
               <Icon name="calendar" size={20} color="#000" />
               <Text>
                 {" "}
-                {new Date(selectedDate).toISOString().substring(0, 10)}
+                { fechaFormateada }
               </Text>
             </View>
             <DropDownPicker
-              setValue={(val) => asignarTipoPaciente(val.toString())}
+              setValue={setPatient}
               value={patient}
               open={openPatient}
               placeholder="Selecciona un paciente"
@@ -532,7 +593,12 @@ export default function AgendaCitas({
               }}
               setOpen={setOpenPatient}
               multiple={false}
-              items={dataPatients.map((patient) => ({
+              items={dataPatients.filter((paciente) => {
+                if(paciente.proximaCita === 'Sin cita') {
+                  return true;
+                }
+                return new Date(convertToISO(paciente.proximaCita)).toLocaleDateString() > new Date(selectedDate).toLocaleDateString()
+              }).map((patient) => ({
                 label: patient.nombre + " " + patient.apellidos,
                 value: patient.id,
                 Icon: () => (
@@ -705,43 +771,6 @@ export default function AgendaCitas({
           </View>
         </View>
       </Modal>
-
-      <Dialog visible={errorCita} onDismiss={changeErrorCita}>
-          <Dialog.Icon icon="alert" size={50} />
-          <Dialog.Title style={styles.dialogTitle}>
-            Surgio un error!
-          </Dialog.Title>
-          <Dialog.Content>
-            <Text style={{ alignSelf: "center" }}>
-            Error al encontrar citas
-            </Text>
-            <TouchableOpacity
-              onPress={changeErrorCita}
-              style={{ alignSelf: "center", paddingTop: 30 }}
-            >
-              <Text style={{ fontSize: 20 }}>Aceptar</Text>
-            </TouchableOpacity>
-          </Dialog.Content>
-        </Dialog>
-
-        <Dialog visible={errorRegistrarCita} onDismiss={changeErrorRegistrarCita}>
-          <Dialog.Icon icon="alert" size={50} />
-          <Dialog.Title style={styles.dialogTitle}>
-            Surgio un error!
-          </Dialog.Title>
-          <Dialog.Content>
-            <Text style={{ alignSelf: "center" }}>
-            Error al registrar cita", "no se puede crear una cita con un paciente que ya tiene una cita programada
-            </Text>
-            <TouchableOpacity
-              onPress={changeErrorRegistrarCita}
-              style={{ alignSelf: "center", paddingTop: 30 }}
-            >
-              <Text style={{ fontSize: 20 }}>Aceptar</Text>
-            </TouchableOpacity>
-          </Dialog.Content>
-        </Dialog>
-        
     </View>
   );
 }
@@ -871,8 +900,5 @@ const styles = StyleSheet.create({
     height: 50,
 
     alignItems: "center",
-  },
-  dialogTitle: {
-    textAlign: "center",
   },
 });
