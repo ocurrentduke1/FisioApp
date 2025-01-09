@@ -345,12 +345,12 @@ export default function AgendaCitas({
         >
           <Icon2 name="calendar-remove" size={30} color="#FFF" />
         </TouchableOpacity>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.expedientAction}
           onPress={() => navigation.navigate("HistorialPaciente", { paciente })}
         >
           <Icon3 name="page-search" size={30} color="#FFF" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </Animated.View>
     );
   };
@@ -381,7 +381,6 @@ export default function AgendaCitas({
   useEffect(() => {
     convertirFecha(); 
   }, [selectedDate, fechaFormateada]); 
-
 
   return (
     <View style={styles.container}>
