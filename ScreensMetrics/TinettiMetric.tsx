@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -65,6 +65,16 @@ export default function TinettiMetric() {
         `Nivel de valoración: ${result}\nRecomendación: ${response.data.info.recomendacion.sugerencias}`
       );
     };
+
+    const accionEvaluar = async () => {
+        await sendSeverity()
+      }
+    
+      useEffect(() => {
+          if(state !== '') {
+            evaluate();
+          }
+        }, [state]);
 
     const sendSeverity = async () => {
       const sum = Object.values(inputValues).reduce((acc, curr) => {
@@ -494,7 +504,7 @@ export default function TinettiMetric() {
                 marginTop: 20,
                 width: 100,
               }}
-              onPress={evaluate}
+              onPress={accionEvaluar}
               disabled={!allFieldsFilled()}
             >
               <Text style={[stylesMain.metricTitle, { fontSize: 20 }]}>

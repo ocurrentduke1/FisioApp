@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -30,10 +30,6 @@ export default function GlasgowMetric() {
 
   const evaluate = async () => {
 
-    await sendSeverity();
-
-      sendSeverity();
-
       console.log("State2:", state);
 
     const response = await axios.post(`${BACKEND_URL}/escala`, {
@@ -49,6 +45,16 @@ export default function GlasgowMetric() {
       `Nivel de valoración: ${result}\nRecomendación: ${response.data.info.recomendacion.sugerencias}`
     );
   };
+
+  const accionEvaluar = async () => {
+      await sendSeverity()
+    }
+  
+    useEffect(() => {
+        if(state !== '') {
+          evaluate();
+        }
+      }, [state]);
 
   const sendSeverity = async () => {
     const sum =
@@ -169,7 +175,7 @@ export default function GlasgowMetric() {
                 alignSelf: "center",
                 paddingTop: 10,
               }}
-              onPress={evaluate}
+              onPress={accionEvaluar}
               disabled={!allFieldsFilled()}
             >
               <Text style={[stylesMain.metricTitle, { fontSize: 20 }]}>

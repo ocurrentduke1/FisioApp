@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -33,10 +33,6 @@ export default function BradenMetric() {
 
   const evaluate = async () => {
 
-    calcular();
-
-    if(state !== "") {
-
       console.log("State2:", state);
 
     const response = await axios.post(`${BACKEND_URL}/escala`, {
@@ -51,10 +47,19 @@ export default function BradenMetric() {
     setMessage(
       `Nivel de valoración: ${result}\nRecomendación: ${response.data.info.recomendacion.sugerencias}`
     );
-  }
   };
 
-  const calcular = async () => {
+  const accionEvaluar = async () => {
+    await sendSeverity()
+  }
+
+  useEffect(() => {
+      if(state !== '') {
+        evaluate();
+      }
+    }, [state]);
+
+  const sendSeverity = async () => {
     
     const sum =
       parseFloat(Sensorial) +
@@ -311,7 +316,7 @@ export default function BradenMetric() {
                 marginTop: 20,
                 width: 100,
               }}
-              onPress={evaluate}
+              onPress={accionEvaluar}
               disabled={!allFieldsFilled()}
             >
               <Text style={[stylesMain.metricTitle, { fontSize: 20 }]}>
