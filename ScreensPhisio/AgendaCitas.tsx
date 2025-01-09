@@ -129,6 +129,7 @@ export default function AgendaCitas({
   const [modalDelete, setModalDelete] = useState(false);
   const [dateTo, setDateTo] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date().toDateString());
+  const [fechaActual] = useState(new Date().toDateString());
 
   const [patient, setPatient] = useState("");
   const [openPatient, setOpenPatient] = useState(false);
@@ -387,7 +388,7 @@ export default function AgendaCitas({
       <Agenda
         items={transformarDatosParaAgenda()}
         selected={selectedDate}
-        minDate={selectedDate} 
+        minDate={fechaActual} 
         renderEmptyData={() => (
           <Animated.View
             style={{
