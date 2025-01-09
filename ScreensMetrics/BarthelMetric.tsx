@@ -25,8 +25,6 @@ export default function BarthelMetric() {
 
   const evaluate = async () => {
 
-    await sendSeverity();
-
       console.log("State2:", state);
 
     const response = await axios.post(`${BACKEND_URL}/escala`, {
@@ -43,6 +41,14 @@ export default function BarthelMetric() {
     );
     
   };
+
+  const accionEvaluar = async () => {
+    await sendSeverity()
+  }
+
+  useEffect(() => {
+    evaluate();
+  }, [state]);
 
   const sendSeverity = async () => {
 
@@ -338,7 +344,7 @@ export default function BarthelMetric() {
                 alignSelf: "center",
                 paddingTop: 10,
               }}
-              onPress={evaluate}
+              onPress={accionEvaluar}
               disabled={!allFieldsFilled()}
             >
               <Text style={[stylesMain.metricTitle, { fontSize: 20 }]}>
