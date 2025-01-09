@@ -47,7 +47,9 @@ export default function BarthelMetric() {
   }
 
   useEffect(() => {
-    evaluate();
+    if(state !== '') {
+      evaluate();
+    }
   }, [state]);
 
   const sendSeverity = async () => {
