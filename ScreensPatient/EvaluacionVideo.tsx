@@ -32,6 +32,7 @@ export default function EvaluacionVideo({
               navigation.navigate("ConfirmExercise", {
                 gifSource: require("../assets/gifs/flexionHombro.gif"),
                 exercise: "flexionHombro",
+                instructions:"Debes estar de pie, de frente con los brazos a los lados del cuerpo y mover el brazo seleccionado hacia el frente y arriba hasta donde se pueda permitir o hasta donde el dolor deje de ser tolerable.",
                 port: "5004",
               })
             }
@@ -55,6 +56,7 @@ export default function EvaluacionVideo({
               navigation.navigate("ConfirmExercise", {
                 gifSource: require("../assets/gifs/extensionHombro.gif"),
                 exercise: "extensionHombro",
+                instructions:"Debes estar de pie, de lado, con los brazos a los lados del cuerpo y mover el brazo seleccionado hacia atras hasta donde se pueda permitir o hasta donde el dolor deje de ser tolerable.",
                 port: "5005",
               })
             }
@@ -78,6 +80,7 @@ export default function EvaluacionVideo({
               navigation.navigate("ConfirmExercise", {
                 gifSource: require("../assets/gifs/abduccionHombro.gif"),
                 exercise: "abduccionHombro",
+                instructions:"Debes estar de pie, de frente, con los brazos a los lados del cuerpo y mover el brazo seleccionado hacia un lado hasta donde se pueda permitir o hasta donde el dolor deje de ser tolerable.",
                 port: "5007",
               })
             }
@@ -101,6 +104,7 @@ export default function EvaluacionVideo({
               navigation.navigate("ConfirmExercise", {
                 gifSource: require("../assets/gifs/aduccionHombro.gif"),
                 exercise: "aduccionHombro",
+                instructions:"Debes estar de pie, de frente, con los brazos a los lados del cuerpo y mover el brazo seleccionado hacia el centro del cuerpo hasta donde se pueda permitir o hasta donde el dolor deje de ser tolerable.",
                 port: "5006",
               })
             }
@@ -124,6 +128,7 @@ export default function EvaluacionVideo({
               navigation.navigate("ConfirmExercise", {
                 gifSource: require("../assets/gifs/extensionFlexionCodo.gif"),
                 exercise: "extensionCodo",
+                instructions:"Debes estar de pie, de lado con el brazo seleccionado estirado hacia el frente y flexionar el codo hasta donde se pueda permitir o hasta donde el dolor deje de ser tolerable.",
                 port: "5010",
               })
             }
@@ -147,6 +152,7 @@ export default function EvaluacionVideo({
               navigation.navigate("ConfirmExercise", {
                 gifSource: require("../assets/gifs/extensionFlexionCodo.gif"),
                 exercise: "flexionCodo",
+                instructions:"Debes estar de pie, de lado con el brazo seleccionado flexionado hacia el frente y estirar el codo hasta donde se pueda permitir o hasta donde el dolor deje de ser tolerable.",
                 port: "5009",
               })
             }
@@ -170,6 +176,7 @@ export default function EvaluacionVideo({
               navigation.navigate("ConfirmExercise", {
                 gifSource: require("../assets/gifs/flexionCadera.gif"),
                 exercise: "flexionCadera",
+                instructions:"Debes estar acostado boca arriba con las piernas estiradas y flexionar la pierna seleccionada hacia el pecho hasta donde se pueda permitir o hasta donde el dolor deje de ser tolerable.",
                 port: "5011",
               })
             }
@@ -193,6 +200,7 @@ export default function EvaluacionVideo({
               navigation.navigate("ConfirmExercise", {
                 gifSource: require("../assets/gifs/extensionCadera.gif"),
                 exercise: "extensionCadera",
+                instructions:"Debes estar acostado boca abajo con las piernas estiradas y elevar la pierna seleccionada hacia arriba hasta donde se pueda permitir o hasta donde el dolor deje de ser tolerable.",
                 port: "5012",
               })
             }
@@ -216,6 +224,7 @@ export default function EvaluacionVideo({
               navigation.navigate("ConfirmExercise", {
                 gifSource: require("../assets/gifs/abduccionCadera.gif"),
                 exercise: "abduccionCadera",
+                instructions:"Debe estar de pie, de frente, si lo requiere puede apoyarse de una silla o pared y elevar la pierna seleccionada hacia un lado hasta donde se pueda permitir o hasta donde el dolor deje de ser tolerable.",
                 port: "5014",
               })
             }
@@ -239,6 +248,7 @@ export default function EvaluacionVideo({
               navigation.navigate("ConfirmExercise", {
                 gifSource: require("../assets/gifs/aduccionCadera.gif"),
                 exercise: "aduccionCadera",
+                instructions:"Debe estar de pie, de frente, si lo requiere puede apoyarse de una silla o pared y elevar la pierna seleccionada hacia el centro del cuerpo hasta donde se pueda permitir o hasta donde el dolor deje de ser tolerable.",
                 port: "5013",
               })
             }
@@ -262,6 +272,7 @@ export default function EvaluacionVideo({
               navigation.navigate("ConfirmExercise", {
                 gifSource: require("../assets/gifs/flexionRodilla.gif"),
                 exercise: "flexionRodilla",
+                instructions:"Debe estar de pie, de lado, con la pierna seleccionada flexionada hacia atras y elevar el talon hacia los gluteos hasta donde se pueda permitir o hasta donde el dolor deje de ser tolerable.",
                 port: "5001",
               })
             }
@@ -285,6 +296,7 @@ export default function EvaluacionVideo({
               navigation.navigate("ConfirmExercise", {
                 gifSource: require("../assets/gifs/extensionRodilla.gif"),
                 exercise: "extensionRodilla",
+                instructions:"Debe estar sentado, de lado y elevar la pierna seleccionada hacia arriba hasta donde se pueda permitir o hasta donde el dolor deje de ser tolerable.",
                 port: "5002",
               })
             }

@@ -17,6 +17,7 @@ export default function EvaluacionImagen({
           navigation.navigate("ConfirmPosture", {
             imageSource: require("../assets/lateral.png"),
             exercise: "curvaturaEspalda",
+            instructions: "Debes estar de pie, de lado y con la espalda lo mas recta posible. Debes tener los brazos a los lados del cuerpo y las piernas juntas. La imagen debe ser tomada de lado.",
             port: "5008",
           })
         }
@@ -41,6 +42,7 @@ export default function EvaluacionImagen({
           navigation.navigate("ConfirmPosture", {
             imageSource: require("../assets/frontal.png"),
             exercise: "curvaturaPiernas",
+            instructions: "Debes estar de pie, de frente y con la espalda lo mas recta posible. Debes tener los brazos a los lados del cuerpo y las piernas juntas. La imagen debe ser tomada de frente.",
             port: "5003",
           })
         }

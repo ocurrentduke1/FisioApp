@@ -17,6 +17,7 @@ type RouteParams = {
       uri: string;
     };
     exercise: string;
+    instructions: string;
     port: string;
   };
 };
@@ -34,7 +35,7 @@ const ConfirmExercise = ({
   const { gifSource } = route.params;
   const { exercise } = route.params;
   const { port } = route.params;
-  //const { Instructions } = route.params;
+  const { instructions } = route.params;
   console.log(port);
 
   return (
@@ -60,7 +61,7 @@ const ConfirmExercise = ({
           </View>
         </RadioButton.Group>
         <Text style={{ color: "black", paddingHorizontal: 10, paddingTop: 10 }}>
-          Instrucciones para la realizacion del ejercicio y su visualizacion
+          {instructions}
         </Text>
       </View>
       <TouchableOpacity

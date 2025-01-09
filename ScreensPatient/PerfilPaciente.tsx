@@ -308,7 +308,8 @@ const PerfilPaciente = ({
         const response = await axios.get(
           `${BACKEND_URL}/obtener-info-usuario/${userID}/${userRol}`
         );
-  
+
+        console.log("Response:", response.data);
         if (response.data.code === 500) {
           console.log("Error en la petición");
           return;
@@ -329,12 +330,12 @@ const PerfilPaciente = ({
     const datosDelServidor = await takeInfo();
     if (datosDelServidor) {
       setName(datosDelServidor.paciente.nombre);
-      setApellido(datosDelServidor.paciente.apellido);
-      setEmail(datosDelServidor.paciente.correo);
-      setTel(datosDelServidor.paciente.telefono);
+      setApellido(datosDelServidor.paciente.apellidos);
+      setEmail(datosDelServidor.paciente.mail);
+      setTel(datosDelServidor.paciente.numeroContacto);
       setEdad(datosDelServidor.paciente.edad);
       setSexo(datosDelServidor.paciente.genero);
-      setDomicilio(datosDelServidor.paciente.location);
+      setDomicilio(datosDelServidor.paciente.ubicacion);
       setImage(await AsyncStorage.getItem("photoPerfil"));
     }
   };

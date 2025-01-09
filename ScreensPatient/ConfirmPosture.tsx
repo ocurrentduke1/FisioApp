@@ -17,6 +17,7 @@ type RouteParams = {
       uri: string;
     };
     exercise: string;
+    instructions: string;
     port: string;
   };
 };
@@ -32,6 +33,7 @@ const ConfirmPosture = ({
   const { imageSource } = route.params;
   const { exercise } = route.params;
   const { port } = route.params;
+  const { instructions } = route.params;
 
   console.log(port);
   console.log(exercise);
@@ -46,7 +48,7 @@ const ConfirmPosture = ({
           style={styles.gifStyle}
         />
         <Text style={{ color: "black" }}>
-          Instrucciones para la realizacion de la postura y su visualizacion
+          {instructions}
         </Text>
       </View>
       <TouchableOpacity
