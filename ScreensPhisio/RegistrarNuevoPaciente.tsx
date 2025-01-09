@@ -231,7 +231,7 @@ const RegistrarNuevoPaciente = ({
           />
           <TextInput
             mode="outlined"
-            label="Telefono"
+            label="Teléfono"
             value={telefono}
             style={stylesHistorial.TextInput}
             outlineColor="#c5cae9"
@@ -336,7 +336,7 @@ const RegistrarNuevoPaciente = ({
                 : null}
             </MapView>
             <Searchbar
-              placeholder="Buscar Direccion"
+              placeholder="Buscar Dirección"
               onChangeText={(query) => {
                 setSearchQuery(query);
               }}

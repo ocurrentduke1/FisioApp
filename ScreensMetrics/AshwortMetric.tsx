@@ -92,11 +92,11 @@ export default function AshwortMetric() {
                 value={side}
               >
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton value="izquierdo" uncheckedColor="#BDBDBD" />
+                  <RadioButton value="Izquierdo" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>Izquierdo</Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton value="derecho" uncheckedColor="#BDBDBD" />
+                  <RadioButton value="Derecho" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>Derecho</Text>
                 </View>
               </RadioButton.Group>
@@ -160,7 +160,7 @@ export default function AshwortMetric() {
               disabled={isButtonDisabled}
             >
               <Text style={[stylesMain.metricTitle, { fontSize: 20 }]}>
-                Calcular
+                Evaluar
               </Text>
             </TouchableOpacity>
           </View>

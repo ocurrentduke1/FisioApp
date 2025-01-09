@@ -26,7 +26,7 @@ const Results = ({
         <Text style={styles.Text}>Resultados de la evaluación</Text>
         <Text style={styles.Text}>{results.angulo}</Text>
 
-        <Text style={styles.Text}>Recomendacion de tratamiento</Text>
+        <Text style={styles.Text}>Recomendación de tratamiento</Text>
         <Text style={styles.Text}>{results.recomendacion}</Text>
       </View>
       {/* <TouchableOpacity

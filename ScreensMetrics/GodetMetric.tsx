@@ -88,7 +88,7 @@ export default function GodetMetric() {
 
             <View>
               <Text style={[stylesMain.metricTitle, { fontSize: 18 }]}>
-                ¿Que lado se va a evaluar?
+                ¿Qué lado se va a evaluar?
               </Text>
               <RadioButton.Group
                 onValueChange={(newValue) => setSide(newValue)}
@@ -107,7 +107,7 @@ export default function GodetMetric() {
 
             <View>
               <Text style={[stylesMain.metricTitle, { fontSize: 18 }]}>
-                Estado del musculo o grupo evaluado
+              Estado del músculo o grupo evaluado
               </Text>
               <RadioButton.Group
                 onValueChange={(newValue) => setState(newValue)}
@@ -116,27 +116,25 @@ export default function GodetMetric() {
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton value="1" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
-                    Fóvea ligera, desaparece rapidamente.
+                  Fóvea ligera, desaparece rápidamente.
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton value="2" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
-                    Fóvea mas profunda, no hay distorcion detectable, desaparece
-                    en 10 a 15 segundos.
+                  Fóvea mas profunda, no hay distorsión detectable, desaparece en 10 a 15 segundos.
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton value="3" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
-                    Fóvea profunda, dura mas de 1 minuto, distorcion detectable.
+                  Fóvea profunda, dura mas de 1 minuto, distorsión detectable.
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton value="4" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
-                    Fóvea muy profunda, dura mas de 2 minutos, distorcion
-                    marcada.
+                  Fóvea muy profunda, dura mas de 2 minutos, distorsión marcada.
                   </Text>
                 </View>
               </RadioButton.Group>

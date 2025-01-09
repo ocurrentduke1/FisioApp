@@ -41,7 +41,7 @@ const ConfirmExercise = ({
   return (
     <SafeAreaView style={stylesHistorial.container}>
       <View style={stylesHistorial.containerRegistro}>
-        <Text style={styles.Text}>Ejemplo de realizacion de ejercicio</Text>
+        <Text style={styles.Text}>Ejemplo de realización de ejercicio</Text>
         <View style={styles.gifContainer}>
           <Image source={gifSource} style={styles.gifStyle} />
         </View>

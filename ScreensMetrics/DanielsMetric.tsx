@@ -94,18 +94,18 @@ export default function DanielsMetric() {
 
             <View>
               <Text style={[stylesMain.metricTitle, { fontSize: 18 }]}>
-                ¿Que lado se va a evaluar?
+              ¿Qué lado se va a evaluar?
               </Text>
               <RadioButton.Group
                 onValueChange={(newValue) => setSide(newValue)}
                 value={side}
               >
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton value="izquierdo" uncheckedColor="#BDBDBD" />
+                  <RadioButton value="Izquierdo" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>Izquierdo</Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
-                  <RadioButton value="derecho" uncheckedColor="#BDBDBD" />
+                  <RadioButton value="Derecho" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>Derecho</Text>
                 </View>
               </RadioButton.Group>
@@ -114,7 +114,7 @@ export default function DanielsMetric() {
 
             <View>
               <Text style={[stylesMain.metricTitle, { fontSize: 18 }]}>
-                Estado del musculo o grupo evaluado
+              Estado del músculo o grupo evaluado.
               </Text>
               <RadioButton.Group
                 onValueChange={(newValue) => setState(newValue)}
@@ -123,70 +123,61 @@ export default function DanielsMetric() {
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton value="0" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
-                    Paralisis Total o ausencia de movimiento
+                  Parálisis total o ausencia de movimiento.
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton value="1" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
-                    Contraccion minima visible, pero sin movimiento
+                  Contracción mínima visible, pero sin movimiento
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton value="2" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
-                    Contraccion escasa, con movimiento, pero inexistente con
-                    resistencia
+                  Contracción escasa, con movimiento, pero inexistente con resistencia
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton value="3" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
-                    Contraccion regular negativa, con movimiento parcial y
-                    liberacion gradual desde la posicion de prueba
+                  Contracción regular negativa, con movimiento parcial y liberación gradual desde la posición de prueba
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton value="4" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
-                    Contraccion regular, con movimiento parcial y con la
-                    gravedad como unica resistencia
+                  Contracción regular, con movimiento parcial y con la gravedad como única resistencia
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton value="5" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
-                    Contraccion regular positiva, con movimiento completo, pero
-                    solo en contra de la gravedad
+                  Contracción regular positiva, con movimiento completo, pero solo en contra de la gravedad
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton value="6" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
-                    Contraccion buena negativa o regular, con movimiento
-                    completo contra la gravedad y con la aplicacion de
-                    resistencia minima
+                  Contracción buena negativa o regular, con movimiento completo contra la gravedad y con la aplicación de resistencia mínima
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton value="7" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
-                    Contraccion buena, con movimiento completo contra la
-                    gravedad y con la aplicacion de resistencia Moderada
+                  Contracción buena, con movimiento completo contra la gravedad y con la aplicación de resistencia Moderada
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton value="8" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
-                    Contraccion buena positiva, con movimiento completo contra
-                    la gravedad y con la aplicacion de resistencia fuerte
+                  Contracción buena positiva, con movimiento completo contra la gravedad y con la aplicación de resistencia fuerte
                   </Text>
                 </View>
                 <View style={stylesMain.radioButtonContainer}>
                   <RadioButton value="9" uncheckedColor="#BDBDBD" />
                   <Text style={stylesMain.metricText}>
-                    Contraccion normal, con movimiento completo contra la
-                    gravedad y con la aplicacion de resistencia maxima
+                  Contracción normal, con movimiento completo contra la gravedad y con la aplicación de resistencia máxima
                   </Text>
                 </View>
               </RadioButton.Group>

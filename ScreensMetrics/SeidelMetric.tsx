@@ -87,7 +87,7 @@ export default function SeidelMetric() {
 
             <View>
               <Text style={[stylesMain.metricTitle, { fontSize: 18 }]}>
-                ¿Que lado se va a evaluar?
+                ¿Qué lado se va a evaluar?
               </Text>
               <RadioButton.Group
                 onValueChange={(newValue) => setSide(newValue)}

@@ -106,13 +106,13 @@ export default function GlasgowMetric() {
           <View
             style={[stylesMain.ContainerInput, { paddingBottom: 20 }]}
           >
-            <Text style={stylesMain.metricTitle}>Evaluacion Ocular</Text>
-            <Text style={stylesMain.metricText}>1-No Responde</Text>
-            <Text style={stylesMain.metricText}>2-Respuesta al Dolor</Text>
+            <Text style={stylesMain.metricTitle}>Evaluación Ocular</Text>
+            <Text style={stylesMain.metricText}>1. No Responde</Text>
+            <Text style={stylesMain.metricText}>2. Respuesta al Dolor</Text>
             <Text style={stylesMain.metricText}>
-              3-Respuesta por orden verbal
+              3. Respuesta por orden verbal
             </Text>
-            <Text style={stylesMain.metricText}>4-Respuesta Espontanea</Text>
+            <Text style={stylesMain.metricText}>4. Respuesta Espontanea</Text>
             <TextInput
               mode="outlined"
               label="De 1 a 4"
@@ -124,12 +124,12 @@ export default function GlasgowMetric() {
               keyboardType="numeric"
               onChangeText={(value) => setValueOcular(value)}
             />
-            <Text style={stylesMain.metricTitle}>Evaluacion Verbal</Text>
-            <Text style={stylesMain.metricText}>1-No Responde</Text>
-            <Text style={stylesMain.metricText}>2-Sonidos Incomprensibles</Text>
-            <Text style={stylesMain.metricText}>3-Palabras Inapropiadas</Text>
-            <Text style={stylesMain.metricText}>4-Desorientado y Hablando</Text>
-            <Text style={stylesMain.metricText}>5-Orientado y conversando</Text>
+            <Text style={stylesMain.metricTitle}>Evaluación Verbal</Text>
+            <Text style={stylesMain.metricText}>1. No Responde</Text>
+            <Text style={stylesMain.metricText}>2. Sonidos Incomprensibles</Text>
+            <Text style={stylesMain.metricText}>3. Palabras Inapropiadas</Text>
+            <Text style={stylesMain.metricText}>4. Desorientado y Hablando</Text>
+            <Text style={stylesMain.metricText}>5. Orientado y conversando</Text>
             <TextInput
               mode="outlined"
               label="De 1 a 5"
@@ -141,17 +141,17 @@ export default function GlasgowMetric() {
               keyboardType="numeric"
               onChangeText={(value) => setValueVerbal(value)}
             />
-            <Text style={stylesMain.metricTitle}>Evaluacion Motora</Text>
-            <Text style={stylesMain.metricText}>1-No Responde</Text>
+            <Text style={stylesMain.metricTitle}>Evaluación Motora</Text>
+            <Text style={stylesMain.metricText}>1. No Responde</Text>
             <Text style={stylesMain.metricText}>
-              2-Extension de Estremidades
+              2. Extensión de Extremidades
             </Text>
             <Text style={stylesMain.metricText}>
-              3-Flexion Anormal de Extremidades
+              3-Flexión Anormal de Extremidades
             </Text>
-            <Text style={stylesMain.metricText}>4-Retirada y Flexion</Text>
-            <Text style={stylesMain.metricText}>5-Localiza el Dolor</Text>
-            <Text style={stylesMain.metricText}>6-Obedece a orden Verban</Text>
+            <Text style={stylesMain.metricText}>4. Retirada y Flexión</Text>
+            <Text style={stylesMain.metricText}>5. Localiza el Dolor</Text>
+            <Text style={stylesMain.metricText}>6. Obedece a orden Verbal</Text>
             <TextInput
               mode="outlined"
               label="De 1 a 6"

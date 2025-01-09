@@ -288,10 +288,10 @@ export default function BarthelMetric() {
               Actividad: Control de heces
             </Text>
             <Text style={stylesMain.metricText}>
-              0-Incontinente (o necesita suministro de enema)
+              0. Incontinente (o necesita suministro de enema)
             </Text>
             <Text style={stylesMain.metricText}>
-              1-Accidente excepcional (1/semana)
+            1. Accidente excepcional (1 vez por semana).
             </Text>
             <Text style={stylesMain.metricText}>2-Continente</Text>
             <TextInput
@@ -311,13 +311,13 @@ export default function BarthelMetric() {
               Actividad: Control de orina
             </Text>
             <Text style={stylesMain.metricText}>
-              0-Incontinente, o sondado incapaz de cambiarse la bolsa
+            0. Incontinente, o sondado incapaz de cambiarse la bolsa.
             </Text>
             <Text style={stylesMain.metricText}>
-              1-accidente excepcional (maximo 1/24hrs)
+            1. Accidente excepcional (máximo 1/24 hrs).
             </Text>
             <Text style={stylesMain.metricText}>
-              2-continente, durante al menos 7 dias
+            2. Continente, durante al menos 7 días.
             </Text>
             <TextInput
               mode="outlined"

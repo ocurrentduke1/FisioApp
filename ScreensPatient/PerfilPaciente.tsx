@@ -740,7 +740,7 @@ const PerfilPaciente = ({
         <View style={styles.modalContainer}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>
-              ¿Seguro que quieres salir de tu sesion?
+            ¿Seguro que quieres salir de tu sesión?
             </Text>
             <View style={styles.buttonContainer}>
               <TouchableOpacity
@@ -753,7 +753,7 @@ const PerfilPaciente = ({
                 style={[styles.button, styles.buttonSearch]}
                 onPress={logout}
               >
-                <Text style={styles.textStyle}>Cerrar sesion</Text>
+                <Text style={styles.textStyle}>Cerrar sesión</Text>
               </TouchableOpacity>
             </View>
           </View>

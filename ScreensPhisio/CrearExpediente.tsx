@@ -538,7 +538,7 @@ const CrearExpediente = ({
           onPress={toggleDatePicker}>
         <TextInput
           mode = "outlined"
-          label={"Fecha de Creacion"}
+          label={"Fecha de creación"}
           value={FechaCreacion}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -603,16 +603,6 @@ const CrearExpediente = ({
           placeholder="Estado Civil"
           
         />
-        {/* <TextInput
-          mode = "outlined"
-          label={"Edad"}
-          value={edad}
-          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
-          outlineColor="#c5cae9"
-          activeOutlineColor="#c5cae9"
-          keyboardType="numeric"
-          onChangeText={(value) => setedad(value)}
-        /> */}
         <SelectList
           setSelected={(val: string) => {
             setedad(val);
@@ -708,7 +698,7 @@ const CrearExpediente = ({
         </TouchableOpacity>
         <TextInput
           mode = "outlined"
-          label={"Telefono"}
+          label={"Teléfono"}
           value={telefono}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           keyboardType="numeric"
@@ -767,7 +757,7 @@ const CrearExpediente = ({
         />
         <TextInput
           mode = "outlined"
-          label={"Presion Arterial"}
+          label={"Presión Arterial"}
           value={presion}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -895,7 +885,7 @@ const CrearExpediente = ({
           </RadioButton.Group>
         </View>
 
-        <Text style={styles.title}>Antecedentes Patologicos</Text>
+        <Text style={styles.title}>Antecedentes patológicos</Text>
         
         <View>
           <Text style={styles.label}>¿Tiene antecedentes de cáncer?</Text>
@@ -1007,7 +997,7 @@ const CrearExpediente = ({
         </View>
         <TextInput
           mode="outlined"
-          label={"Cirugias"}
+          label={"Cirugías"}
           value={cirugias}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -1034,7 +1024,7 @@ const CrearExpediente = ({
         />
         <TextInput
           mode="outlined"
-          label={"Enfermedades congenitas"}
+          label={"Enfermedades congénitas"}
           value={congenitas}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -1070,7 +1060,7 @@ const CrearExpediente = ({
         />
         <TextInput
           mode="outlined"
-          label={"Descripcion de dolor"}
+          label={"Descripción de dolor"}
           value={Ddolor}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -1098,7 +1088,7 @@ const CrearExpediente = ({
         />
         <TextInput
           mode="outlined"
-          label={"Farmacos prescritos y no prescritos"}
+          label={"Fármacos prescritos y no prescritos"}
           value={farmacos}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -1211,7 +1201,7 @@ const CrearExpediente = ({
         />
         <TextInput
           mode="outlined"
-          label={"Alimentacion"}
+          label={"Alimentación"}
           value={alimentacion}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -1220,7 +1210,7 @@ const CrearExpediente = ({
         />
         <TextInput
           mode="outlined"
-          label={"Hidratacion"}
+          label={"Hidratación"}
           value={hidratacion}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -1229,7 +1219,7 @@ const CrearExpediente = ({
         />
         <TextInput
           mode="outlined"
-          label={"Ocupacion"}
+          label={"Ocupación"}
           value={ocupacion}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -1257,7 +1247,7 @@ const CrearExpediente = ({
         />
         <TextInput
           mode="outlined"
-          label={"Lesion Anatomica"}
+          label={"Lesión anatómica"}
           value={lesionAnatomica}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -1284,7 +1274,7 @@ const CrearExpediente = ({
         />
         <TextInput
           mode="outlined"
-          label={"Valoracion Postural"}
+          label={"Valoración Postural"}
           value={valoracionPostural}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -1293,7 +1283,7 @@ const CrearExpediente = ({
         />
         <TextInput
           mode="outlined"
-          label={"Palpacion"}
+          label={"Palpación"}
           value={Palpacion}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -1302,7 +1292,7 @@ const CrearExpediente = ({
         />
         <TextInput
           mode="outlined"
-          label={"Diagnostico Fisico"}
+          label={"Diagnostico Físico"}
           value={DiagnosticoFisio}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"

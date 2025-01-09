@@ -217,6 +217,7 @@ export default function HistorialPaciente({
         return;
       }
 
+      console.log(response.data.expedientes);
       const transformedExpedientes = response.data.expedientes.map(
         (expediente: any) => {
           const date = expediente.createdAt.split("T");
@@ -658,7 +659,7 @@ export default function HistorialPaciente({
                 <Icon name="file-text-o" size={50} color="#000" />
                 <View style={{ paddingLeft: 15 }}>
                   <Text>
-                    Fecha de creación: {expediente.date + " " + expediente.hour}
+                    Fecha de creación: {expediente.date}
                   </Text>
                 </View>
               </TouchableOpacity>

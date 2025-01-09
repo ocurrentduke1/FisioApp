@@ -121,7 +121,7 @@ export default function BradenMetric() {
                 { fontSize: 18, alignSelf: "center" },
               ]}
             >
-              Percepcion Sensorial
+              Percepción sensorial.
             </Text>
             <RadioButton.Group
               onValueChange={(newValue) => setSensorial(newValue)}
@@ -130,12 +130,12 @@ export default function BradenMetric() {
               <View style={stylesMain.radioButtonContainer}>
                 <RadioButton value="1" uncheckedColor="#BDBDBD" />
                 <Text style={stylesMain.metricText}>
-                  Completamente Limitada
+                  Completamente limitada
                 </Text>
               </View>
               <View style={stylesMain.radioButtonContainer}>
                 <RadioButton value="2" uncheckedColor="#BDBDBD" />
-                <Text style={stylesMain.metricText}>Muy Limitada</Text>
+                <Text style={stylesMain.metricText}>Muy limitada.</Text>
               </View>
               <View style={stylesMain.radioButtonContainer}>
                 <RadioButton value="3" uncheckedColor="#BDBDBD" />
@@ -153,7 +153,7 @@ export default function BradenMetric() {
                 { fontSize: 18, alignSelf: "center" },
               ]}
             >
-              Exposicion A la Humedad
+              Exposición a la humedad.
             </Text>
 
             <RadioButton.Group
@@ -162,19 +162,19 @@ export default function BradenMetric() {
             >
               <View style={stylesMain.radioButtonContainer}>
                 <RadioButton value="1" uncheckedColor="#BDBDBD" />
-                <Text style={stylesMain.metricText}>Constantemente Humeda</Text>
+                <Text style={stylesMain.metricText}>Constantemente húmeda</Text>
               </View>
               <View style={stylesMain.radioButtonContainer}>
                 <RadioButton value="2" uncheckedColor="#BDBDBD" />
-                <Text style={stylesMain.metricText}>A menudo Humeda</Text>
+                <Text style={stylesMain.metricText}>A menudo húmeda</Text>
               </View>
               <View style={stylesMain.radioButtonContainer}>
                 <RadioButton value="3" uncheckedColor="#BDBDBD" />
-                <Text style={stylesMain.metricText}>Ocasionalmente Humeda</Text>
+                <Text style={stylesMain.metricText}>Ocasionalmente húmeda.</Text>
               </View>
               <View style={stylesMain.radioButtonContainer}>
                 <RadioButton value="4" uncheckedColor="#BDBDBD" />
-                <Text style={stylesMain.metricText}>Raramente Humeda</Text>
+                <Text style={stylesMain.metricText}>Raramente húmeda.</Text>
               </View>
             </RadioButton.Group>
 
@@ -228,19 +228,19 @@ export default function BradenMetric() {
             >
               <View style={stylesMain.radioButtonContainer}>
                 <RadioButton value="1" uncheckedColor="#BDBDBD" />
-                <Text style={stylesMain.metricText}>Completamente inmovil</Text>
+                <Text style={stylesMain.metricText}>Completamente inmóvil.</Text>
               </View>
               <View style={stylesMain.radioButtonContainer}>
                 <RadioButton value="2" uncheckedColor="#BDBDBD" />
-                <Text style={stylesMain.metricText}>Muy Limitada</Text>
+                <Text style={stylesMain.metricText}>Muy limitada</Text>
               </View>
               <View style={stylesMain.radioButtonContainer}>
                 <RadioButton value="3" uncheckedColor="#BDBDBD" />
-                <Text style={stylesMain.metricText}>ligeramente limitada</Text>
+                <Text style={stylesMain.metricText}>Ligeramente limitada</Text>
               </View>
               <View style={stylesMain.radioButtonContainer}>
                 <RadioButton value="4" uncheckedColor="#BDBDBD" />
-                <Text style={stylesMain.metricText}>sin limitaciones</Text>
+                <Text style={stylesMain.metricText}>Sin limitaciones</Text>
               </View>
             </RadioButton.Group>
 
@@ -250,7 +250,7 @@ export default function BradenMetric() {
                 { fontSize: 18, alignSelf: "center" },
               ]}
             >
-              Nutricion
+              Nutrición
             </Text>
 
             <RadioButton.Group
@@ -263,15 +263,15 @@ export default function BradenMetric() {
               </View>
               <View style={stylesMain.radioButtonContainer}>
                 <RadioButton value="2" uncheckedColor="#BDBDBD" />
-                <Text style={stylesMain.metricText}>Muy Limitada</Text>
+                <Text style={stylesMain.metricText}>Muy limitada</Text>
               </View>
               <View style={stylesMain.radioButtonContainer}>
                 <RadioButton value="3" uncheckedColor="#BDBDBD" />
-                <Text style={stylesMain.metricText}>ligeramente limitada</Text>
+                <Text style={stylesMain.metricText}>Ligeramente limitada</Text>
               </View>
               <View style={stylesMain.radioButtonContainer}>
                 <RadioButton value="4" uncheckedColor="#BDBDBD" />
-                <Text style={stylesMain.metricText}>sin limitaciones</Text>
+                <Text style={stylesMain.metricText}>Sin limitaciones</Text>
               </View>
             </RadioButton.Group>
 
@@ -281,7 +281,7 @@ export default function BradenMetric() {
                 { fontSize: 18, alignSelf: "center" },
               ]}
             >
-              Friccion y cizallamiento
+              Fricción y cizallamiento.
             </Text>
 
             <RadioButton.Group
@@ -290,16 +290,16 @@ export default function BradenMetric() {
             >
               <View style={stylesMain.radioButtonContainer}>
                 <RadioButton value="1" uncheckedColor="#BDBDBD" />
-                <Text style={stylesMain.metricText}>problema</Text>
+                <Text style={stylesMain.metricText}>Problema</Text>
               </View>
               <View style={stylesMain.radioButtonContainer}>
                 <RadioButton value="2" uncheckedColor="#BDBDBD" />
-                <Text style={stylesMain.metricText}>problema potencial</Text>
+                <Text style={stylesMain.metricText}>Problema potencial</Text>
               </View>
               <View style={stylesMain.radioButtonContainer}>
                 <RadioButton value="3" uncheckedColor="#BDBDBD" />
                 <Text style={stylesMain.metricText}>
-                  no existe problema aparente
+                  No existe problema aparente
                 </Text>
               </View>
             </RadioButton.Group>
@@ -315,7 +315,7 @@ export default function BradenMetric() {
               disabled={!allFieldsFilled()}
             >
               <Text style={[stylesMain.metricTitle, { fontSize: 20 }]}>
-                Calcular
+                Evaluar
               </Text>
             </TouchableOpacity>
           </View>

@@ -42,7 +42,7 @@ const ConfirmPosture = ({
   return (
     <SafeAreaView style={stylesHistorial.container}>
       <View style={stylesHistorial.containerRegistro}>
-        <Text style={styles.Text}>Ejemplo de realizacion de postura</Text>
+        <Text style={styles.Text}>Ejemplo de realización de postura</Text>
         <Image
           source={imageSource} // Asegúrate de cambiar la ruta al lugar correcto donde tienes tu GIF
           style={styles.gifStyle}

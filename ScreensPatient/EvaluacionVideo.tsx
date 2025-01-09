@@ -46,7 +46,7 @@ export default function EvaluacionVideo({
                 fontWeight: "bold",
               }}
             >
-              flexion de Hombro
+              flexión de Hombro
             </Text>
           </TouchableOpacity>
 
@@ -56,7 +56,7 @@ export default function EvaluacionVideo({
               navigation.navigate("ConfirmExercise", {
                 gifSource: require("../assets/gifs/extensionHombro.gif"),
                 exercise: "extensionHombro",
-                instructions:"Debes estar de pie, de lado, con los brazos a los lados del cuerpo y mover el brazo seleccionado hacia atras hasta donde se pueda permitir o hasta donde el dolor deje de ser tolerable.",
+                instructions:"Debes estar de pie, de lado, con los brazos a los lados del cuerpo y mover el brazo seleccionado hacia atrás hasta donde se pueda permitir o hasta donde el dolor deje de ser tolerable.",
                 port: "5005",
               })
             }
@@ -70,7 +70,7 @@ export default function EvaluacionVideo({
                 fontWeight: "bold",
               }}
             >
-              extension de Hombro
+              extensión de Hombro
             </Text>
           </TouchableOpacity>
 
@@ -94,7 +94,7 @@ export default function EvaluacionVideo({
                 fontWeight: "bold",
               }}
             >
-              abduccion de Hombro
+              abducción de Hombro
             </Text>
           </TouchableOpacity>
 
@@ -118,7 +118,7 @@ export default function EvaluacionVideo({
                 fontWeight: "bold",
               }}
             >
-              aduccion de Hombro
+              aducción de Hombro
             </Text>
           </TouchableOpacity>
 
@@ -142,7 +142,7 @@ export default function EvaluacionVideo({
                 fontWeight: "bold",
               }}
             >
-              extension de Codo
+              extensión de Codo
             </Text>
           </TouchableOpacity>
 
@@ -166,7 +166,7 @@ export default function EvaluacionVideo({
                 fontWeight: "bold",
               }}
             >
-              flexion de Codo
+              flexión de Codo
             </Text>
           </TouchableOpacity>
 
@@ -190,7 +190,7 @@ export default function EvaluacionVideo({
                 fontWeight: "bold",
               }}
             >
-              flexion de Cadera
+              flexión de Cadera
             </Text>
           </TouchableOpacity>
 
@@ -214,7 +214,7 @@ export default function EvaluacionVideo({
                 fontWeight: "bold",
               }}
             >
-              extension de Cadera
+              extensión de Cadera
             </Text>
           </TouchableOpacity>
 
@@ -238,7 +238,7 @@ export default function EvaluacionVideo({
                 fontWeight: "bold",
               }}
             >
-              abduccion de Cadera
+              abducción de Cadera
             </Text>
           </TouchableOpacity>
 
@@ -262,7 +262,7 @@ export default function EvaluacionVideo({
                 fontWeight: "bold",
               }}
             >
-              aduccion de Cadera
+              aducción de Cadera
             </Text>
           </TouchableOpacity>
 
@@ -272,7 +272,7 @@ export default function EvaluacionVideo({
               navigation.navigate("ConfirmExercise", {
                 gifSource: require("../assets/gifs/flexionRodilla.gif"),
                 exercise: "flexionRodilla",
-                instructions:"Debe estar de pie, de lado, con la pierna seleccionada flexionada hacia atras y elevar el talon hacia los gluteos hasta donde se pueda permitir o hasta donde el dolor deje de ser tolerable.",
+                instructions:"Debe estar de pie, de lado, con la pierna seleccionada flexionada hacia atrás y elevar el talón hacia los glúteos hasta donde se pueda permitir o hasta donde el dolor deje de ser tolerable.",
                 port: "5001",
               })
             }
@@ -286,7 +286,7 @@ export default function EvaluacionVideo({
                 fontWeight: "bold",
               }}
             >
-              flexion de Rodilla
+              flexión de Rodilla
             </Text>
           </TouchableOpacity>
 
@@ -310,7 +310,7 @@ export default function EvaluacionVideo({
                 fontWeight: "bold",
               }}
             >
-              extension de Rodilla
+              extensión de Rodilla
             </Text>
           </TouchableOpacity>
         </ScrollView>

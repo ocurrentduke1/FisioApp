@@ -32,7 +32,7 @@ export default function EvaluacionImagen({
             paddingHorizontal: 10,
           }}
         >
-          Evaluacion de Curvatura de espalda
+          Evaluación de Curvatura de espalda
         </Text>
       </TouchableOpacity>
 
@@ -57,7 +57,7 @@ export default function EvaluacionImagen({
             paddingHorizontal: 10,
           }}
         >
-          Evaluacion de Desviacion de piernas
+          Evaluación de desviación de piernas
         </Text>
       </TouchableOpacity>
 
