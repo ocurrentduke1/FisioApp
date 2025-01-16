@@ -33,7 +33,7 @@ export default StyleSheet.create({
     justifyContent: "center",
     borderRadius: 25,
     width: windowWidth * 0.8,
-    height: windowHeight * 0.25,
+    height: windowHeight * 0.15,
     marginTop: 20,
     marginBottom: 20,
     shadowColor: "#000",

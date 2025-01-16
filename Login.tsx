@@ -159,6 +159,7 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
 
   const loggin = async () => {
     try {
+      console.log(BACKEND_URL);
       const response = await axios.post(
         BACKEND_URL + "/login",
         {

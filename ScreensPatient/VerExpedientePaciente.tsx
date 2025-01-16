@@ -306,6 +306,7 @@ export default function HistorialPaciente({
 
   const getPaciente = async () => {
     try {
+      console.log(BACKEND_URL);
       const response = await axios.get(
         `${BACKEND_URL}/obtener-info-usuario/${userID}/paciente`
       );

@@ -593,12 +593,7 @@ export default function AgendaCitas({
               }}
               setOpen={setOpenPatient}
               multiple={false}
-              items={dataPatients.filter((paciente) => {
-                if(paciente.proximaCita === 'Sin cita') {
-                  return true;
-                }
-                return new Date(convertToISO(paciente.proximaCita)).toLocaleDateString() > new Date(selectedDate).toLocaleDateString()
-              }).map((patient) => ({
+              items={dataPatients.map((patient) => ({
                 label: patient.nombre + " " + patient.apellidos,
                 value: patient.id,
                 Icon: () => (

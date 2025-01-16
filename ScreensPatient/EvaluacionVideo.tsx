@@ -45,7 +45,7 @@ export default function EvaluacionVideo({
                 fontWeight: "bold",
               }}
             >
-              flexión de Hombro
+              Flexión de hombro
             </Text>
           </TouchableOpacity>
 
@@ -68,7 +68,7 @@ export default function EvaluacionVideo({
                 fontWeight: "bold",
               }}
             >
-              extensión de Hombro
+              Extensión de hombro
             </Text>
           </TouchableOpacity>
 
@@ -91,7 +91,7 @@ export default function EvaluacionVideo({
                 fontWeight: "bold",
               }}
             >
-              abducción de Hombro
+              Abducción de hombro
             </Text>
           </TouchableOpacity>
 
@@ -114,7 +114,7 @@ export default function EvaluacionVideo({
                 fontWeight: "bold",
               }}
             >
-              aducción de Hombro
+              Aducción de hombro
             </Text>
           </TouchableOpacity>
 
@@ -137,7 +137,7 @@ export default function EvaluacionVideo({
                 fontWeight: "bold",
               }}
             >
-              extensión de Codo
+              Extensión de codo
             </Text>
           </TouchableOpacity>
 
@@ -160,7 +160,7 @@ export default function EvaluacionVideo({
                 fontWeight: "bold",
               }}
             >
-              flexión de Codo
+              Flexión de codo
             </Text>
           </TouchableOpacity>
 
@@ -183,7 +183,7 @@ export default function EvaluacionVideo({
                 fontWeight: "bold",
               }}
             >
-              flexión de Cadera
+              Flexión de cadera
             </Text>
           </TouchableOpacity>
 
@@ -206,7 +206,7 @@ export default function EvaluacionVideo({
                 fontWeight: "bold",
               }}
             >
-              extensión de Cadera
+              Extensión de cadera
             </Text>
           </TouchableOpacity>
 
@@ -229,7 +229,7 @@ export default function EvaluacionVideo({
                 fontWeight: "bold",
               }}
             >
-              abducción de Cadera
+              Abducción de cadera
             </Text>
           </TouchableOpacity>
 
@@ -252,7 +252,7 @@ export default function EvaluacionVideo({
                 fontWeight: "bold",
               }}
             >
-              aducción de Cadera
+              Aducción de cadera
             </Text>
           </TouchableOpacity>
 
@@ -275,7 +275,7 @@ export default function EvaluacionVideo({
                 fontWeight: "bold",
               }}
             >
-              flexión de Rodilla
+              Flexión de rodilla
             </Text>
           </TouchableOpacity>
 
@@ -298,7 +298,7 @@ export default function EvaluacionVideo({
                 fontWeight: "bold",
               }}
             >
-              extensión de Rodilla
+              Extensión de rodilla
             </Text>
           </TouchableOpacity>
         </ScrollView>
