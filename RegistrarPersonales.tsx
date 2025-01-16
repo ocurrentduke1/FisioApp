@@ -397,7 +397,7 @@ export default function RegistrarPersonales({
                 style={{
                   width: "100%",
                   padding: 15,
-                  backgroundColor: "#00bcd4",
+                  backgroundColor: "#99BF0F",
                   borderRadius: 20,
                   alignItems: "center",
                   marginVertical: 10,
@@ -412,7 +412,7 @@ export default function RegistrarPersonales({
                 style={{
                   width: "100%",
                   padding: 15,
-                  backgroundColor: "#3F51B5",
+                  backgroundColor: "#00bcd4",
                   borderRadius: 20,
                   alignItems: "center",
                   marginVertical: 10,

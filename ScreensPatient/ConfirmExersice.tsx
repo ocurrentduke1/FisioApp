@@ -18,7 +18,6 @@ type RouteParams = {
     };
     exercise: string;
     instructions: string;
-    port: string;
   };
 };
 
@@ -34,9 +33,7 @@ const ConfirmExercise = ({
 
   const { gifSource } = route.params;
   const { exercise } = route.params;
-  const { port } = route.params;
   const { instructions } = route.params;
-  console.log(port);
 
   return (
     <SafeAreaView style={stylesHistorial.container}>
@@ -68,8 +65,7 @@ const ConfirmExercise = ({
         style={stylesHistorial.button}
         onPress={() =>
           navigation.navigate("CamaraVideo", {
-            exercise: exercise + side,
-            port,
+            exercise: exercise + side
           })
         }
       >

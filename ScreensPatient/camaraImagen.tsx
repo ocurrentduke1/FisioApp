@@ -22,9 +22,7 @@ export default function CamaraImagen({
   const [cameraReady, setCameraReady] = useState<boolean>(false);
 
   const { exercise } = route.params as { exercise: string };
-  const { port } = route.params as { port: string };
 
-  console.log(port);
   const onCameraReady = async () => {
     setCameraReady(true);
   };
@@ -38,7 +36,6 @@ export default function CamaraImagen({
         navigation.navigate("ConfirmImage", {
           image: data!.uri,
           exercise,
-          port,
         });
       } catch (e) {
         console.log(e);

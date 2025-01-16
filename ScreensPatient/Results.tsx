@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   Text,
   StyleSheet,
+  ScrollView,
 } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -23,20 +24,16 @@ const Results = ({
   return (
     <SafeAreaView style={stylesHistorial.container}>
       <View style={stylesHistorial.containerRegistro}>
-        <Text style={styles.Text}>Resultados de la evaluación</Text>
-        <Text style={styles.Text}>{results.angulo}</Text>
+        <ScrollView>
+        <Text style={[styles.Text, {fontWeight: "bold"}]}>Resultados de la evaluación</Text>
+        <Text style={styles.Text}>Angulo respecto a la cadera: {results.angulo}</Text>
 
         <Text style={styles.Text}>Recomendación de tratamiento</Text>
         <Text style={styles.Text}>{results.recomendacion}</Text>
+        </ScrollView>
       </View>
-      {/* <TouchableOpacity
-        style={[stylesHistorial.button, { marginTop: 0 }]}
-        onPress={SaveResults}
-      >
-        <Text style={stylesHistorial.buttonText}>Guardar Registro</Text>
-      </TouchableOpacity> */}
       <TouchableOpacity
-        style={[stylesHistorial.button, { marginTop: 0 }]}
+        style={[stylesHistorial.button, { marginTop: 0, backgroundColor: "#04ADBF", }]}
         onPress={() => {
           navigation.navigate("VerExpedientePaciente");
         }}
@@ -52,6 +49,9 @@ const styles = StyleSheet.create({
     color: "black",
     textAlign: "center",
     marginTop: 20,
+  },
+  dialogTitle: {
+    textAlign: "center",
   },
 });
 

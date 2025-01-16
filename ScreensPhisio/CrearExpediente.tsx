@@ -478,7 +478,7 @@ const CrearExpediente = ({
           let formData = new FormData();
           const pdfBlob = {
               uri: file.uri,
-              name: uuid + '.pdf',
+              name: uuid + 'pdf',
               type: 'application/pdf',
           } as any;
           formData.append('expediente', await pdfBlob);

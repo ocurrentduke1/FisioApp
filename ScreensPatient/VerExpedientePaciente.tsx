@@ -125,6 +125,7 @@ export default function HistorialPaciente({
   const changeErrorEscalas = () => setErrorEscalas(!errorEscalas);
   const [errorPaciente, setErrorPaciente] = useState(false);
   const changeErrorPaciente = () => setErrorPaciente(!errorPaciente);
+  const [perfil, setPerfil] = useState<string | null>(null);
 
   const screenWidth = Dimensions.get("window").width;
 
@@ -152,6 +153,7 @@ export default function HistorialPaciente({
       togglePicker1();
     }
   };
+
 
   const onChange2 = ({ type }: { type: string }, selectedDate: any) => {
     if (type === "set") {
@@ -237,6 +239,10 @@ export default function HistorialPaciente({
         ) * 50
       );
       setWidth(Math.max(screenWidth, anchoGrafico * 1.5));
+
+      paciente.imagenPerfil = await AsyncStorage.getItem("photoPerfil");
+
+      setPerfil(await AsyncStorage.getItem("photoPerfil"));
     } catch (error) {
       console.error("Error fetching scales:", error);
       changeErrorEscalas();
@@ -357,9 +363,9 @@ export default function HistorialPaciente({
             }}
           >
             <View style={stylesHistorial.viewpaciente}>
-              {paciente.imagenPerfil ? (
+              {perfil ? (
                 <Image
-                  source={{ uri: paciente.imagenPerfil }}
+                  source={{ uri: perfil }}
                   style={{
                     alignItems: "flex-end",
                     width: windowWidth * 0.19,
@@ -436,14 +442,14 @@ export default function HistorialPaciente({
                   style={{ marginRight: 5 }}
                 />
                 <View style={{ overflow: "hidden" }}>
-                  <Animated.Text
-                    style={{ transform: [{ translateX: scrollX }], width: 200 }}
+                  <Text
+                    style={{ width: 200, paddingRight: 10 }}
                     onLayout={(event) =>
                       setTextWidth(event.nativeEvent.layout.width)
                     }
                   >
                     {paciente.ubicacion}
-                  </Animated.Text>
+                  </Text>
                 </View>
               </View>
 

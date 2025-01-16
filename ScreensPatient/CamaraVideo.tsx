@@ -31,7 +31,6 @@ export default function CamaraVideo({
   const [cameraReady, setCameraReady] = useState<boolean>(false);
 
   const { exercise } = route.params as { exercise: string };
-  const { port } = route.params as { port: string };
 
   const onCameraReady = async () => {
     setCameraReady(true);
@@ -79,7 +78,6 @@ export default function CamaraVideo({
             navigation.navigate("ConfirmVideo", {
               video: response.uri,
               exercise,
-              port,
             });
           }
           console.log(response);

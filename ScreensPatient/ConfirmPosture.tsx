@@ -18,7 +18,6 @@ type RouteParams = {
     };
     exercise: string;
     instructions: string;
-    port: string;
   };
 };
 
@@ -32,10 +31,8 @@ const ConfirmPosture = ({
 }) => {
   const { imageSource } = route.params;
   const { exercise } = route.params;
-  const { port } = route.params;
   const { instructions } = route.params;
 
-  console.log(port);
   console.log(exercise);
   console.log(imageSource);
 
@@ -53,7 +50,7 @@ const ConfirmPosture = ({
       </View>
       <TouchableOpacity
         style={stylesHistorial.button}
-        onPress={() => navigation.navigate("CamaraImagen", { exercise, port })}
+        onPress={() => navigation.navigate("CamaraImagen", { exercise })}
       >
         <Text style={stylesHistorial.buttonText}>Evaluar</Text>
       </TouchableOpacity>

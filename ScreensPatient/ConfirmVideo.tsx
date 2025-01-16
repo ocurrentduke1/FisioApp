@@ -33,9 +33,7 @@ export default function ConfirmVideo({
     video: string;
     exercise: string;
   };
-  const { port } = route.params as { port: string };
   const [userID, setUserID] = useState<string | null>(null);
-  console.log(port);
 
   const getUserID = async () => {
     const id = await AsyncStorage.getItem("idSesion");
@@ -62,7 +60,6 @@ export default function ConfirmVideo({
 
       formData.append("video", videoBlob);
       formData.append("exercise", exercise);
-      formData.append("port", port);
       formData.append("idFisio", userID!);
 
       // Imprime el contenido de FormData para verificar
@@ -133,6 +130,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "#002245",
   },
   mainContainer: {
     top: 20,
@@ -152,7 +150,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-evenly",
-    backgroundColor: "#00BCD4",
+    backgroundColor: "#99BF0F",
     borderRadius: 50,
     width: 130,
     height: 50,
