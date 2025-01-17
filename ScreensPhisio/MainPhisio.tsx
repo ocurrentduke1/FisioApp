@@ -78,6 +78,8 @@ export default function MainPhisio({
       imagenPerfil?: string;
       numeroContacto: string;
       tipo: string;
+      fechaNacimiento: string;
+      genero: string;
     }[]
   >([]);
 

@@ -112,8 +112,6 @@ export default function HistorialPaciente({
     }[]
   >([]);
 
-  const [refreshing, setRefreshing] = useState(false);
-
   const [datosGrafico, setDatosGrafico] = useState<any[]>([]);
   const [anchoGrafico, setAnchoGrafico] = useState(0);
   const [width, setWidth] = useState(0);
@@ -278,17 +276,6 @@ export default function HistorialPaciente({
       })
     ).start();
   };
-
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-
-    await getScales();
-
-    // Simula una recarga de datos
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
-  }, []);
 
   const [userID, setUserID] = useState<string | null>(null);
 

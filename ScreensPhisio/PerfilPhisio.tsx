@@ -8,7 +8,6 @@ import {
   Image,
   Modal,
   StyleSheet,
-  Alert,
   Dimensions,
   Keyboard,
 } from "react-native";
@@ -23,7 +22,6 @@ import {
   TextInput,
   TouchableRipple,
   Searchbar,
-  Button,
   ActivityIndicator,
   Dialog,
 } from "react-native-paper";
@@ -33,7 +31,6 @@ import { useFocusEffect } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import MapView, { LatLng, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
-import { SelectList } from "react-native-dropdown-select-list";
 
 const { width, height } = Dimensions.get("window");
 

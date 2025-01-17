@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   ScrollView,
   TouchableOpacity,
@@ -22,6 +22,7 @@ import { BACKEND_URL } from "@env";
 import { TextInput } from "react-native-paper";
 import * as FileSystem from 'expo-file-system';
 import { RouteProp } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -34,7 +35,7 @@ type RouteParams = {
       imagenPerfil: string;
       apellidos: string;
       fechaNacimiento: string;
-      sexo: string;
+      genero: string;
       ubicacion: string;
       proximaCita: string;
       numeroContacto: string;
@@ -52,6 +53,35 @@ const CrearExpediente = ({
 }) => {
 
   const paciente = route.params.paciente;
+
+  const fetchData = async () => {
+    if(paciente){
+      setNombre(paciente.nombre);
+      setapellidos(paciente.apellidos);
+      setnacimiento(paciente.fechaNacimiento);
+      setSexo(paciente.genero);
+      settelefono(paciente.numeroContacto);
+      setcorreo(paciente.mail);
+    }
+  };
+
+  const takeDate = async () => {
+    const date = new Date();
+    setFechaCreacion(date.toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    }));
+  };
+
+  useFocusEffect(
+      useCallback(() => {
+        if (paciente) {
+          fetchData();
+          takeDate();
+        }
+      }, [paciente])
+    );
 
   const [showPicker, setShowPicker] = useState(false);
   const [showBirthdayPicker, setShowBirthdayPicker] = useState(false);
@@ -105,7 +135,7 @@ const CrearExpediente = ({
   const [apellidos, setapellidos] = useState("");
   const [estadoCivil, setEstadoCivil] = useState("");
   const [edad, setedad] = useState("");
-  const [sexo, setsexo] = useState("");
+  const [sexo, setSexo] = useState("");
   const [nacimiento, setnacimiento] = useState("");
   const [telefono, settelefono] = useState("");
   const [correo, setcorreo] = useState("");
@@ -534,8 +564,6 @@ const CrearExpediente = ({
           onChange={onChange}
           />
         )}
-          <TouchableOpacity
-          onPress={toggleDatePicker}>
         <TextInput
           mode = "outlined"
           label={"Fecha de creación"}
@@ -545,9 +573,7 @@ const CrearExpediente = ({
           activeOutlineColor="#c5cae9"
           onChangeText={(value) => setFechaCreacion(value)}
           editable={false}
-          onPressIn={toggleDatePicker}
         />
-        </TouchableOpacity>
 
         <TextInput
           mode = "outlined"
@@ -557,6 +583,7 @@ const CrearExpediente = ({
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
           onChangeText={(value) => setNombre(value)}
+          readOnly={true}
         />
         <TextInput
           mode = "outlined"
@@ -566,6 +593,17 @@ const CrearExpediente = ({
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
           onChangeText={(value) => setapellidos(value)}
+          readOnly={true}
+        />
+        <TextInput
+          mode = "outlined"
+          label={"Fecha de Nacimiento"}
+          value={nacimiento.substring(0, 10)}
+          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
+          outlineColor="#c5cae9"
+          activeOutlineColor="#c5cae9"
+          onChangeText={(value) => setnacimiento(value)}
+          readOnly={true}
         />
         <SelectList
           setSelected={(val: string) => {
@@ -639,63 +677,16 @@ const CrearExpediente = ({
           placeholder="Edad"
           
         />
-        <SelectList
-          setSelected={(val: string) => {
-            setsexo(val);
-          }}
-          data={SexData}
-          save="value"
-          dropdownItemStyles={{
-            backgroundColor: "#FFFFFF",
-            width: "100%",
-            height: 50,
-            borderBottomWidth: 1,
-            borderBottomColor: "#000000",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-          dropdownStyles={{
-            backgroundColor: "#FFFFFF",
-            width: "96%",
-            height: 110,
-          }}
-          boxStyles={{
-            // backgroundColor: "#FFFFFF",
-            width: "96%",
-            height: 50,
-            alignItems: "center",
-            marginTop: 30,
-            borderColor: "#c5cae9",
-            borderLeftWidth: 0,
-            borderTopWidth: 0,
-            borderRightWidth: 0,
-            borderBottomWidth: 2,
-            
-          }}
-          placeholder="Sexo"
-          
-        />
-        {showBirthdayPicker && (
-          <DateTimePicker
-          mode="date"
-          display="spinner"
-          value={date} // Provide a value prop with the current date or a specific date
-          onChange={onChangeBirthday}
-          />
-        )}
-        <TouchableOpacity
-          onPress={toggleBirthdayPicker}>
         <TextInput
           mode = "outlined"
-          label={"Fecha de Nacimiento"}
-          value={nacimiento}
-          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
+          label={"Sexo"}
+          value={sexo}
+          style={[stylesHistorial.TextInput, {width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
-          onChangeText={(value) => setnacimiento(value)}
-          editable={false}
+          onChangeText={(value) => setSexo(value)}
+          readOnly={true}
         />
-        </TouchableOpacity>
         <TextInput
           mode = "outlined"
           label={"Teléfono"}
