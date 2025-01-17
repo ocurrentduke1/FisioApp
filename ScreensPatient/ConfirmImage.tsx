@@ -9,12 +9,12 @@ import {
   Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
 import { NavigationProp, useFocusEffect } from "@react-navigation/native";
 import { RouteProp } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { BACKEND_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 const { width } = Dimensions.get("window");
 
@@ -108,8 +108,8 @@ export default function ConfirmImage({
             style={styles.pressable}
             onPress={sendImageToServer}
           >
-            <Text style={styles.text}>Evaluar</Text>
-            <Ionicons name="arrow-forward" size={24} color="white" />
+            <MaterialIcons name="image-search" size={24} color="white" />
+            <Text style={styles.text}>Analizar</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-evenly",
     backgroundColor: "#00BCD4",
-    borderRadius: 50,
+    borderRadius: 10,
     width: 130,
     height: 50,
     marginBottom: 20,
@@ -156,6 +156,6 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 20,
     color: "white",
-    fontWeight: "400",
+    fontWeight: "bold",
   },
 });

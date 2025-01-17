@@ -14,7 +14,10 @@ import { RouteProp } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Video } from "expo-av";
 import { BACKEND_URL } from "@env";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { ActivityIndicator, Dialog } from "react-native-paper";
 
 const { width } = Dimensions.get("window");
 
@@ -34,10 +37,11 @@ export default function ConfirmVideo({
     exercise: string;
   };
   const [userID, setUserID] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false); 
+  const [dialogVisible, setDialogVisible] = useState(false);
 
   const getUserID = async () => {
     const id = await AsyncStorage.getItem("idSesion");
-    console.log("Fetched UserID:", id); // Verifica que el ID se obtenga correctamente
     setUserID(id);
   };
 
@@ -47,25 +51,20 @@ export default function ConfirmVideo({
     }, [])
   );
 
-  console.log(exercise);
-
   const sendVideoToServer = async () => {
     try {
+      setLoading(true); 
+      
       const formData = new FormData();
       const videoBlob = {
         uri: video,
-        type: "video/mp4", // o el tipo de imagen que sea
+        type: "video/mp4",
         name: "video.mp4",
       } as any;
 
       formData.append("video", videoBlob);
       formData.append("exercise", exercise);
       formData.append("idFisio", userID!);
-
-      // Imprime el contenido de FormData para verificar
-      console.log("FormData content:");
-      console.log("video:", videoBlob);
-      console.log("formData:", formData);
 
       const response = await axios.post(
         BACKEND_URL + "/obtener-postura-video",
@@ -78,15 +77,15 @@ export default function ConfirmVideo({
       );
 
       if (response.status === 201) {
-        console.log("Éxito Video enviado correctamente");
-        console.log("Respuesta del servidor:", response.data);
         navigation.navigate("Results", { results: response.data });
-      } else {
-        console.log("Error No se pudo enviar el video");
-      }
+        return;
+      } 
+
+      throw new Error("No se pudo enviar el video");
     } catch (error) {
+      setDialogVisible(true);
+      setLoading(false); 
       console.error(error);
-      console.log(" Ocurrió un error al enviar el video");
     }
   };
 
@@ -111,16 +110,46 @@ export default function ConfirmVideo({
         >
           <Icon name="chevron-left" size={30} color="#757575" />
         </TouchableOpacity>
+
+        <View style={styles.rowView}>
+          <FontAwesome name="warning" size={15} color="#FFF" ></FontAwesome>
+          <Text style={[styles.textWarning, styles.underlineText]}>FisioApp</Text>
+          <Text style={styles.textWarning}>puede cometer errores. Solo se debe usar como</Text>
+          <Text style={[styles.textWarning, {marginLeft: 2, fontWeight: 'bold'}]}>referencia.</Text>
+        </View>
+
         <View style={styles.detect}>
           <TouchableOpacity
             style={styles.pressable}
             onPress={sendVideoToServer}
+            disabled={loading}
           >
-            <Text style={styles.text}>Evaluar</Text>
-            <Ionicons name="arrow-forward" size={24} color="white" />
+            {loading ? (
+              <ActivityIndicator animating={loading} size="small" color="white" />
+            ) : (
+              <>
+                <MaterialIcons name="image-search" size={24} color="white" />
+                <Text style={styles.text}>Analizar</Text>
+              </>
+            )}
           </TouchableOpacity>
         </View>
       </SafeAreaView>
+      <Dialog visible={dialogVisible} onDismiss={() => { setDialogVisible(false)}}>
+      <Dialog.Icon icon={() => <FontAwesome name="warning" size={50}/>} />
+      <Dialog.Title style={styles.dialogTitle}>Error al analizar el video</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ alignSelf: "center" }}>
+            El video no pudo ser analizado, esto puede deberse a que no proporcionó una correcta forma del ejercicio o el servicio este temporalmente deshabilitado. Por favor, intentelo de nuevo, más tarde.
+          </Text>
+          <TouchableOpacity
+            onPress={() => { setDialogVisible(false) }}
+            style={{ alignSelf: "center", paddingTop: 30 }}
+          >
+            <Text style={{ fontSize: 20 }}> Aceptar </Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
     </View>
   );
 }
@@ -131,6 +160,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#002245",
+  },
+  rowView: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 20,
   },
   mainContainer: {
     top: 20,
@@ -146,12 +181,23 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  textWarning: {
+    fontSize: 10,
+    color: "white",
+    textAlign: "center",
+    marginBottom: 20,
+    marginLeft: 5,
+  },
+  underlineText: {
+    textDecorationLine: "underline",
+    marginRight: -2,
+  },
   pressable: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-evenly",
     backgroundColor: "#99BF0F",
-    borderRadius: 50,
+    borderRadius: 10,
     width: 130,
     height: 50,
     marginBottom: 30,
@@ -164,6 +210,9 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 20,
     color: "white",
-    fontWeight: "400",
+    fontWeight: "bold",
+  },
+  dialogTitle: {
+    textAlign: "center",
   },
 });
