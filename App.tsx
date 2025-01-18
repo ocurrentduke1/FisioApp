@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
-import { NavigationContainer, useNavigation, useNavigationContainerRef } from "@react-navigation/native";
+import React, { useEffect, useState } from "react";
+import {
+  NavigationContainer,
+} from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createDrawerNavigator} from "@react-navigation/drawer";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import "react-native-gesture-handler";
 import { Login } from "./Login";
@@ -43,10 +44,18 @@ import SeidelMetric from "./ScreensMetrics/SeidelMetric";
 import TinettiMetric from "./ScreensMetrics/TinettiMetric";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import BuscarContactos from "./ScreensPhisio/BuscarContactos";
-import 'react-native-gesture-handler';
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
-import { GestureHandlerRootView, Gesture, GestureDetector, PanGestureHandler } from "react-native-gesture-handler";
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import "react-native-gesture-handler";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import {
+  GestureHandlerRootView,
+} from "react-native-gesture-handler";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import AutoEvaluaciones from "./ScreensPhisio/autoEvaluaciones";
 
 enableScreens();
 
@@ -57,7 +66,6 @@ export default function App() {
   const FisioTabs = createBottomTabNavigator();
 
   function MyTabs() {
-    
     const [visible, setVisible] = useState<string | null>(null);
     const [metricasVisibles, setMetricasVisibles] = useState({
       ashwort: true,
@@ -72,7 +80,7 @@ export default function App() {
 
     useEffect(() => {
       const fetchVisible = async () => {
-        const visible = await AsyncStorage.getItem('metricas');
+        const visible = await AsyncStorage.getItem("metricas");
         if (visible == null) {
           setMetricasVisibles({
             ashwort: true,
@@ -142,181 +150,188 @@ export default function App() {
           tabBarScrollEnabled: true,
         }}
       >
-        {tabs.map((tab) => (
-          tab.visible && (
-            <MetricsTab.Screen
-              key={tab.name}
-              name={tab.name}
-              component={tab.component}
-            />
-          )
-        ))}
+        {tabs.map(
+          (tab) =>
+            tab.visible && (
+              <MetricsTab.Screen
+                key={tab.name}
+                name={tab.name}
+                component={tab.component}
+              />
+            )
+        )}
       </MetricsTab.Navigator>
     );
   }
 
   function TabsPatient() {
-
     return (
       <PatientTabs.Navigator
         initialRouteName="VerExpedientePaciente"
         screenOptions={{
           headerShown: false,
         }}
-        >
-          <PatientTabs.Screen
+      >
+        <PatientTabs.Screen
           name="menu principal"
           component={VerExpedientePaciente}
-          options={{ 
+          options={{
             title: "Inicio",
-            tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} iconName="home" />,
+            tabBarIcon: ({ focused }) => (
+              <TabBarIcon focused={focused} iconName="home" />
+            ),
             tabBarLabel: ({ focused }) => (
               <Animated.Text
                 style={{
-                  color: focused ? '#000' : '#FFF',
+                  color: focused ? "#000" : "#FFF",
                   fontSize: focused ? 14 : 12,
-                  fontWeight: focused ? 'bold' : 'normal',
+                  fontWeight: focused ? "bold" : "normal",
                 }}
               >
                 Inicio
               </Animated.Text>
             ),
             tabBarStyle: { backgroundColor: "#002245" },
-            tabBarActiveBackgroundColor: "#34e1e3",  
+            tabBarActiveBackgroundColor: "#34e1e3",
             tabBarLabelStyle: {
               fontSize: 12,
               color: "white",
-              fontWeight: "bold"         
-            }
+              fontWeight: "bold",
+            },
           }}
         />
         <PatientTabs.Screen
-        name= "EvaluacionImagen"
-        component={EvaluacionImagen}
-        options={{
-          title: "Evaluacion de imagen",
-          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} iconName="camera" />,
-          tabBarLabel: ({ focused }) => (
-            <Animated.Text
-              style={{
-                color: focused ? '#000' : '#FFF',
-                fontSize: focused ? 14 : 12,
-                fontWeight: focused ? 'bold' : 'normal',
-              }}
-            >
-              Imagen
-            </Animated.Text>
-          ),
-          tabBarStyle: { backgroundColor: "#002245" },
-          tabBarActiveBackgroundColor: "#34e1e3",
-          tabBarLabelStyle: {
-            fontSize: 12,
-            color: "white",
-            fontWeight: "bold"
-          }
-        }}
-      />
-      <PatientTabs.Screen
-        name="EvaluacionVideo"
-        component={EvaluacionVideo}
-        options={{
-          title: "Evaluacion de video",
-          tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} iconName="video-camera" />,
-          tabBarLabel: ({ focused }) => (
-            <Animated.Text
-              style={{
-                color: focused ? '#000' : '#FFF',
-                fontSize: focused ? 14 : 12,
-                fontWeight: focused ? 'bold' : 'normal',
-              }}
-            >
-              Video
-            </Animated.Text>
-          ),
-          tabBarStyle: { backgroundColor: "#002245" },
-          tabBarActiveBackgroundColor: "#34e1e3",
-          tabBarLabelStyle: {
-            fontSize: 12,
-            color: "white",
-            fontWeight: "bold"
-          }
-        }}
-      />
-          <PatientTabs.Screen
-            name="PerfilPaciente"
-            component={PerfilPaciente}
-            options={{ 
-              title: "Perfil",
-              tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} iconName="user" />,
-              tabBarLabel: ({ focused }) => (
-                <Animated.Text
-                  style={{
-                    color: focused ? '#000' : '#FFF',
-                    fontSize: focused ? 14 : 12,
-                    fontWeight: focused ? 'bold' : 'normal',
-                  }}
-                >
-                  Perfil
-                </Animated.Text>
-              ),
-              tabBarStyle: { backgroundColor: "#002245" },
-              tabBarActiveBackgroundColor: "#34e1e3",  
-              tabBarLabelStyle: {
-                fontSize: 12,
-                color: "white",
-                fontWeight: "bold"         
-              },
-            }}
-          
-          />
-          
+          name="EvaluacionImagen"
+          component={EvaluacionImagen}
+          options={{
+            title: "Evaluacion de imagen",
+            tabBarIcon: ({ focused }) => (
+              <TabBarIcon focused={focused} iconName="camera" />
+            ),
+            tabBarLabel: ({ focused }) => (
+              <Animated.Text
+                style={{
+                  color: focused ? "#000" : "#FFF",
+                  fontSize: focused ? 14 : 12,
+                  fontWeight: focused ? "bold" : "normal",
+                }}
+              >
+                Imagen
+              </Animated.Text>
+            ),
+            tabBarStyle: { backgroundColor: "#002245" },
+            tabBarActiveBackgroundColor: "#34e1e3",
+            tabBarLabelStyle: {
+              fontSize: 12,
+              color: "white",
+              fontWeight: "bold",
+            },
+          }}
+        />
+        <PatientTabs.Screen
+          name="EvaluacionVideo"
+          component={EvaluacionVideo}
+          options={{
+            title: "Evaluacion de video",
+            tabBarIcon: ({ focused }) => (
+              <TabBarIcon focused={focused} iconName="video-camera" />
+            ),
+            tabBarLabel: ({ focused }) => (
+              <Animated.Text
+                style={{
+                  color: focused ? "#000" : "#FFF",
+                  fontSize: focused ? 14 : 12,
+                  fontWeight: focused ? "bold" : "normal",
+                }}
+              >
+                Video
+              </Animated.Text>
+            ),
+            tabBarStyle: { backgroundColor: "#002245" },
+            tabBarActiveBackgroundColor: "#34e1e3",
+            tabBarLabelStyle: {
+              fontSize: 12,
+              color: "white",
+              fontWeight: "bold",
+            },
+          }}
+        />
+        <PatientTabs.Screen
+          name="PerfilPaciente"
+          component={PerfilPaciente}
+          options={{
+            title: "Perfil",
+            tabBarIcon: ({ focused }) => (
+              <TabBarIcon focused={focused} iconName="user" />
+            ),
+            tabBarLabel: ({ focused }) => (
+              <Animated.Text
+                style={{
+                  color: focused ? "#000" : "#FFF",
+                  fontSize: focused ? 14 : 12,
+                  fontWeight: focused ? "bold" : "normal",
+                }}
+              >
+                Perfil
+              </Animated.Text>
+            ),
+            tabBarStyle: { backgroundColor: "#002245" },
+            tabBarActiveBackgroundColor: "#34e1e3",
+            tabBarLabelStyle: {
+              fontSize: 12,
+              color: "white",
+              fontWeight: "bold",
+            },
+          }}
+        />
       </PatientTabs.Navigator>
-    )
+    );
   }
 
   function TabBarIcon({ focused, iconName }) {
-    const scale = useSharedValue(1); 
-    
+    const scale = useSharedValue(1);
+
     scale.value = withTiming(focused ? 1.4 : 1, {
       duration: 500,
       easing: Easing.ease,
     });
-  
+
     const animatedStyle = useAnimatedStyle(() => {
       return {
         transform: [{ scale: scale.value }],
       };
     });
-  
+
     return (
       <Animated.View style={animatedStyle}>
-        <Icon name={iconName} size={23} color={ focused ? '#000' : '#FFF'} />
+        <Icon name={iconName} size={23} color={focused ? "#000" : "#FFF"} />
       </Animated.View>
     );
   }
-  
-  function TabsFisio() {  
+
+  function TabsFisio() {
     return (
       <GestureHandlerRootView>
         <FisioTabs.Navigator
           initialRouteName="mainMenuFisio"
           screenOptions={{
-            headerShown: false,              
+            headerShown: false,
           }}
-    
-          >
-        <FisioTabs.Screen 
-            name="mainMenuFisio" 
+        >
+          <FisioTabs.Screen
+            name="mainMenuFisio"
             component={MainPhisio}
             options={{
-              title: "Inicio" , 
-              tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} iconName="home" />,
+              title: "Inicio",
+              tabBarIcon: ({ focused }) => (
+                <TabBarIcon focused={focused} iconName="home" />
+              ),
               tabBarLabel: ({ focused }) => (
                 <Animated.Text
                   style={{
-                    color: focused ? '#000' : '#FFF',
+                    color: focused ? "#000" : "#FFF",
                     fontSize: focused ? 14 : 12,
-                    fontWeight: focused ? 'bold' : 'normal',
+                    fontWeight: focused ? "bold" : "normal",
                   }}
                 >
                   Inicio
@@ -324,26 +339,28 @@ export default function App() {
               ),
               tabBarStyle: { backgroundColor: "#002245" },
               tabBarBadgeStyle: { backgroundColor: "#FFFFFF" },
-              tabBarActiveBackgroundColor: "#34e1e3",  
+              tabBarActiveBackgroundColor: "#34e1e3",
               tabBarLabelStyle: {
                 fontSize: 12,
                 color: "white",
-                fontWeight: "bold"         
-              }
+                fontWeight: "bold",
+              },
             }}
-        />
-        <FisioTabs.Screen
+          />
+          <FisioTabs.Screen
             name="metricsSelector"
             component={SelectorMetricas}
-            options={{ 
+            options={{
               title: "Escalas",
-              tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} iconName="bar-chart" />,
+              tabBarIcon: ({ focused }) => (
+                <TabBarIcon focused={focused} iconName="bar-chart" />
+              ),
               tabBarLabel: ({ focused }) => (
                 <Animated.Text
                   style={{
-                    color: focused ? '#000' : '#FFF',
+                    color: focused ? "#000" : "#FFF",
                     fontSize: focused ? 14 : 12,
-                    fontWeight: focused ? 'bold' : 'normal',
+                    fontWeight: focused ? "bold" : "normal",
                   }}
                 >
                   Escalas
@@ -351,26 +368,28 @@ export default function App() {
               ),
               tabBarStyle: { backgroundColor: "#002245" },
               tabBarBadgeStyle: { backgroundColor: "#FFFFFF" },
-              tabBarActiveBackgroundColor: "#34e1e3",  
+              tabBarActiveBackgroundColor: "#34e1e3",
               tabBarLabelStyle: {
                 fontSize: 12,
                 color: "white",
-                fontWeight: "bold"         
-              }
+                fontWeight: "bold",
+              },
             }}
-        />
-        <FisioTabs.Screen
+          />
+          <FisioTabs.Screen
             name="contactsFisio"
             component={ContactosPhisio}
-            options={{ 
+            options={{
               title: "Contactos",
-              tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} iconName="address-book" />,
+              tabBarIcon: ({ focused }) => (
+                <TabBarIcon focused={focused} iconName="address-book" />
+              ),
               tabBarLabel: ({ focused }) => (
                 <Animated.Text
                   style={{
-                    color: focused ? '#000' : '#FFF',
+                    color: focused ? "#000" : "#FFF",
                     fontSize: focused ? 14 : 12,
-                    fontWeight: focused ? 'bold' : 'normal',
+                    fontWeight: focused ? "bold" : "normal",
                   }}
                 >
                   Contactos
@@ -378,26 +397,28 @@ export default function App() {
               ),
               tabBarStyle: { backgroundColor: "#002245" },
               tabBarBadgeStyle: { backgroundColor: "#FFFFFF" },
-              tabBarActiveBackgroundColor: "#34e1e3",  
+              tabBarActiveBackgroundColor: "#34e1e3",
               tabBarLabelStyle: {
                 fontSize: 12,
                 color: "white",
-                fontWeight: "bold"         
-              }
+                fontWeight: "bold",
+              },
             }}
-        />
-        <FisioTabs.Screen
+          />
+          <FisioTabs.Screen
             name="calendar"
             component={AgendaCitas}
-            options={{ 
+            options={{
               title: "Agenda",
-              tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} iconName="calendar" />,
+              tabBarIcon: ({ focused }) => (
+                <TabBarIcon focused={focused} iconName="calendar" />
+              ),
               tabBarLabel: ({ focused }) => (
                 <Animated.Text
                   style={{
-                    color: focused ? '#000' : '#FFF',
+                    color: focused ? "#000" : "#FFF",
                     fontSize: focused ? 14 : 12,
-                    fontWeight: focused ? 'bold' : 'normal',
+                    fontWeight: focused ? "bold" : "normal",
                   }}
                 >
                   Agenda
@@ -405,47 +426,49 @@ export default function App() {
               ),
               // tabBarBadge: '3',
               tabBarBadgeStyle: {
-                color: 'white',
-                backgroundColor: 'red',            
+                color: "white",
+                backgroundColor: "red",
               },
               tabBarStyle: { backgroundColor: "#002245" },
-              tabBarActiveBackgroundColor: "#34e1e3",  
+              tabBarActiveBackgroundColor: "#34e1e3",
               tabBarLabelStyle: {
                 fontSize: 12,
                 color: "white",
-                fontWeight: "bold"         
-              }
+                fontWeight: "bold",
+              },
             }}
-        />
-        <FisioTabs.Screen
+          />
+          <FisioTabs.Screen
             name="profileFisio"
             component={PerfilPhisio}
-            options={{ 
+            options={{
               title: "Perfil",
-              tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} iconName="user" />,
+              tabBarIcon: ({ focused }) => (
+                <TabBarIcon focused={focused} iconName="user" />
+              ),
               tabBarLabel: ({ focused }) => (
                 <Animated.Text
                   style={{
-                    color: focused ? '#000' : '#FFF',
+                    color: focused ? "#000" : "#FFF",
                     fontSize: focused ? 14 : 12,
-                    fontWeight: focused ? 'bold' : 'normal',
+                    fontWeight: focused ? "bold" : "normal",
                   }}
                 >
                   Perfil
                 </Animated.Text>
               ),
               tabBarStyle: { backgroundColor: "#002245" },
-              tabBarActiveBackgroundColor: "#34e1e3",  
+              tabBarActiveBackgroundColor: "#34e1e3",
               tabBarLabelStyle: {
                 fontSize: 12,
                 color: "white",
-                fontWeight: "bold"         
+                fontWeight: "bold",
               },
             }}
           />
         </FisioTabs.Navigator>
       </GestureHandlerRootView>
-    )
+    );
   }
 
   return (
@@ -480,7 +503,11 @@ export default function App() {
         <Stack.Screen
           name="mainFisio"
           component={TabsFisio}
-          options={{ headerShown: false, gestureEnabled: true, gestureDirection: 'horizontal' }}
+          options={{
+            headerShown: false,
+            gestureEnabled: true,
+            gestureDirection: "horizontal",
+          }}
         />
         <Stack.Screen
           name="recuperarContraseña"
@@ -505,7 +532,7 @@ export default function App() {
         <Stack.Screen
           name="perfil"
           component={PerfilPhisio}
-          options={{ headerShown: false, title: ""  }}
+          options={{ headerShown: false, title: "" }}
         />
         <Stack.Screen
           name="perfilPaciente"
@@ -595,6 +622,11 @@ export default function App() {
         <Stack.Screen
           name="BuscarContactos"
           component={BuscarContactos}
+          options={{ title: "" }}
+        />
+        <Stack.Screen
+          name="AutoEvaluaciones"
+          component={AutoEvaluaciones}
           options={{ title: "" }}
         />
       </Stack.Navigator>

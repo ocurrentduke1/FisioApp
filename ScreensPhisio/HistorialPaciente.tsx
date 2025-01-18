@@ -950,6 +950,14 @@ export default function HistorialPaciente({
                 color: "#000",
                 onPress: () => openDelete(),
               },
+              {
+                icon: "delete",
+                label: "ver Autoevaluaciones",
+                labelStyle: { color: "white" },
+                style: { backgroundColor: "#FFF" },
+                color: "#000",
+                onPress: () => navigation.navigate("AutoEvaluaciones"),
+              },
             ]}
             onStateChange={onStateChange}
             onPress={() => {

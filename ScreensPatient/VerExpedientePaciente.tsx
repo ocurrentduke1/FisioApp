@@ -21,7 +21,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LineChart } from "react-native-chart-kit";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { PaperProvider, ActivityIndicator, Dialog } from "react-native-paper";
+import { PaperProvider, ActivityIndicator, Dialog, FAB } from "react-native-paper";
 import { BACKEND_URL } from "@env";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -810,6 +810,13 @@ export default function HistorialPaciente({
             </TouchableOpacity>
           </Dialog.Content>
         </Dialog>
+
+        <FAB
+          icon="account-plus"
+          color="#000"
+          style={styles.fab}
+          onPress={() => navigation.navigate("AutoEvaluaciones")}
+        />
       </SafeAreaView>
     </PaperProvider>
   );
@@ -886,5 +893,12 @@ const styles = StyleSheet.create({
   },
   dialogTitle: {
     textAlign: "center",
+  },
+  fab: {
+    position: "absolute",
+    margin: 16,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "#FFF",
   },
 });

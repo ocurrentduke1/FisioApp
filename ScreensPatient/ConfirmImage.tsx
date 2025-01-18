@@ -15,6 +15,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import { BACKEND_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { ActivityIndicator } from "react-native-paper";
 
 const { width } = Dimensions.get("window");
 
@@ -34,7 +35,7 @@ export default function ConfirmImage({
     exercise: string;
   };
   const [userID, setUserID] = useState<string | null>(null);
-
+  const [loading, setLoading] = useState(false);
 
   const getUserID = async () => {
     const id = await AsyncStorage.getItem("idSesion");
@@ -49,6 +50,7 @@ export default function ConfirmImage({
   );
 
   const sendImageToServer = async () => {
+    setLoading(true);
     try {
       const formData = new FormData();
       const imageBlob = {
@@ -86,6 +88,8 @@ export default function ConfirmImage({
     } catch (error) {
       console.error(error);
       console.log(" Ocurrió un error al enviar la imagen");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -107,9 +111,20 @@ export default function ConfirmImage({
           <TouchableOpacity
             style={styles.pressable}
             onPress={sendImageToServer}
+            disabled={loading}
           >
-            <MaterialIcons name="image-search" size={24} color="white" />
-            <Text style={styles.text}>Analizar</Text>
+            {loading ? (
+              <ActivityIndicator
+                animating={loading}
+                size="small"
+                color="white"
+              />
+            ) : (
+              <>
+                <MaterialIcons name="image-search" size={24} color="white" />
+                <Text style={styles.text}>Analizar</Text>
+              </>
+            )}
           </TouchableOpacity>
         </View>
       </SafeAreaView>

@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity, ImageBackground, StyleSheet } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import stylesMain from "../styles/stylesMain";
 
@@ -11,6 +11,12 @@ export default function EvaluacionImagen({
 }) {
   return (
     <View style={[stylesMain.container, { alignItems: "center", justifyContent: "center" }]}>
+      <ImageBackground
+              source={require("../assets/logo_blanco.png")}
+              resizeMode="contain"
+              style={styles.image}
+              imageStyle={{ opacity: 0.5 }}
+            >
       <TouchableOpacity
         style={stylesMain.opcPatient}
         onPress={() =>
@@ -60,6 +66,14 @@ export default function EvaluacionImagen({
       </TouchableOpacity>
 
       <StatusBar style="auto" />
+      </ImageBackground>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  image: {
+    flex: 1,
+    justifyContent: "center",
+  },
+});

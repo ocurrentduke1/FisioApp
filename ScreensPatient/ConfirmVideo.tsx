@@ -37,7 +37,7 @@ export default function ConfirmVideo({
     exercise: string;
   };
   const [userID, setUserID] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const [dialogVisible, setDialogVisible] = useState(false);
 
   const getUserID = async () => {
@@ -52,9 +52,8 @@ export default function ConfirmVideo({
   );
 
   const sendVideoToServer = async () => {
+    setLoading(true);
     try {
-      setLoading(true); 
-      
       const formData = new FormData();
       const videoBlob = {
         uri: video,
@@ -79,13 +78,15 @@ export default function ConfirmVideo({
       if (response.status === 201) {
         navigation.navigate("Results", { results: response.data });
         return;
-      } 
+      }
 
       throw new Error("No se pudo enviar el video");
     } catch (error) {
       setDialogVisible(true);
-      setLoading(false); 
+      setLoading(false);
       console.error(error);
+    }finally {
+      setLoading(false);
     }
   };
 
@@ -112,10 +113,18 @@ export default function ConfirmVideo({
         </TouchableOpacity>
 
         <View style={styles.rowView}>
-          <FontAwesome name="warning" size={15} color="#FFF" ></FontAwesome>
-          <Text style={[styles.textWarning, styles.underlineText]}>FisioApp</Text>
-          <Text style={styles.textWarning}>puede cometer errores. Solo se debe usar como</Text>
-          <Text style={[styles.textWarning, {marginLeft: 2, fontWeight: 'bold'}]}>referencia.</Text>
+          <FontAwesome name="warning" size={15} color="#FFF"></FontAwesome>
+          <Text style={[styles.textWarning, styles.underlineText]}>
+            FisioApp
+          </Text>
+          <Text style={styles.textWarning}>
+            puede cometer errores. Solo se debe usar como
+          </Text>
+          <Text
+            style={[styles.textWarning, { marginLeft: 2, fontWeight: "bold" }]}
+          >
+            referencia.
+          </Text>
         </View>
 
         <View style={styles.detect}>
@@ -125,7 +134,11 @@ export default function ConfirmVideo({
             disabled={loading}
           >
             {loading ? (
-              <ActivityIndicator animating={loading} size="small" color="white" />
+              <ActivityIndicator
+                animating={loading}
+                size="small"
+                color="white"
+              />
             ) : (
               <>
                 <MaterialIcons name="image-search" size={24} color="white" />
@@ -135,15 +148,27 @@ export default function ConfirmVideo({
           </TouchableOpacity>
         </View>
       </SafeAreaView>
-      <Dialog visible={dialogVisible} onDismiss={() => { setDialogVisible(false)}}>
-      <Dialog.Icon icon={() => <FontAwesome name="warning" size={50}/>} />
-      <Dialog.Title style={styles.dialogTitle}>Error al analizar el video</Dialog.Title>
+      <Dialog
+        visible={dialogVisible}
+        onDismiss={() => {
+          setDialogVisible(false);
+        }}
+      >
+        <Dialog.Icon icon={() => <FontAwesome name="warning" size={50} />} />
+        <Dialog.Title style={styles.dialogTitle}>
+          Error al analizar el video
+        </Dialog.Title>
         <Dialog.Content>
           <Text style={{ alignSelf: "center" }}>
-            El video no pudo ser analizado, esto puede deberse a que no proporcionó una correcta forma del ejercicio o el servicio este temporalmente deshabilitado. Por favor, intentelo de nuevo, más tarde.
+            El video no pudo ser analizado, esto puede deberse a que no
+            proporcionó una correcta forma del ejercicio o el servicio este
+            temporalmente deshabilitado. Por favor, intentelo de nuevo, más
+            tarde.
           </Text>
           <TouchableOpacity
-            onPress={() => { setDialogVisible(false) }}
+            onPress={() => {
+              setDialogVisible(false);
+            }}
             style={{ alignSelf: "center", paddingTop: 30 }}
           >
             <Text style={{ fontSize: 20 }}> Aceptar </Text>
