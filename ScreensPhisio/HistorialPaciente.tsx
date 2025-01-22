@@ -951,7 +951,7 @@ export default function HistorialPaciente({
                 onPress: () => openDelete(),
               },
               {
-                icon: "delete",
+                icon: "angle-acute",
                 label: "ver Autoevaluaciones",
                 labelStyle: { color: "white" },
                 style: { backgroundColor: "#FFF" },

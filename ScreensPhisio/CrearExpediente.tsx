@@ -23,6 +23,7 @@ import { TextInput } from "react-native-paper";
 import * as FileSystem from 'expo-file-system';
 import { RouteProp } from "@react-navigation/native";
 import { useFocusEffect } from "@react-navigation/native";
+import { Slider, Icon } from '@rneui/themed';
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -87,7 +88,7 @@ const CrearExpediente = ({
   const [showBirthdayPicker, setShowBirthdayPicker] = useState(false);
   const [date, setDate] = useState(new Date());
 
-  console.log(paciente);
+  //console.log(paciente);
 
   const toggleDatePicker = () => {
     setShowPicker(!showPicker);
@@ -129,6 +130,42 @@ const CrearExpediente = ({
     }else{
       toggleBirthdayPicker();
     }
+  };
+
+  const calcularIMC = (peso: number, estaturaCm: number) => {
+    const estaturaM = estaturaCm / 100; // Convertir cm a metros
+    const imc = peso / (estaturaM * estaturaM); // Calcular IMC
+    return imc.toFixed(2); // Devolver el IMC con dos decimales
+  };
+
+  const handlePesoChange = (value: string) => {
+    setpeso(value);
+    if (estatura) {
+      const imcCalculado = calcularIMC(parseFloat(value), parseFloat(estatura));
+      setimc(imcCalculado);
+    }
+  };
+  
+  const handleEstaturaChange = (value: string) => {
+    setestatura(value);
+    if (peso) {
+      const imcCalculado = calcularIMC(parseFloat(peso), parseFloat(value));
+      setimc(imcCalculado);
+    }
+  };
+
+  const [value, setValue] = useState(0);
+
+  const interpolate = (start: number, end: number) => {
+    let k = (value - 1) / 10; // 0 =>min  && 10 => MAX
+    return Math.ceil((1 - k) * start + k * end) % 256;
+  };
+  
+  const color = () => {
+    let r = interpolate(255, 0);
+    let g = interpolate(0, 255);
+    let b = interpolate(0, 0);
+    return `rgb(${r},${g},${b})`;
   };
 
   const [nombre, setNombre] = useState("");
@@ -566,7 +603,7 @@ const CrearExpediente = ({
         )}
         <TextInput
           mode = "outlined"
-          label={"Fecha de creación"}
+          label={"Fecha de creación*"}
           value={FechaCreacion}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -577,7 +614,7 @@ const CrearExpediente = ({
 
         <TextInput
           mode = "outlined"
-          label={"Nombre(s)"}
+          label={"Nombre(s)*"}
           value={nombre}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -587,7 +624,7 @@ const CrearExpediente = ({
         />
         <TextInput
           mode = "outlined"
-          label={"Apellidos"}
+          label={"Apellidos*"}
           value={apellidos}
           style={[stylesHistorial.TextInput, {width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -597,7 +634,7 @@ const CrearExpediente = ({
         />
         <TextInput
           mode = "outlined"
-          label={"Fecha de Nacimiento"}
+          label={"Fecha de Nacimiento*"}
           value={nacimiento.substring(0, 10)}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -638,7 +675,7 @@ const CrearExpediente = ({
             borderBottomWidth: 2,
             
           }}
-          placeholder="Estado Civil"
+          placeholder="Estado Civil*"
           
         />
         <SelectList
@@ -674,12 +711,12 @@ const CrearExpediente = ({
             borderBottomWidth: 2,
             
           }}
-          placeholder="Edad"
+          placeholder="Edad*"
           
         />
         <TextInput
           mode = "outlined"
-          label={"Sexo"}
+          label={"Sexo*"}
           value={sexo}
           style={[stylesHistorial.TextInput, {width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -689,7 +726,7 @@ const CrearExpediente = ({
         />
         <TextInput
           mode = "outlined"
-          label={"Teléfono"}
+          label={"Teléfono*"}
           value={telefono}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           keyboardType="numeric"
@@ -699,7 +736,7 @@ const CrearExpediente = ({
         />
         <TextInput
           mode = "outlined"
-          label={"Correo"}
+          label={"Correo*"}
           value={correo}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           keyboardType="email-address"
@@ -709,37 +746,38 @@ const CrearExpediente = ({
         />
         <TextInput
           mode = "outlined"
-          label={"Peso (Kg)"}
+          label={"Peso (Kg)*"}
           value={peso}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           keyboardType="numeric"
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
-          onChangeText={(value) => setpeso(value)}
+          onChangeText={handlePesoChange}
         />
         <TextInput
           mode = "outlined"
-          label={"Estatura (cm)"}
+          label={"Estatura (cm)*"}
           value={estatura}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           keyboardType="numeric"
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
-          onChangeText={(value) => setestatura(value)}
+          onChangeText={handleEstaturaChange}
         />
         <TextInput
           mode = "outlined"
-          label={"IMC"}
+          label={"IMC*"}
           value={imc}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           keyboardType="numeric"
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
           onChangeText={(value) => setimc(value)}
+          readOnly={true}
         />
-        <TextInput
+        {/* <TextInput
           mode = "outlined"
-          label={"Frecuencia Cardiaca"}
+          label={"Frecuencia Cardiaca*"}
           value={frecuencia}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -764,7 +802,7 @@ const CrearExpediente = ({
           activeOutlineColor="#c5cae9"
           keyboardType="numeric"
           onChangeText={(value) => settemperatura(value)}
-        />
+        /> */}
         <Text style={styles.title}>Antecedentes Hereditarios</Text>
 
         <View>
@@ -1058,7 +1096,7 @@ const CrearExpediente = ({
           activeOutlineColor="#c5cae9"
           onChangeText={(value) => setDdolor(value)}
         />
-        <TextInput
+        {/* <TextInput
           mode="outlined"
           label={"EVA"}
           value={EVA}
@@ -1067,7 +1105,33 @@ const CrearExpediente = ({
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
           onChangeText={(value) => setEVA(value)}
-        />
+        /> */}
+        <View style={styles.contentView}>
+          <Text style={styles.label}>Escala EVA</Text>
+        <Slider
+        value={value}
+        onValueChange={setValue}
+        maximumValue={10}
+        minimumValue={1}
+        step={1}
+        allowTouchTrack
+        trackStyle={{ height: 5, backgroundColor: 'transparent' }}
+        thumbStyle={{ height: 20, width: 20, backgroundColor: 'transparent' }}
+        thumbProps={{
+          children: (
+            <Icon
+              name="heartbeat"
+              type="font-awesome"
+              size={20}
+              reverse
+              containerStyle={{ bottom: 20, right: 20 }}
+              color={color()}
+            />
+          ),
+        }}
+      />
+      <Text style={{ paddingTop: 20 }}>Value: {value}</Text>
+      </View>
         <TextInput
           mode="outlined"
           label={"Observaciones"}
@@ -1109,7 +1173,7 @@ const CrearExpediente = ({
             </View>
           </RadioButton.Group>
         </View>
-        <TextInput
+        {/* <TextInput
           mode="outlined"
           label={"Frecuencia"}
           value={frecuenciaT}
@@ -1117,7 +1181,8 @@ const CrearExpediente = ({
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
           onChangeText={(value) => setfrecuenciaT(value)}
-        />
+        /> */}
+
         <View>
           <Text style={styles.label}>Acoholismo</Text>
           <RadioButton.Group
@@ -1369,6 +1434,12 @@ const styles = StyleSheet.create({
   },
   dialogTitle: {
     textAlign: "center",
+  },
+  contentView: {
+    padding: 20,
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'stretch',
   },
 });
 export default CrearExpediente;
