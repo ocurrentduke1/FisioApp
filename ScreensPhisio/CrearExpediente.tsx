@@ -85,17 +85,12 @@ const CrearExpediente = ({
     );
 
   const [showPicker, setShowPicker] = useState(false);
-  const [showBirthdayPicker, setShowBirthdayPicker] = useState(false);
   const [date, setDate] = useState(new Date());
 
   //console.log(paciente);
 
   const toggleDatePicker = () => {
     setShowPicker(!showPicker);
-  };
-
-  const toggleBirthdayPicker = () => {
-    setShowBirthdayPicker(!showBirthdayPicker);
   };
 
   const onChange = ({ type }: { type: string }, selectedDate: any) => {
@@ -112,23 +107,6 @@ const CrearExpediente = ({
 
     }else{
       toggleDatePicker();
-    }
-  };
-
-  const onChangeBirthday = ({ type }: { type: string }, selectedDate: any) => {
-    if(type === "set") {
-      const currentDate = selectedDate;
-      setDate(currentDate);
-
-        toggleBirthdayPicker();
-        setnacimiento(currentDate.toLocaleDateString('es-ES', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-        })); 
-
-    }else{
-      toggleBirthdayPicker();
     }
   };
 
@@ -179,9 +157,6 @@ const CrearExpediente = ({
   const [peso, setpeso] = useState("");
   const [estatura, setestatura] = useState("");
   const [imc, setimc] = useState("");
-  const [frecuencia, setfrecuencia] = useState("");
-  const [presion, setpresion] = useState("");
-  const [temperatura, settemperatura] = useState("");
   const [cancerH, setcancerH] = useState(false);
   const [obesidadH, setobesidadH] = useState(false);
   const [htaH, sethtaH] = useState(false);
@@ -201,8 +176,7 @@ const CrearExpediente = ({
   const [Pactual, setPactual] = useState("");
   const [Dprevio, setDprevio] = useState("");
   const [Tprevio, setTprevio] = useState("");
-  const [Ddolor, setDdolor] = useState("");
-  const [EVA, setEVA] = useState("");
+  const [EVA, setEVA] = useState(1);
   const [Observaciones, setObservaciones] = useState("");
   const [farmacos, setfarmacos] = useState("");
   const [FechaCreacion, setFechaCreacion] = useState("");
@@ -211,16 +185,9 @@ const CrearExpediente = ({
   const [alcoholismo, setalcoholismo] = useState(false);
   const [frecuenciaA, setfrecuenciaA] = useState("");
   const [Otras, setOtras] = useState("");
-  const [Fotras, setFotras] = useState("");
   const [ejercicio, setejercicio] = useState(false);
   const [frecuenciaE, setfrecuenciaE] = useState("");
-  const [alimentacion, setalimentacion] = useState("");
-  const [hidratacion, sethidratacion] = useState("");
   const [ocupacion, setocupacion] = useState("");
-  const [ActividadesR, setActividadesR] = useState("");
-  const [HorasAR, setHorasAR] = useState("");
-  const [lesionAnatomica, setlesionAnatomica] = useState("");
-  const [EMM, setEMM] = useState("");
   const [PruebasE, setPruebasE] = useState("");
   const [valoracionPostural, setvaloracionPostural] = useState("");
   const [Palpacion, setPalpacion] = useState("");
@@ -242,9 +209,6 @@ const CrearExpediente = ({
     peso: peso,
     estatura: estatura,
     imc: imc,
-    frecuencia: frecuencia,
-    presion: presion,
-    temperatura: temperatura,
     cancerH: cancerH,
     obesidadH: obesidadH,
     htaH: htaH,
@@ -264,7 +228,6 @@ const CrearExpediente = ({
     Pactual: Pactual,
     Dprevio: Dprevio,
     Tprevio: Tprevio,
-    Ddolor: Ddolor,
     EVA: EVA,
     Observaciones: Observaciones,
     farmacos: farmacos,
@@ -274,16 +237,9 @@ const CrearExpediente = ({
     alcoholismo: alcoholismo,
     frecuenciaA: frecuenciaA,
     Otras: Otras,
-    Fotras: Fotras,
     ejercicio: ejercicio,
     frecuenciaE: frecuenciaE,
-    alimentacion: alimentacion,
-    hidratacion: hidratacion,
     ocupacion: ocupacion,
-    ActividadesR: ActividadesR,
-    HorasAR: HorasAR,
-    lesionAnatomica: lesionAnatomica,
-    EMM: EMM,
     PruebasE: PruebasE,
     valoracionPostural: valoracionPostural,
     Palpacion: Palpacion,
@@ -350,20 +306,12 @@ const CrearExpediente = ({
               <td colspan="3">${correo}</td>
             </tr>
             <tr>
-              <th>Peso (Kg)</th>
+              <th>Peso</th>
               <td>${peso}</td>
-              <th>Estatura (Cm)</th>
+              <th>Estatura</th>
               <td>${estatura}</td>
               <th>IMC</th>
               <td colspan="2">${imc}</td>
-            </tr>
-            <tr>
-              <th> Frecuencia cardiaca</th>
-              <td>${frecuencia}</td>
-              <th>Presión arterial</th>
-              <td>${presion}</td>
-              <th>Temperatura (C°)</th>
-              <td colspan="2">${temperatura}</td>
             </tr>
             <tr>
               <th rowspan="2">Antecedentes Hereditarios</th>
@@ -428,17 +376,16 @@ const CrearExpediente = ({
               <td colspan="6">${Tprevio}</td>
             </tr>
             <tr>
-              <th>Descripcion de dolor</th>
-              <td colspan="4">${Ddolor}</td>
-              <td colspan="2"> EVA: ${EVA}</td>
-            </tr>
-            <tr>
               <th>Observaciones</th>
               <td colspan="6">${Observaciones}</td>
             </tr>
             <tr>
               <th>Farmacos prescritos y no presc.</th>
-              <td colspan="4">${farmacos}</td>
+              <td colspan="6">${farmacos}</td>
+            </tr>
+            <tr>
+              <th>Escala EVA</th>
+              <td colspan="4"> EVA: ${EVA}</td>
               <th>Fecha de creacion</th>
               <td>${FechaCreacion}</td>
             </tr>
@@ -452,32 +399,16 @@ const CrearExpediente = ({
             <th>Alcoholismo</th>
             <th>Frecuencia</th>
             <td>${alcoholismo} ${frecuenciaA}</td>
-            <th> Otras</th>
-            <td colspan="2">${Otras} ${Fotras}</td>
-          </tr>
-          <tr>
             <th>Ejercicio</th>
-            <td colspan="3">${ejercicio}</td>
-            <th>Frecuencia</th>
-            <td colspan="3">${frecuenciaE}</td>
+            <td colspan="3">${ejercicio} ${frecuenciaE}</td>
           </tr>
           <tr>
-            <th>Alimentación</th>
-            <td colspan="7">${alimentacion}</td>
-          </tr>
-          <tr>
-            <th>Hidratacion</th>
-            <td colspan="7">${hidratacion}</td>
+            <th> Otras Toxicomanias</th>
+            <td colspan="7">${Otras}</td>
           </tr>
           <tr>
             <th>Ocupacion</th>
             <td colspan="7">${ocupacion}</td>
-          </tr>
-          <tr>
-            <th>Actividades Repetitivas</th>
-            <td colspan="5">${ActividadesR}</td>
-            <th>Horas</th>
-            <td>${HorasAR}</td>
           </tr>
         </table>
 
@@ -486,14 +417,6 @@ const CrearExpediente = ({
 
         <h3 style="text-align: center; margin-top: 100px;">Exploracion Física</h3>
         <table>
-          <tr>
-            <th style="width: auto;">Sitio anatomico de lesion</th>
-            <td colspan="2">${lesionAnatomica}</td>
-          </tr>
-          <tr>
-            <th style="width: 25%;">EMM</th>
-            <td>${EMM}</td>
-          </tr>
           <tr>
             <th  style="width: 25%;">Pruebas especificas</th>
             <td>${PruebasE}</td>
@@ -583,6 +506,59 @@ const CrearExpediente = ({
 
     const edades = Array.from({ length: 99 }, (_, i) => ({ key: i + 1, value: `${i + 1} años` }));
 
+    const frecuenciasT = [
+      { key: "1", value: "1-5 cigarros por dia" },
+      { key: "2", value: "6-10 cigarros por dia" },
+      { key: "3", value: "11-20 cigarros por dia" },
+      { key: "4", value: "21-30 cigarros por dia" },
+      { key: "5", value: "Mas de 30 cigarros por dia" },
+    ];
+
+    const frecuenciasA = [
+      { key: "1", value: "una vez al mes" },
+      { key: "2", value: "2-4 veces al mes" },
+      { key: "3", value: "2-3 veces por semana" },
+      { key: "4", value: "4 o mas veces por semana" },
+    ];
+
+    const frecuenciasE = [
+      { key: "1", value: "1-2 veces por semana" },
+      { key: "2", value: "3-4 veces por semana" },
+      { key: "3", value: "5-6 veces por semana" },
+      { key: "4", value: "7 veces por semana" },
+    ];
+
+    const validarDatos = () => {
+      if (
+        !FechaCreacion ||
+        !nombre ||
+        !apellidos ||
+        !estadoCivil ||
+        !edad ||
+        !sexo ||
+        !nacimiento ||
+        !telefono ||
+        !correo ||
+        !peso ||
+        !estatura ||
+        !imc ||
+        !cirugias ||
+        !trauma ||
+        !Hospitalizacion ||
+        !congenitas ||
+        !Pactual ||
+        !Dprevio ||
+        !Tprevio ||
+        !Observaciones ||
+        !farmacos ||
+        !ocupacion ||
+        !DiagnosticoFisio ||
+        !ObjetivoE
+      ) {
+        return false;
+      }
+      return true;
+    };
 
   return (
     <SafeAreaView style={stylesHistorial.container}>
@@ -775,34 +751,6 @@ const CrearExpediente = ({
           onChangeText={(value) => setimc(value)}
           readOnly={true}
         />
-        {/* <TextInput
-          mode = "outlined"
-          label={"Frecuencia Cardiaca*"}
-          value={frecuencia}
-          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
-          outlineColor="#c5cae9"
-          activeOutlineColor="#c5cae9"
-          onChangeText={(value) => setfrecuencia(value)}
-        />
-        <TextInput
-          mode = "outlined"
-          label={"Presión Arterial"}
-          value={presion}
-          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
-          outlineColor="#c5cae9"
-          activeOutlineColor="#c5cae9"
-          onChangeText={(value) => setpresion(value)}
-        />
-        <TextInput
-          mode = "outlined"
-          label={"Temperatura (C°)"}
-          value={temperatura}
-          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
-          outlineColor="#c5cae9"
-          activeOutlineColor="#c5cae9"
-          keyboardType="numeric"
-          onChangeText={(value) => settemperatura(value)}
-        /> */}
         <Text style={styles.title}>Antecedentes Hereditarios</Text>
 
         <View>
@@ -1026,7 +974,7 @@ const CrearExpediente = ({
         </View>
         <TextInput
           mode="outlined"
-          label={"Cirugías"}
+          label={"Cirugías*"}
           value={cirugias}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -1035,7 +983,7 @@ const CrearExpediente = ({
         />
         <TextInput
           mode="outlined"
-          label={"Trauma(s)"}
+          label={"Trauma(s)*"}
           value={trauma}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -1044,7 +992,7 @@ const CrearExpediente = ({
         />
         <TextInput
           mode="outlined"
-          label={"Hospitalizacione(s)"}
+          label={"Hospitalizacione(s)*"}
           value={Hospitalizacion}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -1053,7 +1001,7 @@ const CrearExpediente = ({
         />
         <TextInput
           mode="outlined"
-          label={"Enfermedades congénitas"}
+          label={"Enfermedades congénitas*"}
           value={congenitas}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -1062,7 +1010,7 @@ const CrearExpediente = ({
         />
         <TextInput
           mode="outlined"
-          label={"Padecimiento actual"}
+          label={"Padecimiento actual*"}
           value={Pactual}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -1071,7 +1019,7 @@ const CrearExpediente = ({
         />
         <TextInput
           mode="outlined"
-          label={"Diagnostico previo"}
+          label={"Diagnostico previo*"}
           value={Dprevio}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -1080,37 +1028,18 @@ const CrearExpediente = ({
         />
         <TextInput
           mode="outlined"
-          label={"Tratamiento previo"}
+          label={"Tratamiento previo*"}
           value={Tprevio}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
           onChangeText={(value) => setTprevio(value)}
         />
-        <TextInput
-          mode="outlined"
-          label={"Descripción de dolor"}
-          value={Ddolor}
-          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
-          outlineColor="#c5cae9"
-          activeOutlineColor="#c5cae9"
-          onChangeText={(value) => setDdolor(value)}
-        />
-        {/* <TextInput
-          mode="outlined"
-          label={"EVA"}
-          value={EVA}
-          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
-          keyboardType="numeric"
-          outlineColor="#c5cae9"
-          activeOutlineColor="#c5cae9"
-          onChangeText={(value) => setEVA(value)}
-        /> */}
         <View style={styles.contentView}>
-          <Text style={styles.label}>Escala EVA</Text>
+          <Text style={styles.label}>Escala EVA*</Text>
         <Slider
-        value={value}
-        onValueChange={setValue}
+        value={EVA}
+        onValueChange={setEVA}
         maximumValue={10}
         minimumValue={1}
         step={1}
@@ -1130,11 +1059,11 @@ const CrearExpediente = ({
           ),
         }}
       />
-      <Text style={{ paddingTop: 20 }}>Value: {value}</Text>
+      <Text style={{ paddingTop: 20 }}>Nivel: {value}</Text>
       </View>
         <TextInput
           mode="outlined"
-          label={"Observaciones"}
+          label={"Observaciones*"}
           value={Observaciones}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -1143,7 +1072,7 @@ const CrearExpediente = ({
         />
         <TextInput
           mode="outlined"
-          label={"Fármacos prescritos y no prescritos"}
+          label={"Fármacos prescritos y no prescritos*"}
           value={farmacos}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -1173,16 +1102,42 @@ const CrearExpediente = ({
             </View>
           </RadioButton.Group>
         </View>
-        {/* <TextInput
-          mode="outlined"
-          label={"Frecuencia"}
-          value={frecuenciaT}
-          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
-          outlineColor="#c5cae9"
-          activeOutlineColor="#c5cae9"
-          onChangeText={(value) => setfrecuenciaT(value)}
-        /> */}
-
+        <SelectList
+          setSelected={(val: string) => {
+            setfrecuenciaT(val);
+          }}
+          data={frecuenciasT}
+          save="value"
+          dropdownItemStyles={{
+            backgroundColor: "#FFFFFF",
+            width: "100%",
+            height: 50,
+            borderBottomWidth: 1,
+            borderBottomColor: "#000000",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          dropdownStyles={{
+            backgroundColor: "#FFFFFF",
+            width: "96%",
+            height: 110,
+          }}
+          boxStyles={{
+            // backgroundColor: "#FFFFFF",
+            width: "96%",
+            height: 50,
+            alignItems: "center",
+            marginTop: 5,
+            borderColor: "#c5cae9",
+            borderLeftWidth: 0,
+            borderTopWidth: 0,
+            borderRightWidth: 0,
+            borderBottomWidth: 2,
+            
+          }}
+          placeholder="Frecuencia"
+          search={false}
+        />
         <View>
           <Text style={styles.label}>Acoholismo</Text>
           <RadioButton.Group
@@ -1201,32 +1156,50 @@ const CrearExpediente = ({
             </View>
           </RadioButton.Group>
         </View>
-        <TextInput
-          mode="outlined"
-          label={"Frecuencia"}
-          value={frecuenciaA}
-          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
-          outlineColor="#c5cae9"
-          activeOutlineColor="#c5cae9"
-          onChangeText={(value) => setfrecuenciaA(value)}
+        <SelectList
+          setSelected={(val: string) => {
+            setfrecuenciaA(val);
+          }}
+          data={frecuenciasA}
+          save="value"
+          dropdownItemStyles={{
+            backgroundColor: "#FFFFFF",
+            width: "100%",
+            height: 50,
+            borderBottomWidth: 1,
+            borderBottomColor: "#000000",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          dropdownStyles={{
+            backgroundColor: "#FFFFFF",
+            width: "96%",
+            height: 110,
+          }}
+          boxStyles={{
+            // backgroundColor: "#FFFFFF",
+            width: "96%",
+            height: 50,
+            alignItems: "center",
+            marginTop: 5,
+            borderColor: "#c5cae9",
+            borderLeftWidth: 0,
+            borderTopWidth: 0,
+            borderRightWidth: 0,
+            borderBottomWidth: 2,
+            
+          }}
+          placeholder="Frecuencia"
+          search={false}
         />
         <TextInput
           mode="outlined"
-          label={"Otros Habitos"}
+          label={"Otras toxicomanias*"}
           value={Otras}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
           onChangeText={(value) => setOtras(value)}
-        />
-        <TextInput
-          mode="outlined"
-          label={"Frecuencia"}
-          value={Fotras}
-          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
-          outlineColor="#c5cae9"
-          activeOutlineColor="#c5cae9"
-          onChangeText={(value) => setFotras(value)}
         />
         <View>
           <Text style={styles.label}>Ejercicio</Text>
@@ -1246,78 +1219,50 @@ const CrearExpediente = ({
             </View>
           </RadioButton.Group>
         </View>
-        <TextInput
-          mode="outlined"
-          label={"Frecuencia"}
-          value={frecuenciaE}
-          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
-          outlineColor="#c5cae9"
-          activeOutlineColor="#c5cae9"
-          onChangeText={(value) => setfrecuenciaE(value)}
+        <SelectList
+          setSelected={(val: string) => {
+            setfrecuenciaE(val);
+          }}
+          data={frecuenciasE}
+          save="value"
+          dropdownItemStyles={{
+            backgroundColor: "#FFFFFF",
+            width: "100%",
+            height: 50,
+            borderBottomWidth: 1,
+            borderBottomColor: "#000000",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          dropdownStyles={{
+            backgroundColor: "#FFFFFF",
+            width: "96%",
+            height: 110,
+          }}
+          boxStyles={{
+            // backgroundColor: "#FFFFFF",
+            width: "96%",
+            height: 50,
+            alignItems: "center",
+            marginTop: 5,
+            borderColor: "#c5cae9",
+            borderLeftWidth: 0,
+            borderTopWidth: 0,
+            borderRightWidth: 0,
+            borderBottomWidth: 2,
+            
+          }}
+          placeholder="Frecuencia"
+          search={false}
         />
         <TextInput
           mode="outlined"
-          label={"Alimentación"}
-          value={alimentacion}
-          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
-          outlineColor="#c5cae9"
-          activeOutlineColor="#c5cae9"
-          onChangeText={(value) => setalimentacion(value)}
-        />
-        <TextInput
-          mode="outlined"
-          label={"Hidratación"}
-          value={hidratacion}
-          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
-          outlineColor="#c5cae9"
-          activeOutlineColor="#c5cae9"
-          onChangeText={(value) => sethidratacion(value)}
-        />
-        <TextInput
-          mode="outlined"
-          label={"Ocupación"}
+          label={"Ocupación*"}
           value={ocupacion}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
           onChangeText={(value) => setocupacion(value)}
-        />
-        <TextInput
-          mode="outlined"
-          label={"Actividades Repetitivas"}
-          value={ActividadesR}
-          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
-          outlineColor="#c5cae9"
-          activeOutlineColor="#c5cae9"
-          onChangeText={(value) => setActividadesR(value)}
-        />
-        <TextInput
-          mode="outlined"
-          label={"Horas"}
-          value={HorasAR}
-          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
-          keyboardType="numeric"
-          outlineColor="#c5cae9"
-          activeOutlineColor="#c5cae9"
-          onChangeText={(value) => setHorasAR(value)}
-        />
-        <TextInput
-          mode="outlined"
-          label={"Lesión anatómica"}
-          value={lesionAnatomica}
-          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
-          outlineColor="#c5cae9"
-          activeOutlineColor="#c5cae9"
-          onChangeText={(value) => setlesionAnatomica(value)}
-        />
-        <TextInput
-          mode="outlined"
-          label={"EMM"}
-          value={EMM}
-          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
-          outlineColor="#c5cae9"
-          activeOutlineColor="#c5cae9"
-          onChangeText={(value) => setEMM(value)}
         />
         <TextInput
           mode="outlined"
@@ -1348,7 +1293,7 @@ const CrearExpediente = ({
         />
         <TextInput
           mode="outlined"
-          label={"Diagnostico Físico"}
+          label={"Diagnostico Físico*"}
           value={DiagnosticoFisio}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
@@ -1366,17 +1311,19 @@ const CrearExpediente = ({
         />
         <TextInput
           mode="outlined"
-          label={"Objetivo Especifico"}
+          label={"Objetivo Especifico*"}
           value={ObjetivoE}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
           onChangeText={(value) => setObjetivoE(value)}
+          multiline={true}
         />
       </ScrollView>
       </KeyboardAvoidingView>
       <TouchableOpacity style={stylesHistorial.button}
-      onPress={generatePdf}>
+      onPress={generatePdf}
+      disabled={!validarDatos()}>
         <Text style={stylesHistorial.buttonText}>Guardar Expediente</Text>
       </TouchableOpacity>
 
