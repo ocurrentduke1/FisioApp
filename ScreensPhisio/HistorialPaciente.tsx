@@ -956,7 +956,7 @@ export default function HistorialPaciente({
                 labelStyle: { color: "white" },
                 style: { backgroundColor: "#FFF" },
                 color: "#000",
-                onPress: () => navigation.navigate("AutoEvaluaciones"),
+                onPress: () => navigation.navigate("AutoEvaluaciones", { paciente }),
               },
             ]}
             onStateChange={onStateChange}
