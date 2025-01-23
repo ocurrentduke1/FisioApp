@@ -711,20 +711,6 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
             <Divider style={{ marginTop: 20, marginBottom: 15 }} bold />
 
             <TouchableOpacity
-              style={{ ...styles.btn, ...styles.btnChangePayment }}
-              onPress={() => navigation.goBack()}
-            >
-              <Text
-                style={{
-                  ...styles.buttonOptionText,
-                  ...styles.textColorChangePayment,
-                }}
-              >
-                Volver
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
               style={{ ...styles.btn, ...styles.btnLogout }}
               onPress={toggleLogout}
             >

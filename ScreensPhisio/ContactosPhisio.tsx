@@ -114,6 +114,16 @@ const ContactosPhisio = ({
         imageStyle={{ opacity: 0.5 }}
       >
         <GestureDetector gesture={gesture}>
+          <View
+                        style={[
+                          styles.flexViewCenter,
+                          { marginBottom: 20, marginTop: 10 },
+                        ]}
+                      >
+                        <Text style={[styles.titleText, { marginLeft: 20 }]}>
+                          Pacientes
+                        </Text>
+                      </View>
           <ScrollView style={stylesMain.scrollView}>
             {contacts && contacts.length > 0 ? (
               contacts.map((contacto, index) => (
@@ -222,6 +232,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#002245",
+  },
+  flexViewCenter: {
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "row",
+  },
+  titleText: {
+    fontSize: 24,
+    color: "white",
+    textAlign: "center",
+    fontWeight: "bold",
   },
 });
 

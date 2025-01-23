@@ -12,9 +12,7 @@ import {
   RefreshControl,
 } from "react-native";
 import stylesMain from "../styles/stylesMain";
-import {
-  NavigationProp,
-} from "@react-navigation/native";
+import { NavigationProp } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Octicons from "react-native-vector-icons/Octicons";
@@ -163,18 +161,16 @@ export default function MainPhisio({
       }
     });
 
-    const navigate = async (paciente) =>{
-    
-        paciente.id = paciente.id.substring(0, paciente.id.length - 1);
-    
-        navigation.navigate("HistorialPaciente", { paciente })
-    
-      };
+  const navigate = async (paciente) => {
+    paciente.id = paciente.id.substring(0, paciente.id.length - 1);
+
+    navigation.navigate("HistorialPaciente", { paciente });
+  };
 
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#fff" />
+        <ActivityIndicator size="large" color="#fff" />
       </View>
     );
   }
@@ -190,6 +186,16 @@ export default function MainPhisio({
         >
           {/* <GestureDetector gesture={gesture}> */}
           <View style={{ flex: 1 }}>
+            <View
+              style={[
+                styles.flexViewCenter,
+                { marginBottom: 20, marginTop: 10 },
+              ]}
+            >
+              <Text style={[styles.titleText, { marginLeft: 20 }]}>
+                Pacientes
+              </Text>
+            </View>
             <ScrollView
               style={stylesMain.scrollView}
               refreshControl={
@@ -203,9 +209,7 @@ export default function MainPhisio({
                     style={{
                       ...stylesMain.datosFisio,
                     }}
-                    onPress={() =>
-                      navigate(paciente)
-                    }
+                    onPress={() => navigate(paciente)}
                   >
                     <View
                       style={{
@@ -434,5 +438,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#002245",
+  },
+  flexViewCenter: {
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "row",
+  },
+  titleText: {
+    fontSize: 24,
+    color: "white",
+    textAlign: "center",
+    fontWeight: "bold",
   },
 });

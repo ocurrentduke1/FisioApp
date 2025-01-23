@@ -502,14 +502,14 @@ export default function HistorialPaciente({
                   style={{ marginRight: 5 }}
                 />
                 <View style={{ overflow: "hidden" }}>
-                  <Animated.Text
-                    style={{ transform: [{ translateX: scrollX }], width: 200 }}
+                  <Text
+                    style={{ width: 200 }}
                     onLayout={(event) =>
                       setTextWidth(event.nativeEvent.layout.width)
                     }
                   >
                     {paciente.ubicacion}
-                  </Animated.Text>
+                  </Text>
                 </View>
               </View>
 
@@ -907,7 +907,7 @@ export default function HistorialPaciente({
             icon={open ? "menu-down" : "plus"}
             backdropColor="rgba(0, 0, 0, 0.5)"
             color="#000"
-            fabStyle={{ backgroundColor: "#FFF" }}
+            fabStyle={{ backgroundColor: "#eff0fc"}}
             actions={[
               {
                 icon: "plus",
