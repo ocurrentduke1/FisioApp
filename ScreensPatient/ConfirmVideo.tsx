@@ -63,7 +63,7 @@ export default function ConfirmVideo({
 
       formData.append("video", videoBlob);
       formData.append("exercise", exercise);
-      formData.append("idFisio", userID!);
+      formData.append("idPaciente", userID!);
 
       const response = await axios.post(
         BACKEND_URL + "/obtener-postura-video",

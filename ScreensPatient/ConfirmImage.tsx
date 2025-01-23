@@ -61,7 +61,7 @@ export default function ConfirmImage({
 
       formData.append("image", imageBlob);
       formData.append("exercise", exercise);
-      formData.append("idFisio", userID!);
+      formData.append("idPaciente", userID!);
 
       // Imprime el contenido de FormData para verificar
       console.log("FormData content:");
