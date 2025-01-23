@@ -9,6 +9,13 @@ import {
   View,
   Dimensions,
 } from "react-native";
+
+import {
+  TouchableRipple,
+  Snackbar,
+  List
+} from "react-native-paper";
+
 import { NavigationProp } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import stylesHistorial from "../styles/stylesHistorial";
@@ -23,7 +30,16 @@ import { TextInput } from "react-native-paper";
 import * as FileSystem from 'expo-file-system';
 import { RouteProp } from "@react-navigation/native";
 import { useFocusEffect } from "@react-navigation/native";
-import { Slider, Icon } from '@rneui/themed';
+import Slider from '@react-native-community/slider';
+import { debounce } from 'lodash';  
+import { FontAwesome6 } from "@expo/vector-icons";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import Foundation from "react-native-vector-icons/Foundation";
+import Feather from "react-native-vector-icons/Feather";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Fontisto from "react-native-vector-icons/Fontisto";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import * as Clipboard from 'expo-clipboard';
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -132,26 +148,57 @@ const CrearExpediente = ({
     }
   };
 
-  const [value, setValue] = useState(0);
+  const [evaValue, setEvaValue] = useState(0);
 
-  const interpolate = (start: number, end: number) => {
-    let k = (value - 1) / 10; // 0 =>min  && 10 => MAX
-    return Math.ceil((1 - k) * start + k * end) % 256;
+  const handleEvaValueChange = useCallback(
+    debounce((newValue: number) => {
+      setEvaValue(newValue);
+    }, 50),
+    [evaValue]
+  );
+
+  const getEvaColor = (): string => {
+    const colors = {
+      0: '#A8E6CF',
+      1: '#A8E6CF',
+      2: '#FFD54F',
+      3: '#FFD54F',
+      4: '#FFB74D',
+      5: '#FFB74D',
+      6: '#FF7043',
+      7: '#FF7043',
+      8: '#F44336',
+      9: '#F44336',
+      10: '#D32F2F',
+    };
+
+    return colors[evaValue] || '#000000';
   };
-  
-  const color = () => {
-    let r = interpolate(255, 0);
-    let g = interpolate(0, 255);
-    let b = interpolate(0, 0);
-    return `rgb(${r},${g},${b})`;
-  };
+
+  const getEvaIcon = () => {
+    const icons = {
+      0: 'face-grin-stars',
+      1: 'face-smile-beam',
+      2: 'face-smile',
+      3: 'face-grimace',
+      4: 'face-meh',
+      5: 'face-meh',
+      6: 'face-sad-tear',
+      7: 'face-sad-tear',
+      8: 'face-sad-cry',
+      9: 'face-sad-cry',
+      10: 'face-tired',
+    };
+
+    return icons[evaValue] || 'face-meh-blank';
+  }
 
   const [nombre, setNombre] = useState("");
   const [apellidos, setapellidos] = useState("");
   const [estadoCivil, setEstadoCivil] = useState("");
-  const [edad, setedad] = useState("");
   const [sexo, setSexo] = useState("");
   const [nacimiento, setnacimiento] = useState("");
+  const edad = calcularEdad(nacimiento.substring(0, 10));
   const [telefono, settelefono] = useState("");
   const [correo, setcorreo] = useState("");
   const [peso, setpeso] = useState("");
@@ -196,6 +243,10 @@ const CrearExpediente = ({
   const [ObjetivoE, setObjetivoE] = useState("");
   const [ExpedienteCreado, setExpedienteCreado] = useState(false);
   const changeExpedienteCreado = () => setExpedienteCreado(!ExpedienteCreado);
+  const [isPhoneCopied, setIsPhoneCopied] = useState(false);
+  const onDismissPhoneSnackBar = () => setIsPhoneCopied(false);
+  const [isEmailCopied, setIsEmailCopied] = useState(false);
+  const onDismissEmailSnackBar = () => setIsEmailCopied(false);
 
   const DataPDF = {
     nombre: nombre,
@@ -445,14 +496,7 @@ const CrearExpediente = ({
         </body>
         </html>
         `;
-    // let generatePdf = async () => {
-    //     const file = await printToFileAsync({
-    //         html: html,
-    //         base64: false,
-    //     });
 
-    //     await shareAsync(file.uri);
-    // };
     let generatePdf = async () => {
       try {
           // Genera el archivo PDF
@@ -491,20 +535,12 @@ const CrearExpediente = ({
       }
   };
 
-  /***********************/
-    const SexData = [
-      { key: "1", value: "Masculino" },
-      { key: "2", value: "Femenino" },
-    ];
-
     const CivilData = [
-      { key: "1", value: "Soltero" },
-      { key: "2", value: "Casado" },
-      { key: "3", value: "Divorciado" },
-      { key: "4", value: "Viudo" },
+      { key: "1", value: "Soltero (a)" },
+      { key: "2", value: "Casado (a)" },
+      { key: "3", value: "Divorciado (a)" },
+      { key: "4", value: "Viudo (a)" },
     ];
-
-    const edades = Array.from({ length: 99 }, (_, i) => ({ key: i + 1, value: `${i + 1} años` }));
 
     const frecuenciasT = [
       { key: "1", value: "1-5 cigarros por dia" },
@@ -560,8 +596,62 @@ const CrearExpediente = ({
       return true;
     };
 
+  function calcularEdad(fechaNacimiento: string): string {
+  
+    const fechaNacimientoDate = new Date(fechaNacimiento); // Los meses en JavaScript son 0-indexed (enero es 0)
+    const fechaActual = new Date();
+  
+    let age = fechaActual.getFullYear() - fechaNacimientoDate.getFullYear();
+    
+    // Verificamos si el cumpleaños de este año ya pasó o no
+    const mesActual = fechaActual.getMonth();
+    const diaActual = fechaActual.getDate();
+
+    const mes = fechaNacimientoDate.getMonth();
+    const dia = fechaNacimientoDate.getDay();
+  
+    if (mesActual < mes - 1 || (mesActual === mes - 1 && diaActual < dia)) {
+      age--;
+    }
+  
+    const yearsType = age > 1 ? ' años' : ' año';
+
+    const edadCalculada = age + yearsType;
+
+    return edadCalculada;
+  }
+
+  async function copyPhone(): Promise<void> {
+    try {
+      await Clipboard.setStringAsync(telefono);
+      setIsPhoneCopied(true); 
+      setTimeout(() => setIsPhoneCopied(false), 1000); 
+    } catch (error) {
+      console.error("Error al copiar al portapapeles", error);
+    }
+  }
+
+  async function copyEmail(): Promise<void> {
+    try {
+      await Clipboard.setStringAsync(correo);
+      setIsEmailCopied(true); 
+      setTimeout(() => setIsEmailCopied(false), 1000); 
+    } catch (error) {
+      console.error("Error al copiar al portapapeles", error);
+    }
+  }
+
   return (
     <SafeAreaView style={stylesHistorial.container}>
+      
+      <View style={[styles.flexViewCenter, { marginBottom: 20, marginTop: -15 }]}>
+        <FontAwesome5 name="file-medical-alt" size={30} color="#FFF"></FontAwesome5>
+
+        <Text style={[styles.titleText, { marginLeft: 20 }]}>
+          ¡Crea un nuevo expediente!
+        </Text>
+      </View>
+
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={200}
@@ -571,53 +661,97 @@ const CrearExpediente = ({
 
         {showPicker && (
           <DateTimePicker
-          mode="date"
-          display="spinner"
-          value={date} // Provide a value prop with the current date or a specific date
-          onChange={onChange}
+            mode="date"
+            display="spinner"
+            value={date} // Provide a value prop with the current date or a specific date
+            onChange={onChange}
           />
         )}
-        <TextInput
-          mode = "outlined"
-          label={"Fecha de creación*"}
-          value={FechaCreacion}
-          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
-          outlineColor="#c5cae9"
-          activeOutlineColor="#c5cae9"
-          onChangeText={(value) => setFechaCreacion(value)}
-          editable={false}
-        />
 
-        <TextInput
-          mode = "outlined"
-          label={"Nombre(s)*"}
-          value={nombre}
-          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
-          outlineColor="#c5cae9"
-          activeOutlineColor="#c5cae9"
-          onChangeText={(value) => setNombre(value)}
-          readOnly={true}
-        />
-        <TextInput
-          mode = "outlined"
-          label={"Apellidos*"}
-          value={apellidos}
-          style={[stylesHistorial.TextInput, {width: windowWidth * 0.7}]}
-          outlineColor="#c5cae9"
-          activeOutlineColor="#c5cae9"
-          onChangeText={(value) => setapellidos(value)}
-          readOnly={true}
-        />
-        <TextInput
-          mode = "outlined"
-          label={"Fecha de Nacimiento*"}
-          value={nacimiento.substring(0, 10)}
-          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
-          outlineColor="#c5cae9"
-          activeOutlineColor="#c5cae9"
-          onChangeText={(value) => setnacimiento(value)}
-          readOnly={true}
-        />
+        <List.Subheader style={{ fontSize: 18, alignSelf: 'center', fontWeight: 'bold' }}>Información general</List.Subheader>
+
+        <View style={styles.flexViewStart}>
+          <FontAwesome5 name="hospital-user" size={18} color="#000"></FontAwesome5>
+
+          <Text style={{ marginLeft: 10 }}>
+            { nombre + ' ' + apellidos }
+          </Text>
+        </View>
+
+        <View style={styles.flexViewStart}>
+          <FontAwesome5 name="birthday-cake" size={18} color="#000"></FontAwesome5>
+
+          <Text style={{ marginLeft: 10 }}>
+            { new Date(nacimiento.substring(0, 10)).toLocaleDateString() }
+          </Text>
+        </View>
+
+        <View style={styles.flexViewStart}>
+          <FontAwesome5 name="user-clock" size={18} color="#000"></FontAwesome5>
+
+          <Text style={{ marginLeft: 10 }}>
+            { calcularEdad(nacimiento.substring(0, 10)) }
+          </Text>
+        </View>
+
+        <View style={styles.flexViewStart}>
+          <Foundation name={sexo === 'Masculino' ? "male-symbol" : 'female-symbol'} size={23} color="#000"></Foundation>
+
+          <Text style={{ marginLeft: 10 }}>
+            { sexo }
+          </Text>
+        </View>
+
+        <View style={styles.flexViewStart}>
+          <FontAwesome5 name="phone-alt" size={18} color="#000"></FontAwesome5>
+
+          <Text style={{ marginLeft: 10 }}>
+            { telefono }
+          </Text>
+          
+          <TouchableRipple
+              style={{
+                height: 25,
+                width: 25,
+                marginLeft: 10,
+                borderRadius: 25,
+                overflow: "hidden",
+                justifyContent: 'center', 
+                alignItems: 'center',    
+                marginTop: -2 
+              }}
+              onPress={() => copyPhone()}
+              borderless
+            >
+              <Feather name="copy" size={18} color="#000" />
+            </TouchableRipple>
+        </View>
+
+        <View style={styles.flexViewStart}>
+          <MaterialCommunityIcons name="email" size={18} color="#000"></MaterialCommunityIcons>
+
+          <Text style={{ marginLeft: 10 }}>
+            { correo }
+          </Text>
+          
+          <TouchableRipple
+              style={{
+                height: 25,
+                width: 25,
+                marginLeft: 10,
+                borderRadius: 25,
+                overflow: "hidden",
+                justifyContent: 'center', 
+                alignItems: 'center',    
+                marginTop: -2 
+              }}
+              onPress={() => copyEmail()}
+              borderless
+            >
+              <Feather name="copy" size={18} color="#000" />
+            </TouchableRipple>
+        </View>
+
         <SelectList
           setSelected={(val: string) => {
             setEstadoCivil(val);
@@ -643,7 +777,6 @@ const CrearExpediente = ({
             width: "96%",
             height: 50,
             alignItems: "center",
-            marginTop: 30,
             borderColor: "#c5cae9",
             borderLeftWidth: 0,
             borderTopWidth: 0,
@@ -651,107 +784,47 @@ const CrearExpediente = ({
             borderBottomWidth: 2,
             
           }}
-          placeholder="Estado Civil*"
-          
+          search={false}
+          placeholder="Estado Civil *"
         />
-        <SelectList
-          setSelected={(val: string) => {
-            setedad(val);
-          }}
-          data={edades}
-          save="value"
-          dropdownItemStyles={{
-            backgroundColor: "#FFFFFF",
-            width: "100%",
-            height: 50,
-            borderBottomWidth: 1,
-            borderBottomColor: "#000000",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-          dropdownStyles={{
-            backgroundColor: "#FFFFFF",
-            width: "96%",
-            height: 110,
-          }}
-          boxStyles={{
-            // backgroundColor: "#FFFFFF",
-            width: "96%",
-            height: 50,
-            alignItems: "center",
-            marginTop: 30,
-            borderColor: "#c5cae9",
-            borderLeftWidth: 0,
-            borderTopWidth: 0,
-            borderRightWidth: 0,
-            borderBottomWidth: 2,
-            
-          }}
-          placeholder="Edad*"
-          
-        />
+
+        <List.Subheader style={{ fontSize: 18, alignSelf: 'center', fontWeight: 'bold' }}>Evaluación Corporal</List.Subheader>
+
         <TextInput
           mode = "outlined"
-          label={"Sexo*"}
-          value={sexo}
-          style={[stylesHistorial.TextInput, {width: windowWidth * 0.7}]}
-          outlineColor="#c5cae9"
-          activeOutlineColor="#c5cae9"
-          onChangeText={(value) => setSexo(value)}
-          readOnly={true}
-        />
-        <TextInput
-          mode = "outlined"
-          label={"Teléfono*"}
-          value={telefono}
-          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
-          keyboardType="numeric"
-          outlineColor="#c5cae9"
-          activeOutlineColor="#c5cae9"
-          onChangeText={(value) => settelefono(value)}
-        />
-        <TextInput
-          mode = "outlined"
-          label={"Correo*"}
-          value={correo}
-          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
-          keyboardType="email-address"
-          outlineColor="#c5cae9"
-          activeOutlineColor="#c5cae9"
-          onChangeText={(value) => setcorreo(value)}
-        />
-        <TextInput
-          mode = "outlined"
-          label={"Peso (Kg)*"}
+          label={"Peso (Kg) *"}
           value={peso}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           keyboardType="numeric"
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
           onChangeText={handlePesoChange}
+          left={<TextInput.Icon style={{ marginTop: 30 }} icon={() => <MaterialCommunityIcons name="weight-kilogram" size={30} />} />}
         />
         <TextInput
           mode = "outlined"
-          label={"Estatura (cm)*"}
+          label={"Estatura (Cm) *"}
           value={estatura}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           keyboardType="numeric"
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
           onChangeText={handleEstaturaChange}
+          left={<TextInput.Icon style={{ marginTop: 30 }} icon={() => <FontAwesome5 name="ruler" size={20} />} />}
         />
-        <TextInput
-          mode = "outlined"
-          label={"IMC*"}
-          value={imc}
-          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
-          keyboardType="numeric"
-          outlineColor="#c5cae9"
-          activeOutlineColor="#c5cae9"
-          onChangeText={(value) => setimc(value)}
-          readOnly={true}
-        />
-        <Text style={styles.title}>Antecedentes Hereditarios</Text>
+
+        <View style={styles.flexViewCenter}>
+          <FontAwesome5 name="balance-scale" size={20} color="#000" style={{ marginTop: 4 }}></FontAwesome5>
+
+          <Text style={{ marginLeft: 10, fontSize: 20, fontWeight: 'bold' }}>
+            I.M.C:
+          </Text>
+          <Text style={{ marginLeft: 10, fontSize: 20 }}>
+            { imc == '' ? '-' : imc }
+          </Text>
+        </View>
+
+        <List.Subheader style={{ fontSize: 18, alignSelf: 'center', fontWeight: 'bold' }}>Antecedentes hereditarios</List.Subheader>
 
         <View>
           <Text style={styles.label}>¿Tiene antecedentes de cáncer?</Text>
@@ -772,7 +845,7 @@ const CrearExpediente = ({
           </RadioButton.Group>
         </View>
         <View>
-          <Text style={styles.label}>¿Tiene antecedentes de obecidad?</Text>
+          <Text style={styles.label}>¿Tiene antecedentes de obesidad?</Text>
           <RadioButton.Group
             onValueChange={newValue => setobesidadH(newValue === "si")}
             value={obesidadH ? "si" : "no"}
@@ -826,7 +899,7 @@ const CrearExpediente = ({
           </RadioButton.Group>
         </View>
         <View>
-          <Text style={styles.label}>¿Tiene antecedentes de Osteoporosis?</Text>
+          <Text style={styles.label}>¿Tiene antecedentes de osteoporosis?</Text>
           <RadioButton.Group
             onValueChange={newValue => setosteopH(newValue === "si")}
             value={osteopH ? "si" : "no"}
@@ -844,7 +917,7 @@ const CrearExpediente = ({
           </RadioButton.Group>
         </View>
         <View>
-          <Text style={styles.label}>¿Tiene antecedentes de cardiovasculares?</Text>
+          <Text style={styles.label}>¿Tiene antecedentes cardiovasculares?</Text>
           <RadioButton.Group
             onValueChange={newValue => setcardioH(newValue === "si")}
             value={cardioH ? "si" : "no"}
@@ -862,8 +935,8 @@ const CrearExpediente = ({
           </RadioButton.Group>
         </View>
 
-        <Text style={styles.title}>Antecedentes patológicos</Text>
-        
+        <List.Subheader style={{ fontSize: 18, alignSelf: 'center', fontWeight: 'bold' }}>Antecedentes patológicos</List.Subheader>
+
         <View>
           <Text style={styles.label}>¿Tiene antecedentes de cáncer?</Text>
           <RadioButton.Group
@@ -883,7 +956,7 @@ const CrearExpediente = ({
           </RadioButton.Group>
         </View>
         <View>
-          <Text style={styles.label}>¿Tiene antecedentes de obecidad?</Text>
+          <Text style={styles.label}>¿Tiene antecedentes de obesidad?</Text>
           <RadioButton.Group
             onValueChange={newValue => setobesidadP(newValue === "si")}
             value={obesidadP ? "si" : "no"}
@@ -937,7 +1010,7 @@ const CrearExpediente = ({
           </RadioButton.Group>
         </View>
         <View>
-          <Text style={styles.label}>¿Tiene antecedentes de Osteoporosis?</Text>
+          <Text style={styles.label}>¿Tiene antecedentes de osteoporosis?</Text>
           <RadioButton.Group
             onValueChange={newValue => setosteopP(newValue === "si")}
             value={osteopP ? "si" : "no"}
@@ -955,7 +1028,7 @@ const CrearExpediente = ({
           </RadioButton.Group>
         </View>
         <View>
-          <Text style={styles.label}>¿Tiene antecedentes de cardiovasculares?</Text>
+          <Text style={styles.label}>¿Tiene antecedentes cardiovasculares?</Text>
           <RadioButton.Group
             onValueChange={newValue => setcardioP(newValue === "si")}
             value={cardioP ? "si" : "no"}
@@ -972,120 +1045,160 @@ const CrearExpediente = ({
             </View>
           </RadioButton.Group>
         </View>
+
+        <List.Subheader style={{ fontSize: 18, alignSelf: 'center', fontWeight: 'bold' }}>Información médica</List.Subheader>
+
         <TextInput
           mode="outlined"
-          label={"Cirugías*"}
+          label={"Cirugías *"}
           value={cirugias}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
           onChangeText={(value) => setcirugias(value)}
+          multiline
+          left={<TextInput.Icon style={{ marginTop: 30 }} icon={() => <Fontisto name="surgical-knife" size={20} />} />}
         />
         <TextInput
           mode="outlined"
-          label={"Trauma(s)*"}
+          label={"Trauma(s) *"}
           value={trauma}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
           onChangeText={(value) => settrauma(value)}
+          multiline
+          left={<TextInput.Icon style={{ marginTop: 30 }} icon={() => <FontAwesome6 name="hand-fist" size={20} />} />}
         />
         <TextInput
           mode="outlined"
-          label={"Hospitalizacione(s)*"}
+          label={"Hospitalizacione(s) *"}
           value={Hospitalizacion}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
           onChangeText={(value) => setHospitalizacion(value)}
+          multiline
+          left={<TextInput.Icon style={{ marginTop: 30 }} icon={() => <FontAwesome6 name="hospital" size={20} />} />}
         />
         <TextInput
           mode="outlined"
-          label={"Enfermedades congénitas*"}
+          label={"Enfermedades congénitas *"}
           value={congenitas}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
           onChangeText={(value) => setcongenitas(value)}
+          multiline
+          left={<TextInput.Icon style={{ marginTop: 30 }} icon={() => <FontAwesome6 name="viruses" size={20} />} />}
         />
         <TextInput
           mode="outlined"
-          label={"Padecimiento actual*"}
+          label={"Padecimiento actual *"}
           value={Pactual}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
           onChangeText={(value) => setPactual(value)}
-        />
+          multiline
+          left={<TextInput.Icon style={{ marginTop: 30 }} icon={() => <FontAwesome6 name="stethoscope" size={20} />} />}
+          />
         <TextInput
           mode="outlined"
-          label={"Diagnostico previo*"}
+          label={"Diagnostico previo *"}
           value={Dprevio}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
           onChangeText={(value) => setDprevio(value)}
-        />
+          multiline
+          left={<TextInput.Icon style={{ marginTop: 30 }} icon={() => <FontAwesome6 name="file-medical" size={20} />} />}
+          />
         <TextInput
           mode="outlined"
-          label={"Tratamiento previo*"}
+          label={"Tratamiento previo *"}
           value={Tprevio}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
           onChangeText={(value) => setTprevio(value)}
+          multiline
+          left={<TextInput.Icon style={{ marginTop: 30 }} icon={() => <FontAwesome6 name="pills" size={20} />} />}
         />
+
+        <List.Subheader style={{ fontSize: 18, alignSelf: 'center', fontWeight: 'bold' }}>Escala E.V.A.</List.Subheader>
+
         <View style={styles.contentView}>
-          <Text style={styles.label}>Escala EVA*</Text>
-        <Slider
-        value={EVA}
-        onValueChange={setEVA}
-        maximumValue={10}
-        minimumValue={1}
-        step={1}
-        allowTouchTrack
-        trackStyle={{ height: 5, backgroundColor: 'transparent' }}
-        thumbStyle={{ height: 20, width: 20, backgroundColor: 'transparent' }}
-        thumbProps={{
-          children: (
-            <Icon
-              name="heartbeat"
-              type="font-awesome"
-              size={20}
-              reverse
-              containerStyle={{ bottom: 20, right: 20 }}
-              color={color()}
+          <View style={styles.flexViewCenter}>
+            <View
+              style={{
+                position: 'absolute',
+                left: -20,
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: 40,
+                width: 40,
+                borderRadius: 20,
+                backgroundColor: getEvaColor(),
+                zIndex: -1000,
+              }}
+            >
+              <FontAwesome6 name={getEvaIcon()} size={30} color="#fff" />
+            </View>
+            <Slider
+              minimumValue={0}
+              maximumValue={10}
+              step={1}
+              value={evaValue}
+              onValueChange={handleEvaValueChange}
+              minimumTrackTintColor={getEvaColor()}
+              maximumTrackTintColor="#ccc"
+              thumbTintColor={getEvaColor()}
+              style={{ width: '100%', height: 40 }}
             />
-          ),
-        }}
-      />
-      <Text style={{ paddingTop: 20 }}>Nivel: {value}</Text>
-      </View>
+          </View>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: 'bold', color: getEvaColor() }}>
+              {evaValue}
+            </Text>
+          </View>
+
+        </View>
         <TextInput
           mode="outlined"
-          label={"Observaciones*"}
+          label={"Observaciones *"}
           value={Observaciones}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
+          multiline
           onChangeText={(value) => setObservaciones(value)}
+          left={<TextInput.Icon style={{ marginTop: 30 }} icon={() => <MaterialCommunityIcons name="account-details" size={25} />} />}
         />
+
         <TextInput
           mode="outlined"
-          label={"Fármacos prescritos y no prescritos*"}
+          label={"Fármacos Rx y OTC *"}
           value={farmacos}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
           onChangeText={(value) => setfarmacos(value)}
+          left={<TextInput.Icon style={{ marginTop: 30 }} icon={() => <FontAwesome6 name="hand-holding-medical" size={20} />} />}
         />
 
 
-        <Text style={styles.title}>Habitos</Text>
+        <List.Subheader style={{ fontSize: 18, alignSelf: 'center', fontWeight: 'bold' }}>Hábitos</List.Subheader>
 
 
         <View>
-          <Text style={styles.label}>Tabaquismo</Text>
+          <View style={styles.flexViewStart}>
+            <MaterialCommunityIcons name="cigar" size={25} color="#000"></MaterialCommunityIcons>
+
+            <Text style={[styles.label, { marginLeft: 10, marginTop: 5 }]}>
+              Tabaquismo
+            </Text>
+          </View>
           <RadioButton.Group
             onValueChange={newValue => settabaquismo(newValue === "si")}
             value={tabaquismo ? "si" : "no"}
@@ -1123,7 +1236,6 @@ const CrearExpediente = ({
             height: 110,
           }}
           boxStyles={{
-            // backgroundColor: "#FFFFFF",
             width: "96%",
             height: 50,
             alignItems: "center",
@@ -1138,8 +1250,14 @@ const CrearExpediente = ({
           placeholder="Frecuencia"
           search={false}
         />
-        <View>
-          <Text style={styles.label}>Acoholismo</Text>
+        <View style={{ marginTop: 20 }}>
+          <View style={styles.flexViewStart}>
+            <FontAwesome5 name="beer" size={20} color="#000"></FontAwesome5>
+
+            <Text style={[styles.label, { marginLeft: 10 }]}>
+              Alcoholismo
+            </Text>
+          </View>
           <RadioButton.Group
             onValueChange={newValue => setalcoholismo(newValue === "si")}
             value={alcoholismo ? "si" : "no"}
@@ -1192,17 +1310,26 @@ const CrearExpediente = ({
           placeholder="Frecuencia"
           search={false}
         />
+
         <TextInput
           mode="outlined"
-          label={"Otras toxicomanias*"}
+          label={"Otras toxicomanias *"}
           value={Otras}
-          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
+          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7, marginTop: 10}]}
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
+          multiline
           onChangeText={(value) => setOtras(value)}
+          left={<TextInput.Icon style={{ marginTop: 30 }} icon={() => <MaterialCommunityIcons name="mushroom-outline" size={25} />} />}
         />
         <View>
-          <Text style={styles.label}>Ejercicio</Text>
+          <View style={styles.flexViewStart}>
+            <MaterialCommunityIcons name="weight-lifter" size={22} color="#000"></MaterialCommunityIcons>
+
+            <Text style={[styles.label, { marginLeft: 10 }]}>
+              Actividad fisica
+            </Text>
+          </View>
           <RadioButton.Group
             onValueChange={newValue => setejercicio (newValue === "si")}
             value={ejercicio ? "si" : "no"}
@@ -1257,12 +1384,14 @@ const CrearExpediente = ({
         />
         <TextInput
           mode="outlined"
-          label={"Ocupación*"}
+          label={"Ocupación *"}
           value={ocupacion}
-          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
+          style={[stylesHistorial.TextInput, { width: windowWidth * 0.7, marginTop: 10}]}
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
+          multiline
           onChangeText={(value) => setocupacion(value)}
+          left={<TextInput.Icon style={{ marginTop: 30 }} icon={() => <FontAwesome5 name="hard-hat" size={20} />} />}
         />
         <TextInput
           mode="outlined"
@@ -1270,8 +1399,10 @@ const CrearExpediente = ({
           value={PruebasE}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
+          multiline
           activeOutlineColor="#c5cae9"
           onChangeText={(value) => setPruebasE(value)}
+          left={<TextInput.Icon style={{ marginTop: 30 }} icon={() => <FontAwesome5 name="flask" size={20} />} />}
         />
         <TextInput
           mode="outlined"
@@ -1280,8 +1411,10 @@ const CrearExpediente = ({
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
+          multiline
           onChangeText={(value) => setvaloracionPostural(value)}
-        />
+          left={<TextInput.Icon style={{ marginTop: 30 }} icon={() => <Ionicons name="body-sharp" size={25} />} />}
+          />
         <TextInput
           mode="outlined"
           label={"Palpación"}
@@ -1289,17 +1422,21 @@ const CrearExpediente = ({
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
+          multiline
           onChangeText={(value) => setPalpacion(value)}
-        />
+          left={<TextInput.Icon style={{ marginTop: 30 }} icon={() => <FontAwesome5 name="hand-paper" size={20} />} />}
+          />
         <TextInput
           mode="outlined"
-          label={"Diagnostico Físico*"}
+          label={"Diagnostico Físico *"}
           value={DiagnosticoFisio}
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
+          multiline
           onChangeText={(value) => setDiagnosticoFisio(value)}
-        />
+          left={<TextInput.Icon style={{ marginTop: 30 }} icon={() => <FontAwesome5 name="file-medical-alt" size={20} />} />}
+          />
         <TextInput
           mode="outlined"
           label={"Objetivo General"}
@@ -1307,8 +1444,10 @@ const CrearExpediente = ({
           style={[stylesHistorial.TextInput, { width: windowWidth * 0.7}]}
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
+          multiline
           onChangeText={(value) => setObjetivoG(value)}
-        />
+          left={<TextInput.Icon style={{ marginTop: 30 }} icon={() => <MaterialCommunityIcons name="bullseye-arrow" size={25} />} />}
+          />
         <TextInput
           mode="outlined"
           label={"Objetivo Especifico*"}
@@ -1317,14 +1456,15 @@ const CrearExpediente = ({
           outlineColor="#c5cae9"
           activeOutlineColor="#c5cae9"
           onChangeText={(value) => setObjetivoE(value)}
-          multiline={true}
+          multiline
+          left={<TextInput.Icon style={{ marginTop: 30 }} icon={() => <MaterialCommunityIcons name="bullseye" size={25} />} />}
         />
       </ScrollView>
       </KeyboardAvoidingView>
       <TouchableOpacity style={stylesHistorial.button}
       onPress={generatePdf}
       disabled={!validarDatos()}>
-        <Text style={stylesHistorial.buttonText}>Guardar Expediente</Text>
+        <Text style={stylesHistorial.buttonText}>Guardar información</Text>
       </TouchableOpacity>
 
       <Dialog visible={ExpedienteCreado} onDismiss={changeExpedienteCreado}>
@@ -1345,6 +1485,19 @@ const CrearExpediente = ({
           </Dialog.Content>
         </Dialog>
 
+      <Snackbar
+        visible={isPhoneCopied}
+        onDismiss={onDismissPhoneSnackBar}
+        >
+        ¡Teléfono copiado al portapapeles!
+      </Snackbar>
+
+      <Snackbar
+        visible={isEmailCopied}
+        onDismiss={onDismissEmailSnackBar}
+        >
+        ¡Correo copiado al portapapeles!
+      </Snackbar>
     </SafeAreaView>
   );
 };
@@ -1366,9 +1519,12 @@ const styles = StyleSheet.create({
     shadowRadius: 6, 
     elevation: 8,
   },
+  trackStyle: {
+    height: 5,
+    backgroundColor: '#d3d3d3',
+  },
   label: {
     fontSize: 16,
-    marginVertical: 10,
     color: "#000",
   },
   title: {
@@ -1387,6 +1543,32 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     alignItems: 'stretch',
+  },
+  thumbStyle: {
+    height: 30, 
+    width: 30,
+    backgroundColor: '#6200ee',
+    borderRadius: 30 / 2,
+  },
+  iconContainer: {
+    bottom: 15, right: 15
+  },
+  flexViewCenter: {
+    display: 'flex',
+    justifyContent: 'center',
+    flexDirection: "row",
+  },
+  flexViewStart: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    flexDirection: "row",
+    marginBottom: 10
+  },
+  titleText: {
+    fontSize: 24,
+    color: "white",
+    textAlign: "center",
+    fontWeight: "bold",
   },
 });
 export default CrearExpediente;
