@@ -16,6 +16,7 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Feather from "react-native-vector-icons/Feather";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import { Dialog } from "react-native-paper";
 
 // Suponiendo que este es tu componente
@@ -57,6 +58,29 @@ const Results = ({
     outputRange: ['#808080', '#FFFFFF'], 
   });
 
+  function obtenerRepresentarFactor(tipoFactor: string) {
+    return {
+      'angulo': '°',
+      'distancia': 'cm.',
+    }[tipoFactor] || '-'
+  }
+
+  function obtenerInfoFactor(tipoFactor: string) {
+    return {
+      'angulo': 'grados',
+      'distancia': 'centímetros',
+    }[tipoFactor] || '?'
+  }
+
+  function obtenerIconoFactor(tipoFactor: string) {
+    const iconoDefecto = () => <MaterialCommunityIcons name="angle-acute" size={30} color="#000" style={styles.textIcon}></MaterialCommunityIcons>;
+
+    return {
+      'angulo': () => <MaterialCommunityIcons name="angle-acute" size={30} color="#000" style={styles.textIcon}></MaterialCommunityIcons>,
+      'distancia': () => <FontAwesome6 name="ruler" size={25} color="#000" style={styles.textIcon}></FontAwesome6>,
+    }[tipoFactor] || iconoDefecto
+  }
+
   return (
     <SafeAreaView style={stylesHistorial.container}>
       <View style={styles.rowView}>
@@ -69,9 +93,9 @@ const Results = ({
         <ScrollView>
           
             <TouchableOpacity style={styles.rowView} onPress={() => { setDialogVisible(true) }}>
-              <MaterialCommunityIcons name="angle-acute" size={30} color="#000" style={styles.textIcon}></MaterialCommunityIcons>
+              { obtenerIconoFactor(results.tipoFactor)() }
               <Animated.Text style={[styles.textAngle, {fontWeight: 'bold', borderColor: interpolatedBorderColor, borderWidth: 2 }]}>
-                  {results.angulo} °
+                  {results.factor} {obtenerRepresentarFactor(results.tipoFactor)}
               </Animated.Text>
               <Feather name="info" size={15} color="#000" style={styles.iconInfo}></Feather>
             </TouchableOpacity>
@@ -111,7 +135,7 @@ const Results = ({
       <Dialog.Title style={styles.dialogTitle}>Información de la evaluación</Dialog.Title>
         <Dialog.Content>
           <Text style={{ alignSelf: "center" }}>
-            El resultado muestra los grados que se obtuvieron desde - lugar - hasta el punto final del ejercicio (incluyendo su recorrido).
+            El resultado muestra los { obtenerInfoFactor(results.tipoFactor) } que se obtuvieron desde { results.puntoPartida } hasta el punto final del ejercicio.
           </Text>
           <TouchableOpacity
             onPress={() => { setDialogVisible(false) }}

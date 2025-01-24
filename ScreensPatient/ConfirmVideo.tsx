@@ -7,8 +7,12 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
+
+import {
+  Snackbar
+} from "react-native-paper";
+
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
 import { NavigationProp, useFocusEffect } from "@react-navigation/native";
 import { RouteProp } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -39,6 +43,9 @@ export default function ConfirmVideo({
   const [userID, setUserID] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [dialogVisible, setDialogVisible] = useState(false);
+  const [showSnackbar, setShowSnackbar] = useState(false);
+  const onDismissSnackBar = () => setShowSnackbar(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   const getUserID = async () => {
     const id = await AsyncStorage.getItem("idSesion");
@@ -61,12 +68,13 @@ export default function ConfirmVideo({
         name: "video.mp4",
       } as any;
 
-      formData.append("video", videoBlob);
+      formData.append("file", videoBlob);
       formData.append("exercise", exercise);
       formData.append("idPaciente", userID!);
+      formData.append("type", 'video');
 
       const response = await axios.post(
-        BACKEND_URL + "/obtener-postura-video",
+        BACKEND_URL + "/analizar-postura",
         formData,
         {
           headers: {
@@ -75,12 +83,20 @@ export default function ConfirmVideo({
         }
       );
 
-      if (response.status === 201) {
-        navigation.navigate("Results", { results: response.data });
+      if (response.data.code === 200) {
+        navigation.navigate("Results", { 
+          results: response.data,
+        });
         return;
-      }
+      } 
 
-      throw new Error("No se pudo enviar el video");
+      if (response.data.code === 400) {
+        setSnackbarMessage(response.data.message);
+        setShowSnackbar(true);
+        return;
+      } 
+
+      throw new Error(response.data.message);
     } catch (error) {
       setDialogVisible(true);
       setLoading(false);
@@ -148,33 +164,12 @@ export default function ConfirmVideo({
           </TouchableOpacity>
         </View>
       </SafeAreaView>
-      <Dialog
-        visible={dialogVisible}
-        onDismiss={() => {
-          setDialogVisible(false);
-        }}
-      >
-        <Dialog.Icon icon={() => <FontAwesome name="warning" size={50} />} />
-        <Dialog.Title style={styles.dialogTitle}>
-          Error al analizar el video
-        </Dialog.Title>
-        <Dialog.Content>
-          <Text style={{ alignSelf: "center" }}>
-            El video no pudo ser analizado, esto puede deberse a que no
-            proporcionó una correcta forma del ejercicio o el servicio este
-            temporalmente deshabilitado. Por favor, intentelo de nuevo, más
-            tarde.
-          </Text>
-          <TouchableOpacity
-            onPress={() => {
-              setDialogVisible(false);
-            }}
-            style={{ alignSelf: "center", paddingTop: 30 }}
-          >
-            <Text style={{ fontSize: 20 }}> Aceptar </Text>
-          </TouchableOpacity>
-        </Dialog.Content>
-      </Dialog>
+      <Snackbar
+        visible={showSnackbar}
+        onDismiss={onDismissSnackBar}
+        >
+        {snackbarMessage}
+      </Snackbar>
     </View>
   );
 }

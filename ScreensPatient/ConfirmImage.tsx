@@ -8,6 +8,11 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
+
+import {
+  Snackbar
+} from "react-native-paper";
+
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NavigationProp, useFocusEffect } from "@react-navigation/native";
 import { RouteProp } from "@react-navigation/native";
@@ -36,6 +41,9 @@ export default function ConfirmImage({
   };
   const [userID, setUserID] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showSnackbar, setShowSnackbar] = useState(false);
+  const onDismissSnackBar = () => setShowSnackbar(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   const getUserID = async () => {
     const id = await AsyncStorage.getItem("idSesion");
@@ -59,17 +67,13 @@ export default function ConfirmImage({
         name: "photo.jpg",
       } as any;
 
-      formData.append("image", imageBlob);
+      formData.append("file", imageBlob);
       formData.append("exercise", exercise);
       formData.append("idPaciente", userID!);
-
-      // Imprime el contenido de FormData para verificar
-      console.log("FormData content:");
-      console.log("image:", imageBlob);
-      console.log("formData:", formData);
+      formData.append("type", 'imagen');
 
       const response = await axios.post(
-        BACKEND_URL + "/obtener-postura-imagen",
+        BACKEND_URL + "/analizar-postura",
         formData,
         {
           headers: {
@@ -78,16 +82,22 @@ export default function ConfirmImage({
         }
       );
 
-      if (response.status === 201) {
-        console.log("Éxito Imagen enviada correctamente");
-        console.log("Respuesta del servidor:", response.data);
-        navigation.navigate("Results", { results: response.data });
-      } else {
-        console.log("Error No se pudo enviar la imagen");
-      }
+      if (response.data.code === 200) {
+        navigation.navigate("Results", { 
+          results: response.data,
+        });
+        return;
+      } 
+
+      if (response.data.code === 400) {
+        setSnackbarMessage(response.data.message);
+        setShowSnackbar(true);
+        return;
+      } 
+
+      throw new Error(response.data.message);
     } catch (error) {
       console.error(error);
-      console.log(" Ocurrió un error al enviar la imagen");
     } finally {
       setLoading(false);
     }
@@ -126,7 +136,14 @@ export default function ConfirmImage({
               </>
             )}
           </TouchableOpacity>
+          <Snackbar
+            visible={showSnackbar}
+            onDismiss={onDismissSnackBar}
+            >
+            {snackbarMessage}
+          </Snackbar>
         </View>
+
       </SafeAreaView>
     </View>
   );
