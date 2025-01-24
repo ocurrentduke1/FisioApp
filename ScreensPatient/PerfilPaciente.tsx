@@ -11,6 +11,11 @@ import {
   Dimensions,
   Keyboard,
 } from "react-native";
+
+import {
+  TouchableRipple,
+} from "react-native-paper";
+
 import { NavigationProp } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import stylesHistorial from "../styles/stylesHistorial";
@@ -24,6 +29,9 @@ import { useFocusEffect } from "@react-navigation/native";
 import stylesMain from "../styles/stylesMain";
 import MapView, { LatLng, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import Foundation from "react-native-vector-icons/Foundation";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 const { width, height } = Dimensions.get("window");
 
@@ -511,20 +519,25 @@ const PerfilPaciente = ({
         <ScrollView style={stylesHistorial.scrollViewRegistro}>
           <View
             style={{
-              flex: 1,
               display: "flex",
-              alignItems: "center",
+              flexDirection: "row",
+              justifyContent: "center",
             }}
           >
+            <Image 
+              source={require("../assets/logoFisioApp.png")}
+              style={styles.logo}
+            />
             <Text
               style={{
                 color: "#000",
-                height: 50,
                 fontSize: 25,
                 fontWeight: "bold",
+                marginLeft: 10,
+                marginTop: 6
               }}
             >
-              {"Editar perfil"}
+              FisioApp ®
             </Text>
           </View>
 
@@ -588,18 +601,6 @@ const PerfilPaciente = ({
 
             <TextInput
               mode="outlined"
-              label="Correo Electrónico"
-              style={styles.input}
-              value={email}
-              onChangeText={setEmail}
-              outlineColor="#002245"
-              activeOutlineColor="#002245"
-              disabled={true}
-              left={<TextInput.Icon style={{ marginTop: 10 }} icon="email" />}
-            />
-
-            <TextInput
-              mode="outlined"
               label="Teléfono"
               style={styles.input}
               value={tel}
@@ -611,58 +612,41 @@ const PerfilPaciente = ({
               left={<TextInput.Icon style={{ marginTop: 10 }} icon="phone" />}
             />
 
-            <TextInput
-              mode="outlined"
-              label="Fecha de nacimiento"
-              style={styles.input}
-              value={edad}
-              onChangeText={setEdad}
-              outlineColor="#002245"
-              activeOutlineColor="#002245"
-              keyboardType="numeric"
-              maxLength={10}
-              left={
-                <TextInput.Icon style={{ marginTop: 10 }} icon="calendar" />
-              }
-              disabled={true}
-            />
+            <View style={styles.flexViewStart}>
+              <MaterialCommunityIcons name="email" size={18} color="#000"></MaterialCommunityIcons>
 
-            <TextInput
-              mode="outlined"
-              label="Genero"
-              style={styles.input}
-              value={sexo}
-              onChangeText={setSexo}
-              outlineColor="#002245"
-              activeOutlineColor="#002245"
-              disabled={true}
-              left={
-                <TextInput.Icon
-                  style={{ marginTop: 10 }}
-                  icon="gender-male-female"
-                />
-              }
-            />
+              <Text style={{ marginLeft: 10 }}>
+                { email }
+              </Text>
+            </View>
 
-            <TextInput
-              mode="outlined"
-              label="Domicilio"
-              style={styles.input}
-              value={domicilio}
-              outlineColor="#002245"
-              activeOutlineColor="#002245"
-              readOnly={true}
-              left={
-                <TextInput.Icon style={{ marginTop: 10 }} icon="map-marker" />
-              }
-              right={
-                <TextInput.Icon
-                  style={{ marginTop: 14 }}
-                  icon="border-color"
-                  onPress={toggleMaps}
-                />
-              }
-            />
+            <View style={styles.flexViewStart}>
+              <FontAwesome5 name="birthday-cake" size={18} color="#000"></FontAwesome5>
+
+              <Text style={{ marginLeft: 10, marginTop: 1 }}>
+                { new Date(edad.substring(0, 10)).toLocaleDateString() }
+              </Text>
+            </View>
+
+            <View style={styles.flexViewStart}>
+              <Foundation name={sexo === 'Masculino' ? "male-symbol" : 'female-symbol'} size={23} color="#000"></Foundation>
+
+              <Text style={{ marginLeft: 10, marginTop: 1 }}>
+                { sexo }
+              </Text>
+            </View>
+
+            <TouchableRipple
+                borderless
+                onPress={toggleMaps}
+              >
+                <View style={styles.flexViewStart}>
+                  <MaterialCommunityIcons name="map-search" size={25} color="#000" />
+                  <Text style={styles.text}>
+                    {domicilio}
+                  </Text>
+                </View>
+            </TouchableRipple>
           </View>
 
           <View style={styles.buttonsContainer}>
@@ -697,21 +681,7 @@ const PerfilPaciente = ({
               </View>
             </TouchableOpacity>
 
-            <Divider style={{ marginTop: 20, marginBottom: 15 }} bold />
-
-            <TouchableOpacity
-              style={{ ...styles.btn, ...styles.btnChangePayment }}
-              onPress={() => navigation.goBack()}
-            >
-              <Text
-                style={{
-                  ...styles.buttonOptionText,
-                  ...styles.textColorChangePayment,
-                }}
-              >
-                Volver
-              </Text>
-            </TouchableOpacity>
+            <Divider style={{ marginTop: 20, marginBottom: 5 }} bold />
 
             <TouchableOpacity
               style={{ ...styles.btn, ...styles.btnLogout }}
@@ -1387,6 +1357,38 @@ const styles = StyleSheet.create({
   dialogTitle: {
     textAlign: "center",
   },
+  logo: {
+    width: 50,
+    height: 50,
+    resizeMode: "contain",
+    borderRadius: 300,
+  },
+  flexViewStart: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    flexDirection: "row",
+    marginBottom: 10,
+    marginLeft: 10,
+    flexWrap: 'wrap'
+  },
+  textContainer: {
+    flexDirection: 'row',         // Alinea texto y icono horizontalmente
+    alignItems: 'center',         // Centra verticalmente el texto y el icono
+    flex: 1,                      // Toma el espacio disponible restante
+  },
+  text: {
+    marginLeft: 4,
+    marginTop: -5,
+    fontWeight: 'bold',
+    flex: 1
+  },
+  iconContainer: {
+    height: 30,
+    width: 30,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });
 
 export default PerfilPaciente;

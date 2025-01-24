@@ -673,7 +673,7 @@ const CrearExpediente = ({
         <View style={styles.flexViewStart}>
           <FontAwesome5 name="hospital-user" size={18} color="#000"></FontAwesome5>
 
-          <Text style={{ marginLeft: 10 }}>
+          <Text style={{ marginLeft: 10, flex: 1 }}>
             { nombre + ' ' + apellidos }
           </Text>
         </View>
@@ -681,7 +681,7 @@ const CrearExpediente = ({
         <View style={styles.flexViewStart}>
           <FontAwesome5 name="birthday-cake" size={18} color="#000"></FontAwesome5>
 
-          <Text style={{ marginLeft: 10 }}>
+          <Text style={{ marginLeft: 10, flex: 1 }}>
             { new Date(nacimiento.substring(0, 10)).toLocaleDateString() }
           </Text>
         </View>
@@ -689,7 +689,7 @@ const CrearExpediente = ({
         <View style={styles.flexViewStart}>
           <FontAwesome5 name="user-clock" size={18} color="#000"></FontAwesome5>
 
-          <Text style={{ marginLeft: 10 }}>
+          <Text style={{ marginLeft: 10, flex: 1 }}>
             { calcularEdad(nacimiento.substring(0, 10)) }
           </Text>
         </View>
@@ -697,7 +697,7 @@ const CrearExpediente = ({
         <View style={styles.flexViewStart}>
           <Foundation name={sexo === 'Masculino' ? "male-symbol" : 'female-symbol'} size={23} color="#000"></Foundation>
 
-          <Text style={{ marginLeft: 10 }}>
+          <Text style={{ marginLeft: 10, flex: 1 }}>
             { sexo }
           </Text>
         </View>
@@ -705,7 +705,7 @@ const CrearExpediente = ({
         <View style={styles.flexViewStart}>
           <FontAwesome5 name="phone-alt" size={18} color="#000"></FontAwesome5>
 
-          <Text style={{ marginLeft: 10 }}>
+          <Text style={{ marginLeft: 10, flex: 1 }}>
             { telefono }
           </Text>
           
@@ -730,7 +730,7 @@ const CrearExpediente = ({
         <View style={styles.flexViewStart}>
           <MaterialCommunityIcons name="email" size={18} color="#000"></MaterialCommunityIcons>
 
-          <Text style={{ marginLeft: 10 }}>
+          <Text style={{ marginLeft: 10, flex: 1 }}>
             { correo }
           </Text>
           
@@ -1415,6 +1415,7 @@ const CrearExpediente = ({
           onChangeText={(value) => setvaloracionPostural(value)}
           left={<TextInput.Icon style={{ marginTop: 30 }} icon={() => <Ionicons name="body-sharp" size={25} />} />}
           />
+          
         <TextInput
           mode="outlined"
           label={"Palpación"}
@@ -1562,7 +1563,8 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'flex-start',
     flexDirection: "row",
-    marginBottom: 10
+    marginBottom: 10,
+    flexWrap: 'wrap'
   },
   titleText: {
     fontSize: 24,

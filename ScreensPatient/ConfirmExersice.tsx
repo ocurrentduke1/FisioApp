@@ -1,7 +1,6 @@
 import React from "react";
 import {
   View,
-  Image,
   TouchableOpacity,
   Text,
   StyleSheet,
@@ -10,6 +9,7 @@ import { NavigationProp, RouteProp } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import stylesHistorial from "../styles/stylesHistorial";
 import { RadioButton } from "react-native-paper";
+import { Image } from 'expo-image'; 
 
 type RouteParams = {
   params: {

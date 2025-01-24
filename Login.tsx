@@ -13,7 +13,7 @@ import {
 import stylesLogin from "./styles/stylesLogin";
 import { NavigationProp } from "@react-navigation/native";
 import { BACKEND_URL } from "@env";
-import JWT, { SupportedAlgorithms } from "expo-jwt";
+import JWT from "expo-jwt";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Dialog, TextInput } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";

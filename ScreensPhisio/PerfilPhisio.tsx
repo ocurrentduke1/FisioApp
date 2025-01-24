@@ -31,6 +31,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import MapView, { LatLng, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 const { width, height } = Dimensions.get("window");
 
@@ -111,18 +112,6 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
       setInitialLng(location.coords.longitude);
     })();
   }, []);
-
-  useEffect(() => {});
-
-  const data = [
-    { key: "1", value: "15 minutos" },
-    { key: "2", value: "30 minutos" },
-    { key: "3", value: "1 hora" },
-    { key: "4", value: "Personalizada" },
-  ];
-
-  // console.log("Latitud: ", initialLat);
-  // console.log("Longitud: ", initialLng);
 
   const ASPECT_RATIO = width / height;
   const LATITUDE_DELTA = 0.0922;
@@ -534,20 +523,25 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
         <ScrollView style={stylesHistorial.scrollViewRegistro}>
           <View
             style={{
-              flex: 1,
               display: "flex",
-              alignItems: "center",
+              flexDirection: "row",
+              justifyContent: "center",
             }}
           >
+            <Image 
+              source={require("../assets/logoFisioApp.png")}
+              style={styles.logo}
+            />
             <Text
               style={{
                 color: "#000",
-                height: 50,
                 fontSize: 25,
                 fontWeight: "bold",
+                marginLeft: 10,
+                marginTop: 6
               }}
             >
-              {"Editar perfil"}
+              FisioApp ®
             </Text>
           </View>
 
@@ -616,18 +610,6 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
             <TextInput
               mode="outlined"
-              label="Correo Electrónico"
-              style={styles.input}
-              value={email}
-              onChangeText={setEmail}
-              outlineColor="#002245"
-              activeOutlineColor="#002245"
-              disabled={true}
-              left={<TextInput.Icon style={{ marginTop: 10 }} icon="email" />}
-            />
-
-            <TextInput
-              mode="outlined"
               label="Teléfono"
               style={styles.input}
               value={tel}
@@ -639,26 +621,25 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
               left={<TextInput.Icon style={{ marginTop: 10 }} icon="phone" />}
             />
 
-            <TextInput
-              mode="outlined"
-              label="Consultorio"
-              style={styles.input}
-              value={consultorio}
-              outlineColor="#002245"
-              activeOutlineColor="#002245"
-              readOnly={true}
-              textAlign="left"
-              left={
-                <TextInput.Icon style={{ marginTop: 10 }} icon="map-marker" />
-              }
-              right={
-                <TextInput.Icon
-                  style={{ marginTop: 14 }}
-                  icon="border-color"
-                  onPress={toggleMaps}
-                />
-              }
-            />
+            <View style={styles.flexViewStart}>
+              <MaterialCommunityIcons name="email" size={18} color="#000"></MaterialCommunityIcons>
+
+              <Text style={{ marginLeft: 10 }}>
+                { email }
+              </Text>
+            </View>
+
+            <TouchableRipple
+                borderless
+                onPress={toggleMaps}
+              >
+                <View style={ styles.flexViewStart }>
+                  <MaterialCommunityIcons name="map-search" size={22} color="#000" />
+                  <Text style={ styles.text }>
+                    {consultorio == '' ? 'No se ha añadido el domicilio de su consultorio. ¡Toca aquí para establecerlo!' : consultorio}
+                  </Text>
+                </View>
+            </TouchableRipple>
           </View>
 
           <View style={styles.buttonsContainer}>
@@ -708,7 +689,7 @@ const PerfilFisio = ({ navigation }: { navigation: NavigationProp<any> }) => {
               </Text>
             </TouchableOpacity>
 
-            <Divider style={{ marginTop: 20, marginBottom: 15 }} bold />
+            <Divider style={{ marginTop: 20, marginBottom: 5 }} bold />
 
             <TouchableOpacity
               style={{ ...styles.btn, ...styles.btnLogout }}
@@ -1498,6 +1479,26 @@ const styles = StyleSheet.create({
   },
   dialogTitle: {
     textAlign: "center",
+  },
+  logo: {
+    width: 50,
+    height: 50,
+    resizeMode: "contain",
+    borderRadius: 300,
+  },
+  flexViewStart: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    flexDirection: "row",
+    marginBottom: 10,
+    marginLeft: 10,
+    flexWrap: 'wrap'
+  },
+  text: {
+    marginLeft: 4,
+    marginTop: -5,
+    fontWeight: 'bold',
+    flex: 1
   },
 });
 

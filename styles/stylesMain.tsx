@@ -32,8 +32,8 @@ export default StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 25,
-    width: windowWidth * 0.8,
-    height: windowHeight * 0.15,
+    width: windowWidth * 0.9,
+    height: windowHeight * 0.20,
     marginTop: 20,
     marginBottom: 20,
     shadowColor: "#000",
@@ -41,6 +41,8 @@ export default StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 6,
     elevation: 8,
+    overflow: 'hidden',
+    paddingRight: 55
   },
   datosFisio: {
     backgroundColor: "#FFFFFF",

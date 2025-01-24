@@ -812,8 +812,9 @@ export default function HistorialPaciente({
         </Dialog>
 
         <FAB
-          icon="account-plus"
+          icon={() => <MaterialCommunityIcons name="file-eye" size={24} color="#000" />}
           color="#000"
+          rippleColor="#FFF"
           style={styles.fab}
           onPress={() => navigation.navigate("AutoEvaluaciones")}
         />
@@ -899,6 +900,6 @@ const styles = StyleSheet.create({
     margin: 16,
     right: 0,
     bottom: 0,
-    backgroundColor: "#FFF",
+    backgroundColor: "#34e1e3",
   },
 });
