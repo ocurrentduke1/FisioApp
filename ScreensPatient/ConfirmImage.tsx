@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import {
   View,
@@ -19,6 +19,7 @@ import { RouteProp } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { BACKEND_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { ActivityIndicator } from "react-native-paper";
 
@@ -35,10 +36,12 @@ export default function ConfirmImage({
     navigation.goBack();
   }
 
-  const { image, exercise } = route.params as {
+  const { image, exercise, onlyShowing } = route.params as {
     image: string;
     exercise: string;
+    onlyShowing?: boolean|null;
   };
+
   const [userID, setUserID] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showSnackbar, setShowSnackbar] = useState(false);
@@ -47,7 +50,6 @@ export default function ConfirmImage({
 
   const getUserID = async () => {
     const id = await AsyncStorage.getItem("idSesion");
-    console.log("Fetched UserID:", id); // Verifica que el ID se obtenga correctamente
     setUserID(id);
   };
 
@@ -107,43 +109,75 @@ export default function ConfirmImage({
     <View style={styles.container}>
       <SafeAreaView style={styles.mainContainer}>
         <Image source={{ uri: image }} style={styles.photo} />
-        <TouchableOpacity
-          style={{
-            position: "absolute",
-            left: "5%",
-            top: "6%",
-          }}
-          onPress={closeImage}
-        >
-          <Icon name="chevron-left" size={30} color="#757575" />
-        </TouchableOpacity>
-        <View style={styles.detect}>
-          <TouchableOpacity
-            style={styles.pressable}
-            onPress={sendImageToServer}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator
-                animating={loading}
-                size="small"
-                color="white"
-              />
-            ) : (
-              <>
-                <MaterialIcons name="image-search" size={24} color="white" />
-                <Text style={styles.text}>Analizar</Text>
-              </>
-            )}
-          </TouchableOpacity>
-          <Snackbar
-            visible={showSnackbar}
-            onDismiss={onDismissSnackBar}
-            >
-            {snackbarMessage}
-          </Snackbar>
-        </View>
-
+        {
+          !onlyShowing ? (
+            <>
+              <TouchableOpacity
+                style={{
+                  position: "absolute",
+                  left: "5%",
+                  top: "6%",
+                }}
+                onPress={closeImage}
+              >
+                <Icon name="chevron-left" size={30} color="#757575" />
+              </TouchableOpacity>
+              <View style={styles.rowView}>
+                <FontAwesome name="warning" size={15} color="#FFF"></FontAwesome>
+                <Text style={[styles.textWarning, styles.underlineText]}>
+                  FisioApp
+                </Text>
+                <Text style={styles.textWarning}>
+                  puede cometer errores. Solo se debe usar como
+                </Text>
+                <Text
+                  style={[styles.textWarning, { marginLeft: 2, fontWeight: "bold" }]}
+                >
+                  referencia.
+                </Text>
+              </View>
+              <View style={styles.detect}>
+                <TouchableOpacity
+                  style={styles.pressable}
+                  onPress={sendImageToServer}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <ActivityIndicator
+                      animating={loading}
+                      size="small"
+                      color="white"
+                    />
+                  ) : (
+                    <>
+                      <MaterialIcons name="image-search" size={24} color="white" />
+                      <Text style={styles.text}>Analizar</Text>
+                    </>
+                  )}
+                </TouchableOpacity>
+                <Snackbar
+                  visible={showSnackbar}
+                  onDismiss={onDismissSnackBar}
+                  >
+                  {snackbarMessage}
+                </Snackbar>
+              </View>
+            </>
+          ) : (
+            <>
+                <TouchableOpacity
+                  style={styles.pressable}
+                  onPress={sendImageToServer}
+                  disabled={loading}
+                >
+                  <>
+                    <MaterialIcons name="image-search" size={24} color="white" />
+                    <Text style={styles.text}>Analizar</Text>
+                  </>
+                </TouchableOpacity>
+            </>
+          )
+        }
       </SafeAreaView>
     </View>
   );
@@ -189,5 +223,22 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "white",
     fontWeight: "bold",
+  },
+  rowView: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 20,
+  },
+  underlineText: {
+    textDecorationLine: "underline",
+    marginRight: -2,
+  },
+  textWarning: {
+    fontSize: 10,
+    color: "white",
+    textAlign: "center",
+    marginBottom: 20,
+    marginLeft: 5,
   },
 });

@@ -5,14 +5,19 @@ import {
   ImageBackground,
   View,
   Text,
+  ScrollView
 } from "react-native";
-import { NavigationProp, useFocusEffect } from "@react-navigation/native";
+import { NavigationProp } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RouteProp } from "@react-navigation/native";
 import { ListItem, Icon } from "@rneui/themed";
 import { BACKEND_URL } from "@env";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import UUID from 'react-native-uuid';
 
 type RouteParams = {
   params: {
@@ -44,7 +49,8 @@ const AutoEvaluaciones = ({
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [userID, setUserID] = useState<string | null>(null);
-  const [evaluaciones, setEvaluaciones] = useState<any[]>([]);
+  const [evaluaciones, setEvaluaciones] = useState({});
+  let numeroListas = 0;
 
   const paciente = route.params?.paciente || null;
 
@@ -52,30 +58,40 @@ const AutoEvaluaciones = ({
     setExpandedIndex(expandedIndex === index ? null : index);
   };
 
+  const getUserID = async () => {
+    try {
+      const id = await AsyncStorage.getItem('idSesion');
+      if (id) {
+        setUserID(id);
+      } else {
+        console.error('No se encontró el userID en AsyncStorage');
+      }
+    } catch (error) {
+      console.error('Error al obtener userID de AsyncStorage', error);
+    }
+  };
+
   const getEvaluaciones = async () => {
     setLoading(true);
     try {
       const id = paciente ? paciente.id : userID;
-      if (id) {
-        const response = await axios.get(`${BACKEND_URL}/evaluaciones/${id}`);
 
-        setEvaluaciones(response.data);
-      } else {
-        console.error("No se pudo obtener el ID del paciente o usuario.");
+      if (!id) {
+        console.error('No se pudo obtener el ID del paciente o usuario');
+        return;
       }
+
+      const response = await axios.get(`${BACKEND_URL}/historial-vision-artificial/${id}`);
+
+      if(response.data.code === 200) {
+        setEvaluaciones(response.data.historial);
+      }
+      
+      // No tiene evaluaciones
     } catch (error) {
-      console.error("Error fetching evaluations:", error);
+      console.error('Error fetching evaluations:', error);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const getUserID = async () => {
-    try {
-      const id = await AsyncStorage.getItem("userID");
-      setUserID(id);
-    } catch (error) {
-      console.error("Error fetching user ID:", error);
     }
   };
 
@@ -83,21 +99,59 @@ const AutoEvaluaciones = ({
     if (!paciente) {
       getUserID();
     }
-    getEvaluaciones();
-  }, [paciente, userID]);
+  }, [paciente]);
 
-  // const evaluaciones = [
-  //   {
-  //     fecha: "12/12/2021",
-  //     angulo: "90°",
-  //     descripcion: "Se ha logrado un avance en la flexión de la rodilla",
-  //   },
-  //   {
-  //     fecha: "13/12/2021",
-  //     angulo: "100°",
-  //     descripcion: "Se ha logrado un avance en la flexión de la rodilla",
-  //   }
-  // ];
+  useEffect(() => {
+    if (userID || paciente) {
+      getEvaluaciones();
+    }
+  }, [userID, paciente]);
+
+  function obtenerIconoFactor(tipoFactor: string) {
+    const iconoDefecto = () => <MaterialCommunityIcons name="angle-acute" size={30} color="#000" style={{ marginTop: -2 }}></MaterialCommunityIcons>;
+
+    return {
+      'angulo': () => <MaterialCommunityIcons name="angle-acute" size={30} color="#000" style={{ marginTop: -2 }}></MaterialCommunityIcons>,
+      'distancia': () => <FontAwesome6 name="ruler" size={25} color="#000"></FontAwesome6>,
+    }[tipoFactor] || iconoDefecto
+  }
+
+  function obtenerIconoTipoAnalisis(tipoAnalisis: string) {
+    const iconoDefecto = () => <MaterialCommunityIcons name="camera-account" size={30} color="#000" style={{ marginTop: -4 }}></MaterialCommunityIcons>;
+
+    return {
+      'Imagen': () => <MaterialCommunityIcons name="camera-account" size={30} color="#000" style={{ marginTop: -4 }}></MaterialCommunityIcons>,
+      'Video': () => <MaterialCommunityIcons name="video-box" size={30} color="#000" style={{ marginTop: -4 }}></MaterialCommunityIcons>,
+    }[tipoAnalisis] || iconoDefecto
+  }
+
+  function obtenerRepresentarFactor(tipoFactor: string) {
+    return {
+      'angulo': '°',
+      'distancia': 'cm.',
+    }[tipoFactor] || '-'
+  }
+
+  function mostrarArchivo(archivo: string, exercise: string, tipoAnalisis: string) {
+
+    if(tipoAnalisis === 'Imagen') {
+      navigation.navigate('ConfirmImage', {
+        image: archivo,
+        exercise,
+        onlyShowing: true,
+      });
+      return;
+    }
+
+    if(tipoAnalisis === 'Video') {
+      navigation.navigate('ConfirmVideo', {
+        video: archivo,
+        exercise,
+        onlyShowing: true,
+      });
+      return;
+    }
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -107,49 +161,104 @@ const AutoEvaluaciones = ({
         style={styles.image}
         imageStyle={{ opacity: 0.5 }}
       >
-        <View style={{ flex: 1 }}>
-          {evaluaciones && evaluaciones.length > 0 ? (
-            evaluaciones.map((l, i) => (
-              <Animated.View
-                style={{
-                  width: "90%",
-                  margin: 10,
-                  padding: 10,
-                  borderRadius: 10,
-                  opacity: border,
-                }}
-              >
-                <ListItem.Accordion
-                  content={
-                    <>
-                      <Icon name="align-horizontal-left" size={30} />
-                      <ListItem.Content>
-                        <ListItem.Title>{l.fecha}</ListItem.Title>
-                      </ListItem.Content>
-                    </>
-                  }
-                  isExpanded={expandedIndex === i}
-                  onPress={() => handlePress(i)}
+        <ScrollView style={{ flex: 1 }}>
+          {
+            evaluaciones && Object.keys(evaluaciones).length > 0 ? (
+              Object.keys(evaluaciones).map((fecha, index) => (
+                <Animated.View
+                  style={{
+                    width: "90%",
+                    margin: 10,
+                    padding: 10,
+                    borderRadius: 10,
+                    opacity: border,
+                  }}
                 >
-                  <ListItem
-                    key={i}
-                    onPress={() => console.log(l.angulo)}
-                    bottomDivider
+                  <ListItem.Accordion key={index}
+                    content={
+                      <>
+                        <MaterialCommunityIcons name="calendar-account" size={30} style={{ marginRight: 10}} />
+                        <ListItem.Content>
+                          <ListItem.Title style={styles.title}>{new Date(fecha).toDateString()}</ListItem.Title>
+                        </ListItem.Content>
+                      </>
+                    }
+                    isExpanded={expandedIndex === index}
+                    onPress={() => handlePress(index)}
                   >
-                    <Icon name="bar-chart" size={30} />
-                    <ListItem.Content>
-                      <ListItem.Title>{l.angulo}</ListItem.Title>
-                      <ListItem.Subtitle>{l.descripcion}</ListItem.Subtitle>
-                    </ListItem.Content>
-                    <ListItem.Chevron />
-                  </ListItem>
-                </ListItem.Accordion>
-              </Animated.View>
-            ))
-          ) : (
-            <Text></Text>
-          )}
-        </View>
+                    {
+                      evaluaciones[fecha].map((evaluacion: {
+                        hora: string,
+                        analisis: string,
+                        factor: string,
+                        tipoFactor: string,
+                        puntoPartida: string,
+                        tipoAnalisis: string,
+                        archivo: string,
+                        ejercicio: string,
+                      }) => {
+                        const indexEvaluacion = UUID.v4();
+
+                        return (
+                          <ListItem
+                            key={indexEvaluacion}
+                            bottomDivider
+                            onPress={() => mostrarArchivo(evaluacion.archivo, evaluacion.ejercicio, evaluacion.tipoAnalisis)} // mostrar file
+                          >
+                            <View>
+                              <View style={styles.flexViewStart}>
+                                <MaterialCommunityIcons name="human-greeting" size={30} />
+                      
+                                <Text style={styles.title}>
+                                  { evaluacion.ejercicio }
+                                </Text>
+                              </View>
+  
+                              <View style={styles.flexViewStart}>
+                                <View style={styles.flexViewStart}>
+                                  <MaterialCommunityIcons name="clock-outline" size={25} />
+                        
+                                  <Text style={styles.subtitle}>
+                                    { evaluacion.hora }
+                                  </Text>
+                                </View>
+  
+                                <View style={[styles.flexViewStart, {marginLeft: 10}]}>
+                                  {obtenerIconoFactor(evaluacion.tipoFactor)()} 
+                                
+                                  <Text style={styles.subtitle}>
+                                    {evaluacion.factor} {obtenerRepresentarFactor(evaluacion.tipoFactor)}
+                                  </Text>
+                                </View>
+  
+                                <View style={[styles.flexViewStart, {marginLeft: 10}]}>
+                                  <FontAwesome5 name="exchange-alt" size={22} />
+                                
+                                  <Text style={styles.subtitle}>
+                                    {evaluacion.puntoPartida.toLocaleUpperCase()}
+                                  </Text>
+                                </View>
+  
+                                <View style={[styles.flexViewStart, {marginLeft: 10}]}>
+                                  {obtenerIconoTipoAnalisis(evaluacion.tipoAnalisis)()} 
+                                  
+                                </View>
+                              </View>
+                              <Text style={styles.analisisText}>{evaluacion.analisis}</Text>
+                            </View>
+  
+                          </ListItem>
+                        )
+                      })
+                    }
+                  </ListItem.Accordion>
+                </Animated.View>
+              ))
+            ) : (
+              <Text>No se encontraron evaluaciones</Text>
+            )
+          }
+        </ScrollView>
       </ImageBackground>
     </SafeAreaView>
   );
@@ -185,20 +294,19 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
     marginRight: -2,
   },
-  textSubtitle: {
-    fontSize: 24,
+  subtitle: {
+    fontSize: 14,
     color: "black",
     fontWeight: "bold",
     textAlign: "center",
-    marginTop: 20,
+    marginTop: 4,
+    marginLeft: 7,
   },
   title: {
-    fontSize: 24,
-    color: "white",
-    textAlign: "center",
+    fontSize: 16,
+    color: "black",
     fontWeight: "bold",
-    marginTop: 20,
-    marginBottom: 20,
+    marginTop: 4
   },
   dialogTitle: {
     textAlign: "center",
@@ -228,6 +336,16 @@ const styles = StyleSheet.create({
   image: {
     flex: 1,
     justifyContent: "center",
+  },
+  analisisText: {
+    textAlign: "justify",
+  },
+  flexViewStart: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    flexDirection: "row",
+    marginBottom: 10,
+    flexWrap: 'wrap'
   },
 });
 

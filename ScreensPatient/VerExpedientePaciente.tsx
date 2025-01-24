@@ -10,7 +10,6 @@ import {
   StyleSheet,
   TextInput,
   Animated,
-  RefreshControl,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { NavigationProp } from "@react-navigation/native";

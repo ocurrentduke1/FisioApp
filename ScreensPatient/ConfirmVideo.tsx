@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import {
   View,
@@ -36,10 +36,12 @@ export default function ConfirmVideo({
     navigation.goBack();
   }
 
-  const { video, exercise } = route.params as {
+  const { video, exercise, onlyShowing } = route.params as {
     video: string;
     exercise: string;
+    onlyShowing?: boolean|null;
   };
+
   const [userID, setUserID] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [dialogVisible, setDialogVisible] = useState(false);
@@ -143,26 +145,45 @@ export default function ConfirmVideo({
           </Text>
         </View>
 
-        <View style={styles.detect}>
-          <TouchableOpacity
-            style={styles.pressable}
-            onPress={sendVideoToServer}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator
-                animating={loading}
-                size="small"
-                color="white"
-              />
-            ) : (
-              <>
-                <MaterialIcons name="image-search" size={24} color="white" />
-                <Text style={styles.text}>Analizar</Text>
-              </>
-            )}
-          </TouchableOpacity>
-        </View>
+        {
+          !onlyShowing ? (
+            <>
+              <View style={styles.detect}>
+                <TouchableOpacity
+                  style={styles.pressable}
+                  onPress={sendVideoToServer}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <ActivityIndicator
+                      animating={loading}
+                      size="small"
+                      color="white"
+                    />
+                  ) : (
+                    <>
+                      <MaterialIcons name="image-search" size={24} color="white" />
+                      <Text style={styles.text}>Analizar</Text>
+                    </>
+                  )}
+                </TouchableOpacity>
+              </View>
+            </>
+          ) : (
+            <View style={styles.detect}>
+                <TouchableOpacity
+                  style={styles.pressable}
+                  onPress={closeImage}
+                  disabled={loading}
+                >
+                  <>
+                    <MaterialIcons name="arrow-back" size={24} color="white" />
+                    <Text style={styles.text}>Volver</Text>
+                  </>
+                </TouchableOpacity>
+            </View>
+          )
+        }
       </SafeAreaView>
       <Snackbar
         visible={showSnackbar}
