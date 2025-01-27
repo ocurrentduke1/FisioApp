@@ -7,6 +7,7 @@ import {
   ScrollView,
   ImageBackground,
   StyleSheet,
+  Dimensions,
 } from "react-native";
 import stylesMain from "../styles/stylesMain";
 import { NavigationProp } from "@react-navigation/native";
@@ -18,7 +19,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BACKEND_URL } from "@env";
 import axios from "axios";
 import { ActivityIndicator, Dialog,} from "react-native-paper";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import stylesHistorial from "../styles/stylesHistorial";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 
 type VerifiedIconProps = {
   display: boolean;
@@ -31,6 +36,8 @@ type RouteParams = {
       nombre: string;
       imagenPerfil: string;
       consultorio: string;
+      correo: string;
+      telefono: string;
     };
   };
 };
@@ -62,7 +69,7 @@ const PacientesCompartidos = ({
     const [loading, setLoading] = useState(true);
     const [userID, setUserID] = useState<string | null>(null);
     const [errorPacientes, setErrorPacientes] = useState(false);
-      const changeErrorPacientes = () => setErrorPacientes(!errorPacientes);
+    const changeErrorPacientes = () => setErrorPacientes(!errorPacientes);
 
     const getPacientes = async () => {
       try {
@@ -114,13 +121,115 @@ const PacientesCompartidos = ({
         }
 
   return (
-    <SafeAreaView style={stylesMain.container}>
+    <SafeAreaView style={stylesHistorial.container}>
       <ImageBackground
                 source={require("../assets/logo_blanco.png")}
                 resizeMode="contain"
                 style={styles.image}
                 imageStyle={{ opacity: 0.5 }}
               >
+                <View
+          style={stylesHistorial.datosPaciente}
+        >
+          <Text
+            style={{
+              fontWeight: "bold",
+              fontSize: 18,
+              color: "black",
+              textAlign: "center",
+            }}
+          >
+            {" "}
+            {(contacto.nombre).toUpperCase()}
+          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+            }}
+          >
+            <View style={stylesHistorial.viewpaciente}>
+              {contacto.imagenPerfil ? (
+                <Image
+                  source={{ uri: contacto.imagenPerfil }}
+                  style={{
+                    alignItems: "flex-end",
+                    width: windowWidth * 0.19,
+                    height: windowHeight * 0.095,
+                    borderRadius: 100,
+                    marginLeft: 30,
+                  }}
+                />
+              ) : (
+                <Icon
+                  name="user-circle"
+                  size={70}
+                  color="#000"
+                  style={{
+                    alignItems: "flex-end",
+                    width: windowWidth * 0.19,
+                    height: windowHeight * 0.095,
+                    marginLeft: 30,
+                    borderRadius: 100,
+                  }}
+                />
+              )}
+            </View>
+            <View
+              style={{ alignItems: "flex-start", marginTop: 5, marginLeft: 15 }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "flex-start",
+                  padding: 2,
+                  overflow: "hidden",
+                }}
+              >
+                <Icon
+                  name="map-marker"
+                  size={20}
+                  color="#000"
+                  style={{ marginRight: 5 }}
+                />
+                <View style={{ overflow: "hidden" }}>
+                  <Text
+                    style={{ width: 200 }}
+                  >
+                    {contacto.consultorio}
+                  </Text>
+                </View>
+              </View>
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "flex-start",
+                  padding: 2,
+                }}
+              >
+                <Icon
+                  name="phone"
+                  size={20}
+                  color="#000"
+                  style={{ marginRight: 5 }}
+                />
+                <Text> {contacto.telefono}</Text>
+              </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "flex-start",
+                    padding: 2,
+                  }}
+                >
+                  <MaterialCommunityIcons name="email" size={20} color="#000" />
+                  <Text> {contacto.correo}</Text>
+                </View>
+
+            </View>
+          </View>
+        </View>
       <ScrollView style={stylesMain.scrollView}>
       {pacientes && pacientes.length > 0 ? (
         pacientes.map((paciente, index) => (

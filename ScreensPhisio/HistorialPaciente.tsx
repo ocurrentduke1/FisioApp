@@ -318,26 +318,6 @@ export default function HistorialPaciente({
     );
   };
 
-  const [containerWidth, setContainerWidth] = useState(0); // Ancho del contenedor
-  const [textWidth, setTextWidth] = useState(0); // Ancho del texto
-  const scrollX = useRef(new Animated.Value(0)).current; // Animación del desplazamiento
-
-  useEffect(() => {
-    if (textWidth > containerWidth) {
-      startScrolling(); // Inicia el desplazamiento si el texto es más ancho que el contenedor
-    }
-  }, [textWidth, containerWidth]);
-
-  const startScrolling = () => {
-    Animated.loop(
-      Animated.timing(scrollX, {
-        toValue: -(textWidth - containerWidth), // Desplaza hasta el final visible
-        duration: 10000, // Duración ajustable
-        useNativeDriver: true,
-      })
-    ).start();
-  };
-
   useEffect(() => {
     const savePacienteData = async () => {
       if (paciente) {
@@ -401,9 +381,6 @@ export default function HistorialPaciente({
       <SafeAreaView style={stylesHistorial.container}>
         <View
           style={stylesHistorial.datosPaciente}
-          onLayout={(event) =>
-            setContainerWidth(event.nativeEvent.layout.width)
-          }
         >
           <Text
             style={{
@@ -504,9 +481,6 @@ export default function HistorialPaciente({
                 <View style={{ overflow: "hidden" }}>
                   <Text
                     style={{ width: 200 }}
-                    onLayout={(event) =>
-                      setTextWidth(event.nativeEvent.layout.width)
-                    }
                   >
                     {paciente.ubicacion}
                   </Text>

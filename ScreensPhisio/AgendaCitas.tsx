@@ -23,6 +23,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BACKEND_URL } from "@env";
 import axios from "axios";
 import DropDownPicker from "react-native-dropdown-picker";
+import moment from 'moment-timezone';
 
 export default function AgendaCitas({
   navigation,
@@ -289,7 +290,10 @@ export default function AgendaCitas({
       N: 'NoAccount',
     };
 
-    const date = new Date().toISOString().substring(0, 10);
+    // const date = new Date().toISOString().substring(0, 10);
+    const date = moment.tz(new Date(), 'America/Mexico_City').format('YYYY-MM-DD');
+
+    console.log(date);
 
     const idPaciente = patient.substring(0, patient.length - 1);
     const tipoPaciente = tiposPacientes[patient[patient.length - 1]] ?? null;
@@ -345,12 +349,6 @@ export default function AgendaCitas({
         >
           <Icon2 name="calendar-remove" size={30} color="#FFF" />
         </TouchableOpacity>
-        {/* <TouchableOpacity
-          style={styles.expedientAction}
-          onPress={() => navigation.navigate("HistorialPaciente", { paciente })}
-        >
-          <Icon3 name="page-search" size={30} color="#FFF" />
-        </TouchableOpacity> */}
       </Animated.View>
     );
   };

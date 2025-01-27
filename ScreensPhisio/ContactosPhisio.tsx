@@ -46,6 +46,9 @@ const ContactosPhisio = ({
       nombre: string;
       imagenPerfil?: string;
       consultorio?: string;
+      correo: string;
+      telefono: string;
+      fechaAgregado: string;
     }[]
   >([]);
 
@@ -53,6 +56,8 @@ const ContactosPhisio = ({
     try {
       const response = await axios.get(`${BACKEND_URL}/contactos/${userID}`);
       setContacts(response.data.contactos);
+
+      console.log("Contacts:", response.data.contactos);
     } catch (error) {
       console.error("Error fetching contacts:", error);
     } finally {
@@ -162,7 +167,7 @@ const ContactosPhisio = ({
                       style={{
                         flexDirection: "row",
                         justifyContent: "flex-start",
-                        width: 210,
+                        width: 400,
                       }}
                     >
                       {contacto.consultorio ? (
@@ -175,7 +180,6 @@ const ContactosPhisio = ({
                           />
                           <Text
                             style={{ marginLeft: 5, marginTop: 7 }}
-                            ellipsizeMode="tail"
                             numberOfLines={1}
                           >
                             {contacto.consultorio}
@@ -185,6 +189,24 @@ const ContactosPhisio = ({
                         <Text></Text>
                       )}
                     </View>
+
+                    <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "flex-start",
+                      width: 400,
+                    }}>
+                      <Icon
+                        name="envelope"
+                        size={20}
+                        color="#000"
+                        style={stylesMain.datosPacienteMenuFisio}
+                      />
+                      <Text style={{ marginLeft: 5, marginTop: 7 }}>
+                        {contacto.correo}
+                      </Text>
+                    </View>
+
                   </View>
                 </View>
               </TouchableOpacity>
