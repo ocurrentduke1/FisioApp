@@ -104,9 +104,7 @@ export default StyleSheet.create({
   formatMetrics: {
     width: windowWidth * 0.8,
     height: windowHeight * 0.8,
-    marginTop: 100,
     borderColor: "#000",
-    // borderWidth: 1,
   },
   
   metricsEnabler: {
@@ -218,4 +216,40 @@ export default StyleSheet.create({
     fontSize: 24,
     color: "#FFF",
   },
+  metricasTitle: {
+    fontSize: 30,
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  gradient: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 300,
+  },
+  flexViewStart: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    flexDirection: "row",
+    marginLeft: 10,
+    flexWrap: 'wrap'
+  },
+  textEscala: {
+    fontSize: 18,
+    color: 'white',
+    fontStyle: 'italic',
+    fontWeight: 'bold',
+  },
+  iconEscalas: {
+    marginTop: 3,
+    marginRight: 10
+  },
+  metricasDescription: {
+    fontSize: 15,
+    color: 'white',
+    textAlign: "justify",
+  }
 });
