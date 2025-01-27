@@ -20,6 +20,7 @@ import { BACKEND_URL } from "@env";
 import axios from "axios";
 import { ActivityIndicator, Dialog,} from "react-native-paper";
 import stylesHistorial from "../styles/stylesHistorial";
+import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 const windowWidth = Dimensions.get("window").width;
@@ -139,7 +140,6 @@ const PacientesCompartidos = ({
               textAlign: "center",
             }}
           >
-            {" "}
             {(contacto.nombre).toUpperCase()}
           </Text>
           <View
@@ -155,7 +155,7 @@ const PacientesCompartidos = ({
                   style={{
                     alignItems: "flex-end",
                     width: windowWidth * 0.19,
-                    height: windowHeight * 0.095,
+                    height: windowHeight * 0.100,
                     borderRadius: 100,
                     marginLeft: 30,
                   }}
@@ -230,6 +230,12 @@ const PacientesCompartidos = ({
             </View>
           </View>
         </View>
+      <View style={[stylesMain.flexViewCenter, { marginTop: 20 }]}>
+        <FontAwesome6 name="users" size={30} color="#FFF" />
+        <Text style={stylesMain.commonPatientsTitle}>
+          Pacientes en común
+        </Text>
+      </View>
       <ScrollView style={stylesMain.scrollView}>
       {pacientes && pacientes.length > 0 ? (
         pacientes.map((paciente, index) => (

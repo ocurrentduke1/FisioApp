@@ -16,6 +16,7 @@ import { NavigationProp } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Octicons from "react-native-vector-icons/Octicons";
+import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import { RouteProp } from "@react-navigation/native";
 import { BACKEND_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -149,18 +150,6 @@ export default function MainPhisio({
     [navigation, translateX]
   );
 
-  const gesture = Gesture.Pan()
-    .onUpdate((event) => {
-      translateX.value = event.translationX;
-    })
-    .onEnd((event) => {
-      try {
-        runOnJS(handleGestureEnd)(event);
-      } catch (error) {
-        console.log(error.stack);
-      }
-    });
-
   const navigate = async (paciente) => {
     paciente.id = paciente.id.substring(0, paciente.id.length - 1);
 
@@ -184,18 +173,13 @@ export default function MainPhisio({
           style={styles.image}
           imageStyle={{ opacity: 0.5 }}
         >
-          {/* <GestureDetector gesture={gesture}> */}
           <View style={{ flex: 1 }}>
-            <View
-              style={[
-                styles.flexViewCenter,
-                { marginBottom: 20, marginTop: 10 },
-              ]}
-            >
-              <Text style={[styles.titleText, { marginLeft: 20 }]}>
-                Pacientes
-              </Text>
-            </View>
+          <View style={[stylesMain.flexViewCenter, { marginTop: 20 }]}>
+            <FontAwesome6 name="hospital-user" size={30} color="#FFF" />
+            <Text style={stylesMain.commonPatientsTitle}>
+              Pacientes
+            </Text>
+          </View>
             <ScrollView
               style={stylesMain.scrollView}
               refreshControl={

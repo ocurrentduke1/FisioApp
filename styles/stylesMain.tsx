@@ -237,6 +237,13 @@ export default StyleSheet.create({
     marginLeft: 10,
     flexWrap: 'wrap'
   },
+  flexViewCenter: {
+    display: 'flex',
+    justifyContent: 'center',
+    flexDirection: "row",
+    marginLeft: 10,
+    flexWrap: 'wrap'
+  },
   textEscala: {
     fontSize: 18,
     color: 'white',
@@ -251,5 +258,13 @@ export default StyleSheet.create({
     fontSize: 15,
     color: 'white',
     textAlign: "justify",
+  },
+  commonPatientsTitle: {
+    justifyContent: "center",
+    alignSelf: "center",
+    fontSize: 24,
+    color: "#FFF",
+    fontWeight: 'bold',
+    marginLeft: 10
   }
 });

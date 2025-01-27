@@ -432,7 +432,6 @@ const PerfilPaciente = ({
       nombre: Name,
       apellido: apellido,
       phone: tel,
-      edad: edad,
       location: domicilio,
     });
 
