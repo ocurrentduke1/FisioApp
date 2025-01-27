@@ -113,17 +113,7 @@ const ContactosPhisio = ({
         style={styles.image}
         imageStyle={{ opacity: 0.5 }}
       >
-        <GestureDetector gesture={gesture}>
-          <View
-                        style={[
-                          styles.flexViewCenter,
-                          { marginBottom: 20, marginTop: 10 },
-                        ]}
-                      >
-                        <Text style={[styles.titleText, { marginLeft: 20 }]}>
-                          Pacientes
-                        </Text>
-                      </View>
+          <View style={{ flex: 1 }}>
           <ScrollView style={stylesMain.scrollView}>
             {contacts && contacts.length > 0 ? (
               contacts.map((contacto, index) => (
@@ -203,7 +193,7 @@ const ContactosPhisio = ({
               <Text></Text>
             )}
           </ScrollView>
-        </GestureDetector>
+          </View>
         <FAB
           icon="account-plus"
           color="#000"

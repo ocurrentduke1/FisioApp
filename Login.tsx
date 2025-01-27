@@ -171,6 +171,7 @@ export function Login({ navigation }: { navigation: NavigationProp<any> }) {
         }
       );
 
+      console.log(response.data);
 
       if (response.data.code == 404 || response.data.code == 500) {
         changeCorreoIncorrecto();
@@ -391,6 +392,22 @@ await AsyncStorage.setItem("expiracion", jwtDecode.exp.toString());
         <Dialog.Content>
           <Text style={{ alignSelf: "center" }}>
             Correo o contraseña incorrectos
+          </Text>
+          <TouchableOpacity
+            onPress={changeCorreoIncorrecto}
+            style={{ alignSelf: "center", paddingTop: 30 }}
+          >
+            <Text style={{ fontSize: 20 }}>Aceptar</Text>
+          </TouchableOpacity>
+        </Dialog.Content>
+      </Dialog>
+
+      <Dialog visible={correoIncorrecto} onDismiss={changeCorreoIncorrecto}>
+        <Dialog.Icon icon="alert" size={50} />
+        <Dialog.Title style={styles.dialogTitle}>Surgio un error!</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{ alignSelf: "center" }}>
+            el correo no es valido
           </Text>
           <TouchableOpacity
             onPress={changeCorreoIncorrecto}
