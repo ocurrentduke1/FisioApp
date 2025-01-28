@@ -84,7 +84,7 @@ const PacientesCompartidos = ({
           return;
         }
       
-        setPacientes(response.data.pacientes);
+        setPacientes(response.data.pacientesCompartidos);
 
       } catch (error) {
         console.error("Error fetching pacientes:", error);
